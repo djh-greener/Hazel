@@ -1,7 +1,7 @@
 #directorys
 .vs/
-bin/
+**/bin/
 bin-int/
-
+!vendor/bin
 #vs files
 *.user
