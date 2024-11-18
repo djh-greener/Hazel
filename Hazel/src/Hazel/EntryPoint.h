@@ -1,9 +1,14 @@
 
 #ifdef HZ_PLATFORM_WINDOWS
-//隐藏main函数，创建Application的行为由用户定义，入口点由引擎调用
+//hide main function
 extern Hazel::Application* Hazel::CreateApplication();
 
 int main() {
+	Hazel::Log::Init();
+	
+	HZ_CORE_WARN("Hazel Warning");
+	HZ_INFO("App Info:{0}",199);
+
 	Hazel::Application* application = Hazel::CreateApplication();
 	application->Run();
 	delete application;
