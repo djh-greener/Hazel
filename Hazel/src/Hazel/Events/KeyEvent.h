@@ -6,7 +6,7 @@ namespace Hazel {
 	{
 	public:
 		int GetKeyCode()const { return m_KeyCode; }
-
+		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 	protected:
 		//donot implement, similar to a interface class
 		KeyEvent(int KeyCode):m_KeyCode(KeyCode){}
