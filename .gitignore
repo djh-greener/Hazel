@@ -1,7 +1,11 @@
 #directorys
 .vs/
-**/bin/
+bin/
 bin-int/
-!vendor/bin
+
 #vs files
-*.user
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
