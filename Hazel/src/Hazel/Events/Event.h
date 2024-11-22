@@ -1,4 +1,5 @@
 #pragma once
+#include"hzpch.h"
 #include"Hazel/Core.h"
 
 namespace Hazel {
@@ -56,7 +57,9 @@ namespace Hazel {
 				{
 					//dynamic_cast<T>(m_event)?
 					m_event.m_Handled = func(static_cast<T&>(m_event));
+					return true;
 				}
+				return false;
 		}
 
 

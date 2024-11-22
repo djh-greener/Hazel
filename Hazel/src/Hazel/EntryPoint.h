@@ -1,11 +1,13 @@
 
 #ifdef HZ_PLATFORM_WINDOWS
 //hide main function
-extern Hazel::Application* Hazel::CreateApplication();
+namespace Hazel {
+	extern Application* CreateApplication();
+}
 
 int main() {
 	Hazel::Log::Init();
-	Hazel::Application* application = Hazel::CreateApplication();
+	auto application = Hazel::CreateApplication();
 	application->Run();
 	delete application;
 	return 0;

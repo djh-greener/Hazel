@@ -9,7 +9,9 @@ workspace "Hazel"
 	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
+includeDir = {}
+includeDir["GLFW"] = "Hazel/vendor/GLFW/include"
+include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
 project "Hazel"
 	location "Hazel"
 	kind "SharedLib"
@@ -20,18 +22,20 @@ project "Hazel"
 
 	pchheader "hzpch.h"
 	pchsource "Hazel/src/hzpch.cpp"
-	files
-	{
+	files	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs
-	{
+	includedirs	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{includeDir.GLFW}"
 	}
-
+	links{
+		"GLFW",
+		"opengl32.lib"
+	}
 	filter "system:windows"
 		cppdialect "C++17"
 		staticruntime "On"
@@ -40,7 +44,8 @@ project "Hazel"
 		defines
 		{
 			"HZ_PLATFORM_WINDOWS",
-			"HZ_BUILD_DLL"
+			"HZ_BUILD_DLL",
+			"HZ_ENABLE_ASSERTS"
 		}
 
 		postbuildcommands
