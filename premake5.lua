@@ -11,7 +11,9 @@ workspace "Hazel"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 includeDir = {}
 includeDir["GLFW"] = "Hazel/vendor/GLFW/include"
+includeDir["GLAD"] = "Hazel/vendor/GLAD/include"
 include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
+include "Hazel/vendor/GLAD"
 project "Hazel"
 	location "Hazel"
 	kind "SharedLib"
@@ -30,10 +32,13 @@ project "Hazel"
 	includedirs	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{includeDir.GLFW}"
+		"%{includeDir.GLFW}",
+		"%{includeDir.GLAD}",
+
 	}
 	links{
 		"GLFW",
+		"GLAD",
 		"opengl32.lib"
 	}
 	filter "system:windows"
@@ -45,7 +50,8 @@ project "Hazel"
 		{
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
-			"HZ_ENABLE_ASSERTS"
+			"HZ_ENABLE_ASSERTS",
+			"GLFW_INCLUDE_NONE",
 		}
 
 		postbuildcommands

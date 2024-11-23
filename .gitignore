@@ -1,9 +1,9 @@
-#directorys
-.vs/
-bin/
-bin-int/
+**bin/
+**bin-int/
+!vendor/bin
 
 #vs files
+.vs/
 **.sln
 **.vcxproj
 **.vcxproj.filters

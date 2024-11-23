@@ -15,7 +15,6 @@ namespace Hazel {
 	 {
 		 EventDispatcher dispatcher(e);
 		 dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
-		 //HZ_CORE_TRACE("{0}",e);
 
 		 //pass to all layers
 		 for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
@@ -45,6 +44,9 @@ namespace Hazel {
 	void Application::Run()
 	{
 		while (m_Running) {
+			for (auto it : m_LayerStack) {
+				it->OnUpdate();
+			}
 			m_Window->OnUpdate();
 		}
 	}
