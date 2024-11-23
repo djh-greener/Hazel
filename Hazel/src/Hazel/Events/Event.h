@@ -41,8 +41,8 @@ namespace Hazel {
 		inline bool IsInCategory(EventCategory Category) {
 			return GetCategoryFlags() & Category;
 		}
-	protected:
-		bool m_Handled = false;
+		bool Handled = false;
+
 	};
 
 	class HAZEL_API EventDispatcher {
@@ -56,7 +56,7 @@ namespace Hazel {
 				if (m_event.GetEventType() == T::GetStaticType())
 				{
 					//dynamic_cast<T>(m_event)?
-					m_event.m_Handled = func(static_cast<T&>(m_event));
+					m_event.Handled = func(static_cast<T&>(m_event));
 					return true;
 				}
 				return false;
