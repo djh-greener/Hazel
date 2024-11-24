@@ -2,10 +2,10 @@
 #include"Event.h"
 
 namespace Hazel {
-	class HAZEL_API MouseMoveEvent :public Event
+	class HAZEL_API MouseMovedEvent :public Event
 	{
 	public:
-		MouseMoveEvent(float MouseX,float MouseY):m_MouseX(MouseX),m_MouseY(MouseY){}
+		MouseMovedEvent(float MouseX,float MouseY):m_MouseX(MouseX),m_MouseY(MouseY){}
 		float GetX()const { return m_MouseX; }
 		float GetY()const { return m_MouseY; }
 		std::string ToString()const override

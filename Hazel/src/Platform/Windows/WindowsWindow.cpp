@@ -79,7 +79,7 @@ namespace Hazel {
 				{
 				case GLFW_PRESS:
 				{
-					KeyPressEvent event(key, 0);
+					KeyPressedEvent event(key, 0);
 					data.EventCallback(event);
 					break;
 				}
@@ -91,13 +91,18 @@ namespace Hazel {
 				}
 				case GLFW_REPEAT:
 				{
-					KeyPressEvent event(key, 1);
+					KeyPressedEvent event(key, 1);
 					data.EventCallback(event);
 					break;
 				}
 				}
 			});
-
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				KeyTypedEvent event(codepoint);
+				data.EventCallback(event);
+			});
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -131,7 +136,7 @@ namespace Hazel {
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				MouseMoveEvent event((float)xPos, (float)yPos);
+				MouseMovedEvent event((float)xPos, (float)yPos);
 				data.EventCallback(event);
 			});
 	}
