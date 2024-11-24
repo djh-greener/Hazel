@@ -143,8 +143,6 @@ namespace Hazel {
 
 	void WindowsWindow::OnUpdate()
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.2, 0.3, 0.3, 1.0);
 		glfwPollEvents();
 		glfwSwapBuffers(m_Window);
 	}

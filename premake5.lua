@@ -12,8 +12,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 includeDir = {}
 includeDir["GLFW"] = "Hazel/vendor/GLFW/include"
 includeDir["GLAD"] = "Hazel/vendor/GLAD/include"
+includeDir["ImGui"] = "Hazel/vendor/ImGui"
+
 include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
 include "Hazel/vendor/GLAD"
+include "Hazel/vendor/ImGui"
+
 project "Hazel"
 	location "Hazel"
 	kind "SharedLib"
@@ -34,11 +38,13 @@ project "Hazel"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
+		"%{includeDir.ImGui}",
 
 	}
 	links{
 		"GLFW",
 		"GLAD",
+		"ImGui",
 		"opengl32.lib"
 	}
 	filter "system:windows"
