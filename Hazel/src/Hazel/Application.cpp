@@ -2,8 +2,7 @@
 #include "Application.h"
 #include"Events/ApplicationEvent.h"
 #include<glad/glad.h>
-#include"GLFW/glfw3.h"
-
+#include"Hazel/Input.h"
 namespace Hazel {
 
 	Application* Application::s_Instance = nullptr;
@@ -48,7 +47,6 @@ namespace Hazel {
 	}
 	void Application::Run()
 	{
-
 		while (m_Running) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(0.2, 0.3, 0.3, 1.0);

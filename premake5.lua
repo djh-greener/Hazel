@@ -13,11 +13,12 @@ includeDir = {}
 includeDir["GLFW"] = "Hazel/vendor/GLFW/include"
 includeDir["GLAD"] = "Hazel/vendor/GLAD/include"
 includeDir["ImGui"] = "Hazel/vendor/ImGui"
-
-include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
-include "Hazel/vendor/GLAD"
-include "Hazel/vendor/ImGui"
-
+group "Dependencies"
+	include "Hazel/vendor/GLAD"
+	include "Hazel/vendor/ImGui"
+	include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
+	
+group ""
 project "Hazel"
 	location "Hazel"
 	kind "SharedLib"
@@ -56,13 +57,12 @@ project "Hazel"
 		{
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
-			"HZ_ENABLE_ASSERTS",
 			"GLFW_INCLUDE_NONE",
 		}
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox\"")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 		}
 
 	filter "configurations:Debug"
