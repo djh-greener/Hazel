@@ -5,9 +5,7 @@
 [submodule "Hazel/vendor/GLFW"]
 	path = Hazel/vendor/GLFW
 	url = git@github.com:djh-greener/glfw.git
-[submodule "Hazel/vendor/ImGui"]
-	path = Hazel/vendor/ImGui
-	url = git@github.com:djh-greener/imgui.git
+
 [submodule "Hazel/vendor/glm"]
 	path = Hazel/vendor/glm
 	url = git@github.com:g-truc/glm.git
