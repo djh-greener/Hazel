@@ -12,10 +12,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 includeDir = {}
 includeDir["GLFW"] = "Hazel/vendor/GLFW/include"
 includeDir["GLAD"] = "Hazel/vendor/GLAD/include"
-includeDir["ImGui"] = "Hazel/vendor/ImGui"
+includeDir["imgui"] = "Hazel/vendor/imgui"
+includeDir["glm"] = "Hazel/vendor/glm"
+
 group "Dependencies"
 	include "Hazel/vendor/GLAD"
-	include "Hazel/vendor/ImGui"
+	include "Hazel/vendor/imgui"
 	include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
 	
 group ""
@@ -32,7 +34,9 @@ project "Hazel"
 	pchsource "Hazel/src/hzpch.cpp"
 	files	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
 	}
 
 	includedirs	{
@@ -40,13 +44,14 @@ project "Hazel"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
-		"%{includeDir.ImGui}",
+		"%{includeDir.imgui}",
+		"%{includeDir.glm}",
 
 	}
 	links{
 		"GLFW",
 		"GLAD",
-		"ImGui",
+		"imgui",
 		"opengl32.lib"
 	}
 	filter "system:windows"
@@ -98,11 +103,15 @@ project "Sandbox"
 	includedirs
 	{
 		"Hazel/vendor/spdlog/include",
-		"Hazel/src"
+		"Hazel/src",
+		"%{includeDir.glm}",
+		"Hazel/vendor",
+
 	}
 
 	links	{
-		"Hazel"
+		"Hazel",
+		--"imgui"
 	}
 
 	filter "system:windows"
