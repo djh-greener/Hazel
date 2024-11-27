@@ -1,6 +1,7 @@
 #pragma once
 #include"Hazel/Window.h"
 struct GLFWwindow;
+#include "Hazel/Renderer/GraphicsContext.h"
 namespace Hazel {
 	class WindowsWindow : public Window
 	{
@@ -22,7 +23,7 @@ namespace Hazel {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
-
+		GraphicsContext* m_Context;
 		struct WindowData
 		{
 			std::string Title;
