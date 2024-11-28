@@ -4,9 +4,14 @@
 #include"LayerStack.h"
 #include"Events/Event.h"
 #include"ImGui/ImGuiLayer.h"
-#include"Hazel/Renderer/Shader.h"
+#include<memory>
+
 
 namespace Hazel {
+	class Shader;
+	class VertexArray;
+	class VertexBuffer;
+	class IndexBuffer;
 	class WindowCloseEvent;
 	class HAZEL_API  Application
 	{
@@ -28,8 +33,13 @@ namespace Hazel {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
-		unsigned int VAO, VBO, EBO;
-		Shader* m_Shader;
+		unsigned int VAO;
+		std::unique_ptr<Shader>m_Shader;
+		//std::unique_ptr<VertexArray>m_VertexArray;
+		std::unique_ptr<VertexBuffer>m_VertexBuffer;
+		std::unique_ptr<IndexBuffer>m_IndexBuffer;
+
+
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
