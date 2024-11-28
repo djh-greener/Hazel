@@ -16,13 +16,13 @@ public:
 	}
 	void OnUpdate() override
 	{
-		if (Hazel::Input::IsKeyPressed(HZ_KEY_TAB))
-			HZ_TRACE("Tab Key is Pressed");
+		//if (Hazel::Input::IsKeyPressed(HZ_KEY_TAB))
+		//	HZ_TRACE("Tab Key is Pressed");
 	}
 
 	void OnEvent(Hazel::Event& event) override
 	{
-		HZ_TRACE("{0}", event);
+		//HZ_TRACE("{0}", event);
 	}
 
 };

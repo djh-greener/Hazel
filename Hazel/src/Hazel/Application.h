@@ -4,6 +4,8 @@
 #include"LayerStack.h"
 #include"Events/Event.h"
 #include"ImGui/ImGuiLayer.h"
+#include"Hazel/Renderer/Shader.h"
+
 namespace Hazel {
 	class WindowCloseEvent;
 	class HAZEL_API  Application
@@ -26,6 +28,8 @@ namespace Hazel {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
+		unsigned int VAO, VBO, EBO;
+		Shader* m_Shader;
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
