@@ -8,16 +8,19 @@
 
 
 namespace Hazel {
+
 	class Shader;
 	class VertexArray;
 	class VertexBuffer;
 	class IndexBuffer;
+
 	class WindowCloseEvent;
+
 	class HAZEL_API  Application
 	{
 	public:
 		Application();
-		virtual ~Application();
+		virtual ~Application() = default;
 		void Run();
 		void OnEvent(Event& e);
 		void PushLayer(Layer* layer);
@@ -33,13 +36,11 @@ namespace Hazel {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
-		unsigned int VAO;
-		std::unique_ptr<Shader>m_Shader;
-		//std::unique_ptr<VertexArray>m_VertexArray;
-		std::unique_ptr<VertexBuffer>m_VertexBuffer;
-		std::unique_ptr<IndexBuffer>m_IndexBuffer;
 
-
+		std::shared_ptr<Shader>m_ShaderTriangle;
+		std::shared_ptr<Shader>m_ShaderSquare;
+		std::shared_ptr<VertexArray>m_VATriangle;
+		std::shared_ptr<VertexArray>m_VASquare;
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
