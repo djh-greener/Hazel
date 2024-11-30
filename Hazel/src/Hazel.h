@@ -6,8 +6,16 @@
 #include"Hazel/Input.h"
 #include"Hazel/MouseButtonCodes.h"
 #include"Hazel/KeyCodes.h"
-
+//ImGui
 #include"Hazel/ImGui/ImGuiLayer.h"
+//Render
+#include"Hazel/Renderer/Shader.h"
+#include"Hazel/Renderer/Renderer.h"
+//Camera
+#include"Hazel/Camera/OrthographicCamera.h"
+
+
+
 
 //-------EntryPoint--------------//
 #include"Hazel/EntryPoint.h"

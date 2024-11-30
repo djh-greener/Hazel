@@ -9,11 +9,6 @@
 
 namespace Hazel {
 
-	class Shader;
-	class VertexArray;
-	class VertexBuffer;
-	class IndexBuffer;
-
 	class WindowCloseEvent;
 
 	class HAZEL_API  Application
@@ -37,10 +32,6 @@ namespace Hazel {
 		LayerStack m_LayerStack;
 
 
-		std::shared_ptr<Shader>m_ShaderTriangle;
-		std::shared_ptr<Shader>m_ShaderSquare;
-		std::shared_ptr<VertexArray>m_VATriangle;
-		std::shared_ptr<VertexArray>m_VASquare;
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:

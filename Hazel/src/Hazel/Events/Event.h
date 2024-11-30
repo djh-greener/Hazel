@@ -54,7 +54,7 @@ namespace Hazel {
 		{
 				if (m_event.GetEventType() == T::GetStaticType())
 				{
-					//dynamic_cast<T>(m_event)?
+					//faster than dynamic_cast<T>(m_event)?
 					m_event.Handled = func(static_cast<T&>(m_event));
 					return true;
 				}
