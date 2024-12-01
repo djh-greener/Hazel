@@ -10,8 +10,9 @@ namespace Hazel {
 
 	void OrthographicCamera::RecalculateProjectionViewMatrix()
 	{
-		glm::mat4 transform = glm::translate(glm::mat4(1), m_Position) *
+		glm::mat4 transform = glm::translate(glm::mat4(1), m_Position)*
 			glm::rotate(glm::mat4(1), glm::radians(m_Rotation.z), glm::vec3(0, 0, 1));
+		 
 		m_View = glm::inverse(transform);
 
 	}

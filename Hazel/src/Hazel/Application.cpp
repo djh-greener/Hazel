@@ -3,9 +3,9 @@
 #include"Events/ApplicationEvent.h"
 #include"Hazel/Input.h"
 #include"Camera/OrthographicCamera.h"
+#include"Hazel/Core/Timestep.h"
 
-
-
+#include<GLFW/glfw3.h>
 namespace Hazel {
 
 
@@ -14,14 +14,13 @@ namespace Hazel {
 	{
 		 HZ_CORE_ASSERT(!s_Instance,"Application alReady Exists!")
 		 s_Instance = this;
+
 		 m_Window = std::unique_ptr<Window>(Window::Create());
 		 m_Window->SetEventCallback(HZ_BIND_EVENT_FN(Application::OnEvent));
 		 m_Window->SetVSync(true);
+
 		 m_ImGuiLayer = new ImGuiLayer;
 		 PushOverlay(m_ImGuiLayer);
-
-		
-		
 	 }
 	 void Application::OnEvent(Event& e)
 	 {
@@ -52,9 +51,11 @@ namespace Hazel {
 	void Application::Run()
 	{
 		while (m_Running) {
-
+			float time = glfwGetTime();
+			float ts = time - m_LastFrameTime;
+			m_LastFrameTime = time;
 			for (auto it : m_LayerStack) 
-				it->OnUpdate();
+				it->OnUpdate(ts);
 			
 
 			m_ImGuiLayer->Begin();

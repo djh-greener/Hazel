@@ -14,8 +14,8 @@
 //Camera
 #include"Hazel/Camera/OrthographicCamera.h"
 
-
-
+//Core
+#include"Hazel/Core/Timestep.h"
 
 //-------EntryPoint--------------//
 #include"Hazel/EntryPoint.h"

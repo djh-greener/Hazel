@@ -27,10 +27,10 @@ namespace Hazel {
 	private:
 		std::unique_ptr<Window>m_Window;
 		ImGuiLayer* m_ImGuiLayer;
-
-		bool m_Running = true;
 		LayerStack m_LayerStack;
 
+		bool m_Running = true;
+		float m_LastFrameTime = 0.0f;
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
