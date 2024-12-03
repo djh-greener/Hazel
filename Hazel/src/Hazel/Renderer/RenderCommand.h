@@ -5,6 +5,9 @@ namespace Hazel {
 	
 	class RenderCommand {
 	public:
+		static void Init() {
+			s_RendererAPI->Init();
+		}
 		static void Clear() {
 			s_RendererAPI->Clear();
 		}

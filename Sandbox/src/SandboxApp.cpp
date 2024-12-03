@@ -66,6 +66,7 @@ public:
 			m_VASquare->SetIndexBuffer(indexBuffer);
 
 			m_Texture = Texture2D::Create("assets/textures/Checkerboard.png");
+			m_LogoTexture = Texture2D::Create("assets/textures/ChernoLogo.png");
 		}
 		{
 			std::string vertexSrc = R"(
@@ -162,6 +163,7 @@ public:
 		)";
 
 			m_ShaderTexture.reset(Shader::Create(TextureVertexSrc, TextureFragmentSrc));
+
 			std::dynamic_pointer_cast<OpenGLShader>(m_ShaderTexture)->Bind();
 			std::dynamic_pointer_cast<OpenGLShader>(m_ShaderTexture)->UploadUniformInt("u_Texture", 0);
 		}
@@ -207,8 +209,8 @@ public:
 
 		m_Texture->Bind();
 		Renderer::Submit(m_ShaderTexture, m_VASquare, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-
-		//Renderer::Submit(m_ShaderTriangle, m_VATriangle);
+		m_LogoTexture->Bind();
+		Renderer::Submit(m_ShaderTexture, m_VASquare, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 		Renderer::EndScene();
 	}
 
@@ -218,7 +220,7 @@ private:
 	Ref<Shader>m_ShaderSquare,m_ShaderTexture;
 	Ref<VertexArray>m_VATriangle;
 	Ref<VertexArray>m_VASquare;
-	Ref<Texture2D>m_Texture;
+	Ref<Texture2D>m_Texture, m_LogoTexture;
 
 	Camera& m_Camera;
 	glm::vec3 m_CameraPosition;

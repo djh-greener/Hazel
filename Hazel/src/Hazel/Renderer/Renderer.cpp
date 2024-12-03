@@ -5,7 +5,11 @@
 #include"Platform/OpenGL/OpenGLShader.h"
 namespace Hazel {
 	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
-    void Renderer::BeginScene(Camera& camera)
+	void Renderer::Init()
+	{
+		RenderCommand::Init();
+	}
+	void Renderer::BeginScene(Camera& camera)
     {
 		m_SceneData->Projection = camera.GetPorjectionMatrix(); 
 		m_SceneData->View = camera.GetViewMatrix();
