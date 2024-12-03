@@ -14,6 +14,7 @@ includeDir["GLFW"] = "Hazel/vendor/GLFW/include"
 includeDir["GLAD"] = "Hazel/vendor/GLAD/include"
 includeDir["imgui"] = "Hazel/vendor/imgui"
 includeDir["glm"] = "Hazel/vendor/glm"
+includeDir["stb_image"] = "Hazel/vendor/stb_image"
 
 group "Dependencies"
     include "Hazel/vendor/GLAD"
@@ -37,6 +38,9 @@ project "Hazel"
     files	{
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/stb_image/**.h",
+        "%{prj.name}/vendor/stb_image/**.cpp",
+
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
     }
@@ -52,6 +56,7 @@ project "Hazel"
         "%{includeDir.GLAD}",
         "%{includeDir.imgui}",
         "%{includeDir.glm}",
+        "%{includeDir.stb_image}",
     
     }
     links{

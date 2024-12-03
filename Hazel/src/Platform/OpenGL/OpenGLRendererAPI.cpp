@@ -11,7 +11,7 @@ namespace Hazel
 	{
 		glClearColor(color.x, color.y, color.z, color.w);
 	}
-	void OpenGLRendererAPI::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray)
 	{
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}

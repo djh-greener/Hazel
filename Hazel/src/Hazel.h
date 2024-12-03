@@ -11,13 +11,18 @@
 //Render
 #include"Hazel/Renderer/Shader.h"
 #include"Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/Texture.h"
 //Camera
 #include"Hazel/Camera/OrthographicCamera.h"
 
 //Core
 #include"Hazel/Core/Timestep.h"
 
+
+//Platform/OpenGL
+
+
+
 //-------EntryPoint--------------//
 #include"Hazel/EntryPoint.h"
-
 //-------------------------------//

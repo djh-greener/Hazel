@@ -9,3 +9,7 @@
 **.vcxproj.filters
 **.vcxproj.user
 **.csproj
+
+
+#my private files
+Develop.md

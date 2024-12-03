@@ -1,5 +1,8 @@
 #include<Hazel.h>
 #include"glm/gtc/matrix_transform.hpp"
+#include"glm/gtc/type_ptr.hpp"
+#include"Platform/OpenGL/OpenGLShader.h"
+#include"imgui/imgui.h"
 using namespace Hazel;
 
 class ExampleLayer : public Hazel::Layer
@@ -12,7 +15,7 @@ public:
 		m_SquarePosition(0)
 	{
 		//Triangle
-		m_VATriangle.reset(VertexArray::Create());
+		m_VATriangle = VertexArray::Create();
 		m_VATriangle->Bind();
 		{
 			float vertices[3 * 7] = {
@@ -20,8 +23,8 @@ public:
 					0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
 					0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 			};
-			std::shared_ptr<VertexBuffer>vertexBuffer;
-			vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+			Ref<VertexBuffer>vertexBuffer;
+			vertexBuffer = VertexBuffer::Create(vertices, sizeof(vertices));
 			BufferLayout layout =
 			{
 				 {ShaderDataType::Float3,"aPosition"},
@@ -31,34 +34,38 @@ public:
 			m_VATriangle->AddVertexBuffer(vertexBuffer);
 
 			unsigned int indices[3] = { 0,1,2 };
-			std::shared_ptr<IndexBuffer>indexBuffer;
-			indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+			Ref<IndexBuffer>indexBuffer;
+			indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 			m_VATriangle->SetIndexBuffer(indexBuffer);
 		}
 
 		//Square
-		m_VASquare.reset(VertexArray::Create());
+		m_VASquare = VertexArray::Create();
 		m_VASquare->Bind();
 		{
-			float squareVertices[3 * 4] = {
-				-0.75f, -0.75f, 0.0f,
-				 0.75f, -0.75f, 0.0f,
-				 0.75f,  0.75f, 0.0f,
-				-0.75f,  0.75f, 0.0f
+			float squareVertices[4 * 5] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 			};
-			std::shared_ptr<VertexBuffer>vertexBuffer;
-			vertexBuffer.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+			Ref<VertexBuffer>vertexBuffer;
+			vertexBuffer = VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 			BufferLayout layout =
 			{
 				 {ShaderDataType::Float3,"aPosition"},
+				 {ShaderDataType::Float2,"aTexCoord"},
+
 			};
 			vertexBuffer->SetLayout(layout);
 			m_VASquare->AddVertexBuffer(vertexBuffer);
 
 			unsigned int indices[6] = { 0,1,2 ,2,3,0 };
-			std::shared_ptr<IndexBuffer>indexBuffer;
-			indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+			Ref<IndexBuffer>indexBuffer;
+			indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 			m_VASquare->SetIndexBuffer(indexBuffer);
+
+			m_Texture = Texture2D::Create("assets/textures/Checkerboard.png");
 		}
 		{
 			std::string vertexSrc = R"(
@@ -71,12 +78,9 @@ public:
 			uniform mat4 u_View;
 			uniform mat4 u_Model;
 
-			out vec3 v_Position;
 			out vec4 v_Color;
-
 			void main()
 			{
-				v_Position = a_Position;
 				v_Color = a_Color;
 				gl_Position = u_Projection*u_View*u_Model*vec4(a_Position, 1.0);	
 			}
@@ -87,17 +91,15 @@ public:
 			
 			layout(location = 0) out vec4 color;
 
-			in vec3 v_Position;
 			in vec4 v_Color;
 
 			void main()
 			{
-				color = vec4(v_Position * 0.5 + 0.5, 1.0);
 				color = v_Color;
 			}
 		)";
 
-			m_ShaderTriangle.reset(new Shader(vertexSrc, fragmentSrc));
+			m_ShaderTriangle.reset(Shader::Create(vertexSrc, fragmentSrc));
 
 			std::string blueVertexSrc = R"(
 			#version 330 core
@@ -118,20 +120,57 @@ public:
 			#version 330 core
 			
 			layout(location = 0) out vec4 color;
-
 			
+			uniform vec3 u_Color;
 			void main()
 			{
-				color = vec4(0.2f,0.3f,0.8f,1.0f);
+				color = vec4(u_Color,1);
 			}
 		)";
 
-			m_ShaderSquare.reset(new Shader(blueVertexSrc, blueFragmentSrc));
+			m_ShaderSquare.reset(Shader::Create(blueVertexSrc, blueFragmentSrc));
+
+			std::string TextureVertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TexCoord;
+
+			uniform mat4 u_Projection;
+			uniform mat4 u_View;
+			uniform mat4 u_Model;
+			
+			out vec2 TexCoord;
+			void main()
+			{
+				gl_Position =u_Projection * u_View * u_Model * vec4(a_Position, 1.0);	
+				TexCoord = a_TexCoord;
+			}
+		)";
+
+			std::string TextureFragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+			in vec2 TexCoord;
+			uniform sampler2D u_Texture;
+			void main()
+			{
+				color = vec4(TexCoord,0,1);
+				color = texture(u_Texture,TexCoord);
+			}
+		)";
+
+			m_ShaderTexture.reset(Shader::Create(TextureVertexSrc, TextureFragmentSrc));
+			std::dynamic_pointer_cast<OpenGLShader>(m_ShaderTexture)->Bind();
+			std::dynamic_pointer_cast<OpenGLShader>(m_ShaderTexture)->UploadUniformInt("u_Texture", 0);
 		}
 	}
 
 	virtual void OnImGuiRender()override
 	{
+		//ImGui::Begin("Test");
+		//ImGui::End();
 	}
 	void OnUpdate(Timestep ts) override
 	{
@@ -160,23 +199,26 @@ public:
 			m_SquarePosition.y -= m_CameraMoveSpeed * ts;
 		else if (Input::IsKeyPressed(HZ_KEY_I))
 			m_SquarePosition.y += m_CameraMoveSpeed * ts;
-		glm::mat4 transform = glm::translate(glm::mat4(1), m_SquarePosition);
 
 		RenderCommand::ClearColor({ 0.2f, 0.3f, 0.3f, 1.0f });
 		RenderCommand::Clear();
 		Renderer::BeginScene(m_Camera);
-		Renderer::Submit(m_ShaderSquare, m_VASquare,transform);
+		
 
-		Renderer::Submit(m_ShaderTriangle, m_VATriangle);
+		m_Texture->Bind();
+		Renderer::Submit(m_ShaderTexture, m_VASquare, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		//Renderer::Submit(m_ShaderTriangle, m_VATriangle);
 		Renderer::EndScene();
 	}
 
 
 private:
-	std::shared_ptr<Shader>m_ShaderTriangle;
-	std::shared_ptr<Shader>m_ShaderSquare;
-	std::shared_ptr<VertexArray>m_VATriangle;
-	std::shared_ptr<VertexArray>m_VASquare;
+	Ref<Shader>m_ShaderTriangle;
+	Ref<Shader>m_ShaderSquare,m_ShaderTexture;
+	Ref<VertexArray>m_VATriangle;
+	Ref<VertexArray>m_VASquare;
+	Ref<Texture2D>m_Texture;
 
 	Camera& m_Camera;
 	glm::vec3 m_CameraPosition;
@@ -185,7 +227,6 @@ private:
 	float m_CameraRotateSpeed = 10;
 
 	glm::vec3 m_SquarePosition;
-
 };
 
 class Sandbox : public Hazel::Application

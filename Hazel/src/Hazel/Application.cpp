@@ -51,7 +51,7 @@ namespace Hazel {
 	void Application::Run()
 	{
 		while (m_Running) {
-			float time = glfwGetTime();
+			float time = (float)glfwGetTime();
 			float ts = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 			for (auto it : m_LayerStack) 
