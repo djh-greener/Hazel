@@ -49,8 +49,8 @@ namespace Hazel {
 		EventDispatcher(Event& event) :m_event(event){}
 
 		//Dispatch base event to T type event，then pass to func and execute
-		template<typename T>
-			bool Dispatch(std::function<bool(T&)> func)
+		template<typename T, typename F>
+			bool Dispatch(const F& func)
 		{
 				if (m_event.GetEventType() == T::GetStaticType())
 				{

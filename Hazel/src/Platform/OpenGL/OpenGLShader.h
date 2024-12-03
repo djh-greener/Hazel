@@ -2,10 +2,12 @@
 #include"Hazel/Renderer/Shader.h"
 #include"glm/glm.hpp"
 namespace	Hazel {
-
+	using GLenum = uint32_t;
 	class OpenGLShader:public Shader
 	{
 	public: 
+		OpenGLShader(const std::string& filePath);
+
 		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		~OpenGLShader(); 
 		void Bind()const override;
@@ -21,6 +23,9 @@ namespace	Hazel {
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 	private:
 		int GetLocation(const std::string& name);
+		std::unordered_map<GLenum, std::string> ParseFile(const std::string& filepath);
+		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+
 	private:
 		uint32_t m_RendererID;
 		std::unordered_map<std::string, int> m_UniformCach;

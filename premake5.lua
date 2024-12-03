@@ -7,6 +7,10 @@ workspace "Hazel"
         "Release",
         "Dist"
     }
+	flags
+	{
+		"MultiProcessorCompile"
+	}
     
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 includeDir = {}
