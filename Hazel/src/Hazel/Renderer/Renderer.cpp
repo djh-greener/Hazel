@@ -1,5 +1,7 @@
 #include"hzpch.h"
 #include"Renderer.h"
+#include "Renderer2D.h"
+
 #include"Shader.h"
 #include"Hazel/Camera/Camera.h"
 #include"Platform/OpenGL/OpenGLShader.h"
@@ -8,10 +10,11 @@ namespace Hazel {
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
+		Renderer2D::Init();
 	}
 	void Renderer::BeginScene(Camera& camera)
     {
-		m_SceneData->Projection = camera.GetPorjectionMatrix(); 
+		m_SceneData->Projection = camera.GetProjectionMatrix(); 
 		m_SceneData->View = camera.GetViewMatrix();
     }
     void Renderer::EndScene()

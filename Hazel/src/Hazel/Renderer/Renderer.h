@@ -1,6 +1,5 @@
 #pragma once
 #include"RenderCommand.h"
-
 namespace Hazel {
 	class Camera;
 	class Shader;
