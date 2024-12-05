@@ -23,4 +23,9 @@ namespace Hazel {
 		m_Position = glm::vec3(0);
 		m_Rotation = glm::vec3(0);
 	}
+
+	void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
+	{
+		m_Projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+	}
 }

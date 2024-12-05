@@ -1,6 +1,6 @@
 #pragma once
 #include"hzpch.h"
-#include"Hazel/Core.h"
+#include"Hazel/Core/Core.h"
 
 namespace Hazel {
 	enum class EventType {
@@ -23,7 +23,7 @@ namespace Hazel {
 	// EventType::##type = EventType::MouseEvent
 	//return #type = return "MouseEvent"
 #define EVENT_CLASS_TYPE(type) \
-	static EventType GetStaticType(){return EventType::##type;}\
+	static EventType GetStaticType(){return EventType::type;}\
 	virtual EventType GetEventType()const {return GetStaticType();}\
 	virtual const std::string GetName() const override{return #type;}
 

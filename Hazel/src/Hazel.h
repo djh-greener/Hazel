@@ -1,11 +1,13 @@
 //-----------for users----------//
-#include"Hazel/Application.h"
-#include"Hazel/Layer.h"
-#include"Hazel/Log.h"
-//input
-#include"Hazel/Input.h"
-#include"Hazel/MouseButtonCodes.h"
-#include"Hazel/KeyCodes.h"
+//-------Core
+#include"Hazel/Core/Timestep.h"
+#include"Hazel/Core/Application.h"
+#include"Hazel/Core/Layer.h"
+#include"Hazel/Core/Log.h"
+	//input
+#include"Hazel/Core/Input.h"
+#include"Hazel/Core/MouseButtonCodes.h"
+#include"Hazel/Core/KeyCodes.h"
 //ImGui
 #include"Hazel/ImGui/ImGuiLayer.h"
 //Render
@@ -14,15 +16,7 @@
 #include "Hazel/Renderer/Texture.h"
 //Camera
 #include"Hazel/Camera/OrthographicCamera.h"
+#include"Hazel/Camera/OrthographicCameraController.h"
 
-//Core
-#include"Hazel/Core/Timestep.h"
-
-
-//Platform/OpenGL
-
-
-
-//-------EntryPoint--------------//
-#include"Hazel/EntryPoint.h"
-//-------------------------------//
+#include"Hazel/Camera/Perspective3DCamera.h"
+#include"Hazel/Camera/Perspective3DCameraController.h"

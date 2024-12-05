@@ -8,6 +8,8 @@ namespace Hazel {
 	{
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
+		void SetProjection(float left, float right, float bottom, float top);
+
 	private:
 		void RecalculateProjectionViewMatrix()override;
 		void Init(float left, float right, float bottom, float top);

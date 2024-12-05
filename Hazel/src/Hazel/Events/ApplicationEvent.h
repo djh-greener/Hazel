@@ -32,6 +32,7 @@ namespace Hazel {
 	};
 
 
+
 	class HAZEL_API AppTickEvent : public Event
 	{
 	public:

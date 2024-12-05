@@ -4,7 +4,7 @@
 #include"Hazel/Camera/Camera.h"
 #include"Platform/OpenGL/OpenGLShader.h"
 namespace Hazel {
-	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
+	Scope<Renderer::SceneData> Renderer::m_SceneData = CreateScope<Renderer::SceneData>();
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
@@ -17,6 +17,10 @@ namespace Hazel {
     void Renderer::EndScene()
     {
     }
+	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
+	{
+		RenderCommand::SetViewport(0, 0, width, height);
+	}
     void Renderer::Submit(Ref<Shader>& shader, Ref<VertexArray>& vertexArray, const glm::mat4& transform)
     {
 		shader->Bind();

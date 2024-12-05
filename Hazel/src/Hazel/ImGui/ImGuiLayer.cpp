@@ -4,7 +4,7 @@
 #include"backends/imgui_impl_glfw.h"
 #include"backends/imgui_impl_opengl3.h"
 
-#include"Hazel/Application.h"
+#include"Hazel/Core/Application.h"
 
 //TMP
 #include <GLFW/glfw3.h>
@@ -58,12 +58,20 @@ namespace Hazel {
 
 	void ImGuiLayer::OnImGuiRender()
 	{
-		//static bool show = true;
-		//ImGui::ShowDemoWindow(&show);
-		//ImGui::Text("DJH");
-		//ImGui::Begin("Test");
-		//ImGui::Text("ImGuiLayer");
-		//ImGui::End();
+
+	}
+
+	void ImGuiLayer::OnEvent(Event& e)
+	{
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<WindowResizeEvent>(HZ_BIND_EVENT_FN(ImGuiLayer::OnWindowResize));
+	}
+
+	bool ImGuiLayer::OnWindowResize(WindowResizeEvent& e)
+	{
+		//TMP,recaculate Window Layout
+		glViewport(0, 0, e.GetWidth(), e.GetHeight());
+		return false;
 	}
 
 	void ImGuiLayer::Begin()

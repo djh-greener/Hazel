@@ -7,10 +7,13 @@ namespace Hazel {
 	}
 
 	 LayerStack::~LayerStack()
-	{
+	 {
 		 for (auto Layer : m_Layers)
+		 {
+			 Layer->OnDetach();
 			 delete Layer;
-	}
+		 }
+	 }
 
 	void  LayerStack::PushLayer(Layer* layer)
 	{

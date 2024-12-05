@@ -24,6 +24,7 @@ namespace Hazel
 	protected:
 		virtual void RecalculateProjectionViewMatrix() = 0;
 	protected:
+
 		glm::mat4 m_Projection;
 		glm::mat4 m_View;
 		glm::vec3 m_Position;

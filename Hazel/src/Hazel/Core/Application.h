@@ -2,15 +2,15 @@
 #include"Core.h"
 #include"Window.h"
 #include"LayerStack.h"
-#include"Events/Event.h"
-#include"ImGui/ImGuiLayer.h"
+#include"Hazel/Events/Event.h"
+#include"Hazel/ImGui/ImGuiLayer.h"
 #include<memory>
 
 
 namespace Hazel {
 
 	class WindowCloseEvent;
-
+	class WindowResizeEvent;
 	class HAZEL_API  Application
 	{
 	public:
@@ -34,8 +34,11 @@ namespace Hazel {
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
+
 	private:
 		static Application* s_Instance;//single instance
+		bool m_Minimized = false;
 	};
 	Application* CreateApplication();
 }
