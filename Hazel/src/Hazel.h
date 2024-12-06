@@ -1,5 +1,6 @@
 //-----------for users----------//
 //-------Core
+#include"Hazel/Core/Core.h"
 #include"Hazel/Core/Timestep.h"
 #include"Hazel/Core/Application.h"
 #include"Hazel/Core/Layer.h"

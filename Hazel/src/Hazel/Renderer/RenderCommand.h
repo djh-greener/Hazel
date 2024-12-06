@@ -1,5 +1,5 @@
 #pragma once
-#include"RendererAPI.h"
+#include"Hazel/Renderer/RendererAPI.h"
  
 namespace Hazel {
 	
@@ -11,10 +11,10 @@ namespace Hazel {
 		static void Clear() {
 			s_RendererAPI->Clear();
 		}
-		static void ClearColor(const glm::vec4& color) {
+		static void SetClearColor(const glm::vec4& color) {
 			s_RendererAPI->SetClearColor(color);
 		}
-		static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+		static void DrawIndexed( Ref<VertexArray>& vertexArray)
 		{
 			s_RendererAPI->DrawIndexed(vertexArray);
 		}

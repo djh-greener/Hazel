@@ -1,6 +1,6 @@
 #include "hzpch.h"
-#include "Shader.h"
-#include"Renderer.h"
+#include "Hazel/Renderer/Shader.h"
+#include "Hazel/Renderer/Renderer.h"
 #include"Platform/OpenGL/OpenGLShader.h"
 namespace Hazel {
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)

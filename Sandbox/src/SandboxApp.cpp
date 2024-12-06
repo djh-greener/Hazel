@@ -1,8 +1,9 @@
 #include<Hazel.h>
 #include <Hazel/Core/EntryPoint.h>
+#include <imgui/imgui.h>
+
 #include"glm/gtc/matrix_transform.hpp"
 #include"glm/gtc/type_ptr.hpp"
-#include"Platform/OpenGL/OpenGLShader.h"
 
 #include "Sandbox2D/Sandbox2D.h"
 using namespace Hazel;
@@ -25,20 +26,17 @@ public:
 			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 			};
-			Ref<VertexBuffer>vertexBuffer;
-			vertexBuffer = VertexBuffer::Create(squareVertices, sizeof(squareVertices));
-			BufferLayout layout =
-			{
+			Ref<VertexBuffer>vertexBuffer= VertexBuffer::Create(squareVertices, sizeof(squareVertices));
+			BufferLayout layout ={
 				 {ShaderDataType::Float3,"aPosition"},
 				 {ShaderDataType::Float2,"aTexCoord"},
-
 			};
 			vertexBuffer->SetLayout(layout);
-			m_VASquare->AddVertexBuffer(vertexBuffer);
 			
 			unsigned int indices[6] = { 0,1,2 ,2,3,0 };
-			Ref<IndexBuffer>indexBuffer;
-			indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
+			Ref<IndexBuffer>indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
+
+			m_VASquare->AddVertexBuffer(vertexBuffer);
 			m_VASquare->SetIndexBuffer(indexBuffer);
 
 			m_Texture = Texture2D::Create("assets/textures/Checkerboard.png");
@@ -66,7 +64,7 @@ public:
 		
 		m_CameraController->OnUpdate(ts);
 
-		RenderCommand::ClearColor({ 0.2f, 0.3f, 0.3f, 1.0f });
+		RenderCommand::SetClearColor({ 0.2f, 0.3f, 0.3f, 1.0f });
 		RenderCommand::Clear();
 		Renderer::BeginScene(m_CameraController->GetCamera());
 		

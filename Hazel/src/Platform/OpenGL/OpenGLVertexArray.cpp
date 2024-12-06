@@ -5,17 +5,17 @@ namespace Hazel {
 	static GLenum ShaderDataType2OpenGLBaseType(ShaderDataType type) {
 		switch (type)
 		{
-		case Hazel::ShaderDataType::Float:			return GL_FLOAT;			break;
-		case Hazel::ShaderDataType::Float2:		return GL_FLOAT;			break;
-		case Hazel::ShaderDataType::Float3:		return GL_FLOAT;			break;
-		case Hazel::ShaderDataType::Float4:		return GL_FLOAT;			break;
-		case Hazel::ShaderDataType::Mat3:		return GL_FLOAT;			break;
-		case Hazel::ShaderDataType::Mat4:		return GL_FLOAT;			break;
-		case Hazel::ShaderDataType::Int:			return GL_INT;					break;
-		case Hazel::ShaderDataType::Int2:			return GL_INT;					break;
-		case Hazel::ShaderDataType::Int3:			return GL_INT;					break;
-		case Hazel::ShaderDataType::Int4:			return GL_INT;					break;
-		case Hazel::ShaderDataType::Bool:			return GL_BOOL;				break;
+		case ShaderDataType::Float:		return GL_FLOAT;
+		case ShaderDataType::Float2:		return GL_FLOAT;
+		case ShaderDataType::Float3:		return GL_FLOAT;
+		case ShaderDataType::Float4:		return GL_FLOAT;
+		case ShaderDataType::Mat3:		return GL_FLOAT;
+		case ShaderDataType::Mat4:		return GL_FLOAT;
+		case ShaderDataType::Int:			return GL_INT;		
+		case ShaderDataType::Int2:			return GL_INT;		
+		case ShaderDataType::Int3:			return GL_INT;		
+		case ShaderDataType::Int4:			return GL_INT;		
+		case ShaderDataType::Bool:		return GL_BOOL;	
 		}
 		HZ_CORE_ASSERT(false, "Error ShaderDataType");
 		return 0;

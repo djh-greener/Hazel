@@ -2,10 +2,6 @@
 #include "LayerStack.h"
 
 namespace Hazel {
-	 LayerStack::LayerStack()
-	{
-	}
-
 	 LayerStack::~LayerStack()
 	 {
 		 for (auto Layer : m_Layers)

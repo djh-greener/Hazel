@@ -12,9 +12,9 @@ namespace Hazel {
 
 	static uint8_t s_GLFWWindowCount = 0;
 
-	Window* Window::Create(const WindowProps& props)
+	Scope<Window> Window::Create(const WindowProps& props)
 	{
-		return new WindowsWindow(props);
+		return CreateScope<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
@@ -38,6 +38,7 @@ namespace Hazel {
 		if (s_GLFWWindowCount==0)
 		{
 			// TODO: glfwTerminate on system shutdown
+			HZ_CORE_INFO("Initializing GLFW");
 			int success = glfwInit();
 			HZ_CORE_ASSERT(success, "Could not intialize GLFW!");
 			glfwSetErrorCallback([](int error_code, const char* description)
@@ -49,18 +50,12 @@ namespace Hazel {
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		s_GLFWWindowCount++;
 
-		m_Context = CreateScope<OpenGLContext>(m_Window);
+		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
-		
-
-
 
 		//-------Set CallBack---------//
-		//Call it by Hand, regard CreateWindow as a WindowResizeEvent;
-
-
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -150,8 +145,8 @@ namespace Hazel {
 	{
 
 		glfwDestroyWindow(m_Window);
-
-		if (--s_GLFWWindowCount == 0)
+		--s_GLFWWindowCount;
+		if (s_GLFWWindowCount == 0)
 		{
 			HZ_CORE_INFO("Terminating GLFW");
 			glfwTerminate();

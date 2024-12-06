@@ -1,11 +1,13 @@
 #pragma once
-#include"RenderCommand.h"
+#include"Hazel/Renderer/RenderCommand.h"
 namespace Hazel {
 	class Camera;
 	class Shader;
 	class Renderer {
 	public:
-		static void Init();
+		static void Init();		
+		static void Shutdown();
+
 		static void BeginScene(Camera& camera);
 		static void EndScene();
 		static void OnWindowResize(uint32_t width, uint32_t height);

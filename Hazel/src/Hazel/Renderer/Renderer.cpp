@@ -1,8 +1,8 @@
 #include"hzpch.h"
 #include"Renderer.h"
-#include "Renderer2D.h"
+#include "Hazel/Renderer/Renderer2D.h"
 
-#include"Shader.h"
+#include"Hazel/Renderer/Shader.h"
 #include"Hazel/Camera/Camera.h"
 #include"Platform/OpenGL/OpenGLShader.h"
 namespace Hazel {
@@ -11,6 +11,10 @@ namespace Hazel {
 	{
 		RenderCommand::Init();
 		Renderer2D::Init();
+	}
+	void Renderer::Shutdown()
+	{
+		Renderer2D::Shutdown();
 	}
 	void Renderer::BeginScene(Camera& camera)
     {

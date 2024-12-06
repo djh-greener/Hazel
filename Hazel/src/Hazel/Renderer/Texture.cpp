@@ -1,8 +1,7 @@
 #pragma once
 #include"hzpch.h"
-#include"Texture.h"
-#include<string>
-#include"Renderer.h"
+#include "Hazel/Renderer/Texture.h"
+#include "Hazel/Renderer/Renderer.h"
 #include"Platform/OpenGL/OpenGLTexture.h"
 namespace Hazel {
     Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)

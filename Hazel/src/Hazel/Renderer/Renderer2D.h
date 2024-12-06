@@ -2,7 +2,7 @@
 
 #include "Hazel/Camera/OrthographicCamera.h"
 
-#include "Texture.h"
+#include "Hazel/Renderer/Texture.h"
 namespace Hazel {
 
 	class Renderer2D

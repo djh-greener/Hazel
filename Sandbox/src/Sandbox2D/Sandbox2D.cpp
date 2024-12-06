@@ -1,5 +1,5 @@
 #include "Sandbox2D.h"
-#include "imgui/imgui.h"
+#include <imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -70,7 +70,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 	// Render
 	{
 		PROFILE_SCOPE("Renderer Prep");
-		Hazel::RenderCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Hazel::RenderCommand::Clear();
 	}
 	{
@@ -89,10 +89,8 @@ void Sandbox2D::OnImGuiRender()
 	//ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
 	for (auto& result : m_ProfileResults)
 	{
-		char label[50];
-		strcpy(label, "%.3fms ");
-		strcat(label, result.Name);
-		ImGui::Text(label, result.Time);
+		std::string label = "%.3fms  " + std::string(result.Name);
+		ImGui::Text(label.c_str(), result.Time);
 	}
 	m_ProfileResults.clear();
 	ImGui::End();
