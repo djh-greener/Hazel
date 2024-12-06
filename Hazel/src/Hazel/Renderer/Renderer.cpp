@@ -28,10 +28,9 @@ namespace Hazel {
     {
 		shader->Bind();
 		
-		auto openglShader = std::dynamic_pointer_cast<OpenGLShader>(shader);
-		openglShader->UploadUniformMat4("u_View", m_SceneData->View);
-		openglShader->UploadUniformMat4("u_Projection", m_SceneData->Projection);
-		openglShader->UploadUniformMat4("u_Model", transform);
+		shader->SetMat4("u_View", m_SceneData->View);
+		shader->SetMat4("u_Projection", m_SceneData->Projection);
+		shader->SetMat4("u_Model", transform);
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
     }

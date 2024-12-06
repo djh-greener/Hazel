@@ -46,9 +46,9 @@ public:
 		}
 		{
 			
-			auto ShaderTexture = m_ShaderLibrary.Load("assets/shaders/testTexture/texture.glsl");
-			std::dynamic_pointer_cast<OpenGLShader>(ShaderTexture)->Bind();
-			std::dynamic_pointer_cast<OpenGLShader>(ShaderTexture)->UploadUniformInt("u_Texture", 0);
+			auto ShaderTexture = m_ShaderLibrary.Load("assets/shaders/testTexture/Texture.glsl");
+			ShaderTexture->Bind();
+			ShaderTexture->SetInt("u_Texture", 0);
 
 		}
 	}

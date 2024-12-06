@@ -47,7 +47,7 @@ namespace Hazel {
 		{
 			glEnableVertexAttribArray(m_VertexBufferIndex);
 			glVertexAttribPointer(m_VertexBufferIndex, element.GetComponentCount(), ShaderDataType2OpenGLBaseType(element.Type),
-				element.Normalized ? GL_TRUE : GL_FALSE, vertexBuffer->GetLayout().GetStride(), (const void*)(intptr_t)element.Offset);
+				element.Normalized ? GL_TRUE : GL_FALSE, vertexBuffer->GetLayout().GetStride(), (const void*)element.Offset);
 			m_VertexBufferIndex++;
 		}
 		m_VertexBuffers.emplace_back(vertexBuffer);
