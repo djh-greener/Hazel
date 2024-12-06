@@ -56,10 +56,6 @@ namespace Hazel {
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiLayer::OnImGuiRender()
-	{
-
-	}
 
 	void ImGuiLayer::OnEvent(Event& e)
 	{
