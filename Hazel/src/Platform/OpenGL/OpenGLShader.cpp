@@ -45,7 +45,7 @@ namespace Hazel {
 
 	void OpenGLShader::Bind() const
 	{
-		GLCall(glUseProgram(m_RendererID));
+		glUseProgram(m_RendererID);
 	}
 
 	void OpenGLShader::UnBind() const
