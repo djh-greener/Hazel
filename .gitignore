@@ -2,6 +2,9 @@
 **bin-int/
 
 
+# Hazel files
+*.log
+
 #vs files
 .vs/
 **.sln

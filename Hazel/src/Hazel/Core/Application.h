@@ -7,6 +7,7 @@
 #include<memory>
 
 
+int main(int argc, char** argv);
 namespace Hazel {
 
 	class WindowCloseEvent;
@@ -16,7 +17,6 @@ namespace Hazel {
 	public:
 		Application();
 		virtual ~Application();
-		void Run();
 		void OnEvent(Event& e);
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
@@ -33,9 +33,10 @@ namespace Hazel {
 		float m_LastFrameTime = 0.0f;
 
 	private:
+		void Run();
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
-
+		friend int ::main(int argc, char** argv);
 	private:
 		static Application* s_Instance;//single instance
 		bool m_Minimized = false;

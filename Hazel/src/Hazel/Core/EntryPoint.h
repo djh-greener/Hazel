@@ -1,11 +1,10 @@
 #include "Hazel/Core/Core.h"
 #ifdef HZ_PLATFORM_WINDOWS
 //hide main function
-namespace Hazel {
-	extern Application* CreateApplication();
-}
+extern Hazel::Application* Hazel::CreateApplication();
 
-int main() {
+
+int main(int argc, char** argv) {
 	Hazel::Log::Init();
 	HZ_PROFILE_BEGIN_SESSION("Startup", "HazelProfile-Startup.json");
 	auto app = Hazel::CreateApplication();
