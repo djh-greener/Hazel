@@ -1,8 +1,11 @@
 #pragma once
 #include"Hazel/Core/Window.h"
-struct GLFWwindow;
+
 #include "Hazel/Renderer/GraphicsContext.h"
+
+struct GLFWwindow;
 namespace Hazel {
+
 	class WindowsWindow : public Window
 	{
 	public:
