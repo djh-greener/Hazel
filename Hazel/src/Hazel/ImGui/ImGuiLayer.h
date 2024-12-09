@@ -15,7 +15,6 @@ namespace Hazel {
 		virtual void OnDetach()override;
 		virtual void OnEvent(Event& e)override;
 		bool OnWindowResize(WindowResizeEvent& e);
-
 		void Begin();
 		void End();
 	private:

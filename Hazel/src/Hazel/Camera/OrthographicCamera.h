@@ -3,6 +3,7 @@
 #include"glm/glm.hpp"
 #include"Hazel/Camera/Camera.h"
 namespace Hazel {
+
 	//face to XoY plane,so only rotation.z is used
 	class OrthographicCamera: public Camera
 	{

@@ -52,6 +52,7 @@ project "Hazel"
     defines
     {
         "_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
     }
     includedirs	{
         "%{prj.name}/src",
@@ -71,13 +72,8 @@ project "Hazel"
     }
     filter "system:windows"
         systemversion "latest"
-    
-        defines
-        {
-            "GLFW_INCLUDE_NONE",
-        }
-    
-    
+
+
     filter "configurations:Debug"
         defines "HZ_DEBUG"
         runtime "Debug"
@@ -115,6 +111,8 @@ project "Sandbox"
         "Hazel/src",
         "%{includeDir.glm}",
         "Hazel/vendor",
+        "Sandbox/src",
+
     }
 
     links
