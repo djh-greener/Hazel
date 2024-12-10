@@ -11,7 +11,7 @@ namespace Hazel {
 		std::string ToString()const override
 		{
 			std::stringstream ss;
-			ss << "MosueMoveEvent: " << m_MouseX << ","<<m_MouseY;
+			ss << "MouseMovedEvent: " << m_MouseX << ","<<m_MouseY;
 			return ss.str();
 		}
 		EVENT_CLASS_TYPE(MouseMoved);

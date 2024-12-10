@@ -11,6 +11,7 @@ Sandbox2D::Sandbox2D()
 	m_ParticleSystem(100000)
 	
 {
+
 }
 
 void Sandbox2D::OnAttach()
@@ -18,7 +19,8 @@ void Sandbox2D::OnAttach()
 	HZ_PROFILE_FUNCTION();
 
 	m_CheckerboardTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
-	// Init here
+
+	// Particle Init here
 	m_Particle.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
 	m_Particle.ColorEnd = { 254 / 255.0f, 109 / 255.0f, 41 / 255.0f, 1.0f };
 	m_Particle.SizeBegin = 0.5f, m_Particle.SizeVariation = 0.3f, m_Particle.SizeEnd = 0.0f;
@@ -45,6 +47,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 
 	// Render
 	Hazel::Renderer2D::ResetStats();
+
 	{
 		HZ_PROFILE_SCOPE("Renderer Prep");
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -52,9 +55,10 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 	}
 	{
 		HZ_PROFILE_SCOPE("Renderer Draw");
+
 		static float rotation = 0.0f;
 		rotation += ts * 50.0f;
-
+		//Saperate Quads
 		Hazel::Renderer2D::BeginScene(m_CameraController.GetCamera());
 		Hazel::Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(-45.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
 		Hazel::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
@@ -62,7 +66,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 		Hazel::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, m_CheckerboardTexture, 10.0f);
 		Hazel::Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, glm::radians(rotation), m_CheckerboardTexture, 20.0f);
 		Hazel::Renderer2D::EndScene();
-
+		//BackGround Quads Matrix
 		Hazel::Renderer2D::BeginScene(m_CameraController.GetCamera());
 		for (float y = -5.0f; y < 5.0f; y += 0.5f)
 		{
@@ -73,7 +77,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			}
 		}
 		Hazel::Renderer2D::EndScene();
-
+		//Particles
 		if (Hazel::Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_LEFT))
 		{
 			auto [x, y] = Hazel::Input::GetMousePosition();
@@ -101,6 +105,7 @@ void Sandbox2D::OnImGuiRender()
 {
 	HZ_PROFILE_FUNCTION();
 
+
 	ImGui::Begin("Settings");
 	auto stats = Hazel::Renderer2D::GetStats();
 	ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
@@ -109,6 +114,7 @@ void Sandbox2D::OnImGuiRender()
 	ImGui::Text("Quads: %d", stats.QuadCount);
 	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+	
 
 	ImGui::End();
 }
