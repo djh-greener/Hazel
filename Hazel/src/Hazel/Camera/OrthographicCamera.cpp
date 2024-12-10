@@ -32,4 +32,5 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 		m_Projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 	}
+
 }

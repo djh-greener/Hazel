@@ -64,9 +64,9 @@ namespace Hazel {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowResizeEvent>(HZ_BIND_EVENT_FN(ImGuiLayer::OnWindowResize));
 
-		ImGuiIO& io = ImGui::GetIO();
-		e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-		e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		//ImGuiIO& io = ImGui::GetIO();
+		//e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+		//e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 	}
 
 	bool ImGuiLayer::OnWindowResize(WindowResizeEvent& e)
