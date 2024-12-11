@@ -17,7 +17,9 @@ namespace Hazel {
 		bool OnWindowResize(WindowResizeEvent& e);
 		void Begin();
 		void End();
+		void LetEventGo(bool flag) { m_LetEventGo = flag; }
 	private:
 		float m_Time=0.0f;
+		bool m_LetEventGo = true;
 	};
 }
