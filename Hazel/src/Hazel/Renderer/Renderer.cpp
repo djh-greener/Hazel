@@ -3,7 +3,7 @@
 #include "Hazel/Renderer/Renderer2D.h"
 
 #include"Hazel/Renderer/Shader.h"
-#include"Hazel/Camera/Camera.h"
+#include"Hazel/Camera/OrthographicCamera.h"
 #include"Platform/OpenGL/OpenGLShader.h"
 namespace Hazel {
 	Scope<Renderer::SceneData> Renderer::m_SceneData = CreateScope<Renderer::SceneData>();
@@ -18,7 +18,7 @@ namespace Hazel {
 	{
 		Renderer2D::Shutdown();
 	}
-	void Renderer::BeginScene(Camera& camera)
+	void Renderer::BeginScene(OrthographicCamera& camera)
     {
 		m_SceneData->Projection = camera.GetProjectionMatrix(); 
 		m_SceneData->View = camera.GetViewMatrix();

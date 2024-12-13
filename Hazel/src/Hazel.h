@@ -21,11 +21,11 @@
 #include"Hazel/Camera/OrthographicCamera.h"
 #include"Hazel/Camera/OrthographicCameraController.h"
 
-#include"Hazel/Camera/Perspective3DCamera.h"
-#include"Hazel/Camera/Perspective3DCameraController.h"
 //ECS
 #include"Hazel/Scene/Scene.h"
 #include "Hazel/Scene/Components.h"
 #include "Hazel/Scene/Entity.h"
+#include "Hazel/Scene/ScriptableEntity.h"
+
 
 
