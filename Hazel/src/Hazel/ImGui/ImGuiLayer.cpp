@@ -61,8 +61,6 @@ namespace Hazel {
 
 	void ImGuiLayer::OnEvent(Event& e)
 	{
-		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowResizeEvent>(HZ_BIND_EVENT_FN(ImGuiLayer::OnWindowResize));
 
 		if (!m_LetEventGo)
 		{
@@ -72,12 +70,6 @@ namespace Hazel {
 		}
 	}
 
-	bool ImGuiLayer::OnWindowResize(WindowResizeEvent& e)
-	{
-		//TMP,recaculate Window Layout
-		glViewport(0, 0, e.GetWidth(), e.GetHeight());
-		return false;
-	}
 
 
 	void ImGuiLayer::Begin()

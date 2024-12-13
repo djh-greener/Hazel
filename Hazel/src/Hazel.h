@@ -5,7 +5,7 @@
 #include"Hazel/Core/Application.h"
 #include"Hazel/Core/Layer.h"
 #include"Hazel/Core/Log.h"
-	//input
+//input
 #include"Hazel/Core/Input.h"
 #include"Hazel/Core/MouseCodes.h"
 #include"Hazel/Core/KeyCodes.h"
@@ -23,3 +23,9 @@
 
 #include"Hazel/Camera/Perspective3DCamera.h"
 #include"Hazel/Camera/Perspective3DCameraController.h"
+//ECS
+#include"Hazel/Scene/Scene.h"
+#include "Hazel/Scene/Components.h"
+#include "Hazel/Scene/Entity.h"
+
+

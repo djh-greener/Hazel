@@ -19,6 +19,7 @@ includeDir["GLAD"] = "Hazel/vendor/GLAD/include"
 includeDir["imgui"] = "Hazel/vendor/imgui"
 includeDir["glm"] = "Hazel/vendor/glm"
 includeDir["stb_image"] = "Hazel/vendor/stb_image"
+includeDir["entt"] = "Hazel/vendor/entt/include"
 
 group "Dependencies"
     include "Hazel/vendor/GLAD"
@@ -62,6 +63,8 @@ project "Hazel"
         "%{includeDir.imgui}",
         "%{includeDir.glm}",
         "%{includeDir.stb_image}",
+        "%{includeDir.entt}",
+
     
     }
     links{
@@ -110,9 +113,9 @@ project "Sandbox"
         "Hazel/vendor/spdlog/include",
         "Hazel/src",
         "%{includeDir.glm}",
+		"%{includeDir.entt}",
         "Hazel/vendor",
         "Sandbox/src",
-
     }
 
     links
@@ -160,6 +163,7 @@ project "Hazelnut"
         "Hazel/vendor/spdlog/include",
         "Hazel/src",
         "%{includeDir.glm}",
+		"%{includeDir.entt}",
         "Hazel/vendor",
         "Sandbox/src",
 

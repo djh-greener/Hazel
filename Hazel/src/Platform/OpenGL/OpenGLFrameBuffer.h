@@ -16,7 +16,7 @@ namespace Hazel {
 		virtual void Unbind() override;
 
 		virtual uint32_t GetColorAttachmentRendererID() const override { return m_ColorAttachment; }
-		virtual void Resize(uint32_t width, uint32_t height);
+		virtual void Resize(float width, float height)override;
 
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
 	private:

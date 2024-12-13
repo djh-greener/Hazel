@@ -16,6 +16,7 @@ namespace Hazel {
 		void OnUpdate(Timestep ts) override;
 		virtual void OnImGuiRender() override;
 		void OnEvent(Event& e) override;
+		bool OnWindowResize(WindowResizeEvent& e);
 	private:
 		Hazel::OrthographicCameraController m_CameraController;
 
@@ -25,8 +26,13 @@ namespace Hazel {
 		Ref<Framebuffer> m_Framebuffer;
 
 		Ref<Texture2D> m_CheckerboardTexture;
+
+		Ref<Scene>m_ActiveScene;
+		Entity m_SquareEntity;
+
 		glm::vec2 m_ViewportSize;
 		glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
+
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 	};

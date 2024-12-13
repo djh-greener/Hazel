@@ -8,7 +8,8 @@
 #include<GLFW/glfw3.h>
 #include<glad/glad.h>
 
-
+#include <thread>
+#include <chrono>
 int main(int argc, char** argv);
 namespace Hazel {
 
@@ -110,8 +111,9 @@ namespace Hazel {
 					m_ImGuiLayer->End();
 
 				}
-				m_Window->OnUpdate();
 			}
+			m_Window->OnUpdate();
+
 		}
 	}
 
