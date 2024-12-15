@@ -16,6 +16,8 @@ namespace Hazel {
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
 		entt::registry m_Registry;
+		
 		friend class Entity;
+		friend class SceneHierarchyPanel;
 	};
 }

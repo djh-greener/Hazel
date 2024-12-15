@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Hazel.h"
-
+#include "Panels/SceneHierarchyPanel.h"
 namespace Hazel {
 
 	class EditorLayer : public Layer
@@ -40,6 +40,9 @@ namespace Hazel {
 
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
+
+		// Panels
+		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
 
 }
