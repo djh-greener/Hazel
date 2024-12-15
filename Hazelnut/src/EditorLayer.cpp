@@ -25,8 +25,10 @@ namespace Hazel {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
-		m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		auto greenSquare = m_ActiveScene->CreateEntity("Green Square");
+		greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
+		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
 		m_CameraEntity.AddComponent<CameraComponent>();
@@ -181,8 +183,8 @@ namespace Hazel {
 			ImGui::Text("Quads: %d", stats.QuadCount);
 			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-			auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
-			ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
+			//auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
+			//ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
 
 			ImGui::DragFloat3("Camera Transform",
 				glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
