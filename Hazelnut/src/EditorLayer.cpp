@@ -54,17 +54,17 @@ namespace Hazel {
 				if (!GetComponent<CameraComponent>().Primary)
 					return;
 				
-				auto& transform = GetComponent<TransformComponent>().Transform;
+				auto& position = GetComponent<TransformComponent>().Position;
 				float speed = 5.0f;
 
 				if (Input::IsKeyPressed(KeyCode::A))
-					transform[3][0] -= speed * ts;
+					position.x -= speed * ts;
 				if (Input::IsKeyPressed(KeyCode::D))
-					transform[3][0] += speed * ts;
+					position.x += speed * ts;
 				if (Input::IsKeyPressed(KeyCode::W))
-					transform[3][1] += speed * ts;
+					position.y += speed * ts;
 				if (Input::IsKeyPressed(KeyCode::S))
-					transform[3][1] -= speed * ts;
+					position.y -= speed * ts;
 			}
 		};
 
@@ -176,31 +176,12 @@ namespace Hazel {
 			ImGui::EndMenuBar();
 		}
 		m_SceneHierarchyPanel.OnImGuiRender();
-		ImGui::Begin("Settings");
+		ImGui::Begin("Renderer2D Stats");
 			auto stats = Renderer2D::GetStats();
-			ImGui::Text("Renderer2D Stats:");
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 			ImGui::Text("Quads: %d", stats.QuadCount);
 			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-			//auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
-			//ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
-
-			ImGui::DragFloat3("Camera Transform",
-				glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
-
-			if (ImGui::Checkbox("Camera A", &m_PrimaryCamera))
-			{
-				m_CameraEntity.GetComponent<CameraComponent>().Primary = m_PrimaryCamera;
-				m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_PrimaryCamera;
-			}
-
-			{
-				auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
-				float orthoSize = camera.GetOrthographicSize();
-				if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize))
-					camera.SetOrthographicSize(orthoSize);
-			}
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
