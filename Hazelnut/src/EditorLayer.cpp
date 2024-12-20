@@ -3,7 +3,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include"Hazel/Scene/SceneSerializer.h"
 namespace Hazel {
 
 	EditorLayer::EditorLayer()
@@ -24,7 +24,7 @@ namespace Hazel {
 
 
 		m_ActiveScene = CreateRef<Scene>();
-
+#if 0
 		auto greenSquare = m_ActiveScene->CreateEntity("Green Square");
 		greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
 		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
@@ -70,7 +70,9 @@ namespace Hazel {
 
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+#endif
 		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+
 
 	}
 
@@ -108,25 +110,11 @@ namespace Hazel {
 	void EditorLayer::OnImGuiRender()
 	{
 		HZ_PROFILE_FUNCTION();
-		// If you strip some features of, this demo is pretty much equivalent to calling DockSpaceOverViewport()!
-	// In most cases you should be able to just call DockSpaceOverViewport() and ignore all the code below!
-	// In this specific demo, we are not using DockSpaceOverViewport() because:
-	// - we allow the host window to be floating/moveable instead of filling the viewport (when opt_fullscreen == false)
-	// - we allow the host window to have padding (when opt_padding == true)
-	// - we have a local menu bar in the host window (vs. you could use BeginMainMenuBar() + DockSpaceOverViewport() in your code!)
-	// TL;DR; this demo is more complicated than what you would normally use.
-	// If we removed all the options we are showcasing, this demo would become:
-	//     void ShowExampleAppDockSpace()
-	//     {
-	//         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-	//     }
 		static bool* dockspaceOpen = (bool*)true;
 
 		static bool opt_fullscreen = true;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-		// because it would be confusing to have two docking targets within each others.
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 		if (opt_fullscreen)
 		{
@@ -140,16 +128,8 @@ namespace Hazel {
 			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 		}
 
-		// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-		// and handle the pass-thru hole, so we ask Begin() to not render a background.
 		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 			window_flags |= ImGuiWindowFlags_NoBackground;
-
-		// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-		// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-		// all active windows docked into it will lose their parent and become undocked.
-		// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -160,24 +140,41 @@ namespace Hazel {
 
 		// Submit the DockSpace
 		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();
+		float MinWindowSizeX = style.WindowMinSize.x;
+		style.WindowMinSize.x = 370;
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
+		style.WindowMinSize.x = MinWindowSizeX;
 
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				if (ImGui::MenuItem("Serialize"))
+				{
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.Serialize("assets/scenes/Example.hazel");
+				}
+				if (ImGui::MenuItem("DeSerialize"))
+				{
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.DeSerialize("assets/scenes/Example.hazel");
+				}
 				if (ImGui::MenuItem("Exit")) Application::Get().Close();
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
 		}
+
+
 		m_SceneHierarchyPanel.OnImGuiRender();
 		ImGui::Begin("Renderer2D Stats");
 			auto stats = Renderer2D::GetStats();
+			ImGui::Text("fps: %.2f", ImGui::GetIO().Framerate);
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 			ImGui::Text("Quads: %d", stats.QuadCount);
 			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());

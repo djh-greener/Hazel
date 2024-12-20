@@ -1,7 +1,7 @@
 #pragma once
 #pragma once
 #include "Hazel.h"
-#include"Particle/ParticleSystem.h"
+#include"../Particle/ParticleSystem.h"
 class Sandbox2D : public Hazel::Layer
 {
 public:

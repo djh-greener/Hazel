@@ -17,6 +17,7 @@ namespace Hazel {
 		void Begin();
 		void End();
 		void LetEventGo(bool flag) { m_LetEventGo = flag; }
+		void SetDarkThemeColors();
 	private:
 		float m_Time=0.0f;
 		bool m_LetEventGo = true;
