@@ -1,6 +1,6 @@
 /bin/
 **bin-int/
-
+!vendor/premake/bin/
 
 # Hazel files
 *.log

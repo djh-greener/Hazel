@@ -18,6 +18,12 @@ namespace Hazel {
 		void OnEvent(Event& e) override;
 		bool OnWindowResize(WindowResizeEvent& e);
 	private:
+		bool OnKeyPressed(KeyPressedEvent& e);
+
+		void NewScene();
+		void OpenScene();
+		void SaveSceneAs();
+	private:
 		Hazel::OrthographicCameraController m_CameraController;
 
 		// Temp

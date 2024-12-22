@@ -6,7 +6,7 @@ namespace Hazel {
 
 	struct FramebufferSpecification
 	{
-		float Width, Height;
+		float Width=0, Height=0;
 		// FramebufferFormat Format = 
 		uint32_t Samples = 1;
 

@@ -166,7 +166,6 @@ namespace Hazel {
 			{
 				HZ_CORE_ERROR("Could not read from file '{0}'", filepath);
 			}
-			in.close();
 		}
 		else
 		{

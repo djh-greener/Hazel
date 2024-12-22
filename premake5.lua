@@ -1,3 +1,4 @@
+--include "./vendor/premake/premake_customization/solution_items.lua"
 workspace "Hazel"
     architecture "x86_64"
     startproject "Hazelnut"
@@ -7,6 +8,11 @@ workspace "Hazel"
         "Release",
         "Dist"
     }
+
+    --solution_items
+	--{
+	--	".editorconfig"
+	--}
 	flags
 	{
 		"MultiProcessorCompile"
@@ -22,6 +28,7 @@ IncludeDir["stb_image"] = "%{wks.location}/Hazel/vendor/stb_image"
 IncludeDir["entt"] = "%{wks.location}/Hazel/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "%{wks.location}/Hazel/vendor/yaml-cpp/include"
 group "Dependencies"
+    --include "vendor/premake"
     include "Hazel/vendor/GLAD"
     include "Hazel/vendor/imgui"
     include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
