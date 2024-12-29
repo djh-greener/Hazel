@@ -16,7 +16,7 @@ namespace Hazel {
 		void OnUpdate(Timestep ts) override;
 		virtual void OnImGuiRender() override;
 		void OnEvent(Event& e) override;
-		bool OnWindowResize(WindowResizeEvent& e);
+
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
 
@@ -48,6 +48,9 @@ namespace Hazel {
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+
+		//Gizmo
+		int m_GizmoType = -1;
 	};
 
 }

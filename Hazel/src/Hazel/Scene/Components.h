@@ -1,6 +1,9 @@
 #pragma once
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include<glm/gtx/quaternion.hpp>
+
 #include "Hazel/Scene/SceneCamera.h"
 #include"Hazel/Scene/ScriptableEntity.h"
 namespace Hazel {
@@ -26,9 +29,10 @@ namespace Hazel {
 
 		glm::mat4 GetTranform()const
 		{
-			glm::mat4 rotation = glm::rotate(glm::mat4(1.f), glm::radians(Rotation.x), { 1,0,0 })
-				* glm::rotate(glm::mat4(1.f), glm::radians(Rotation.y), { 0,1,0 })
-				* glm::rotate(glm::mat4(1.f), glm::radians(Rotation.z), { 0,0,1 });
+			glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(Rotation)));
+				//glm::rotate(glm::mat4(1.f), glm::radians(Rotation.x), { 1,0,0 })
+				//* glm::rotate(glm::mat4(1.f), glm::radians(Rotation.y), { 0,1,0 })
+				//* glm::rotate(glm::mat4(1.f), glm::radians(Rotation.z), { 0,0,1 });
 			return glm::translate(glm::mat4(1.f), Position)
 				* rotation
 				* glm::scale(glm::mat4(1), Scale);

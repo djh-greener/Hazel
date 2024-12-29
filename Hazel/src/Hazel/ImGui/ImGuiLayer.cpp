@@ -6,6 +6,7 @@
 
 #include"Hazel/Core/Application.h"
 
+#include"ImGuizmo.h"
 //TMP
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -80,6 +81,7 @@ namespace Hazel {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGuiLayer::End()

@@ -217,12 +217,18 @@ namespace Hazel {
 		{
 			if (ImGui::MenuItem("Camera Component"))
 			{
-				m_SelectionEntity.AddComponent<CameraComponent>();
+				if (!m_SelectionEntity.HasComponent<CameraComponent>())
+					m_SelectionEntity.AddComponent<CameraComponent>();
+				else
+					HZ_CORE_WARN("This entity already has the Camera Component!");
 				ImGui::CloseCurrentPopup();
 			}
 			if (ImGui::MenuItem("Sprite Renderer Component"))
 			{
-				m_SelectionEntity.AddComponent<SpriteRendererComponent>();
+				if (!m_SelectionEntity.HasComponent<SpriteRendererComponent>())
+					m_SelectionEntity.AddComponent<SpriteRendererComponent>();
+				else
+					HZ_CORE_WARN("This entity already has the Sprite Renderer Component!");
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -232,6 +238,8 @@ namespace Hazel {
 
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
+				//if (ImGui::Button("deg"))
+				//	component.Rotation = glm::degrees(component.Rotation)
 				DrawVec3Control("Position", component.Position);
 				DrawVec3Control("Rotation", component.Rotation);
 				DrawVec3Control("Scale", component.Scale, 1.f);

@@ -1,6 +1,6 @@
 #include "Sandbox2D.h"
 #include <imgui/imgui.h>
-
+#include"Hazel/Core/MouseCodes.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -78,9 +78,11 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 		}
 		Hazel::Renderer2D::EndScene();
 		//Particles
-		if (Hazel::Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_LEFT))
+		
+		if (Hazel::Input::IsMouseButtonPressed(Hazel::Mouse::ButtonLeft))
 		{
-			auto [x, y] = Hazel::Input::GetMousePosition();
+			float x = Hazel::Input::GetMouseX();
+			float y = Hazel::Input::GetMouseY();
 			auto width = Hazel::Application::Get().GetWindow().GetWidth();
 			auto height = Hazel::Application::Get().GetWindow().GetHeight();
 

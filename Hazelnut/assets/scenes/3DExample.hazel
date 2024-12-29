@@ -1,8 +1,26 @@
 Scene: Untitled
 Entities:
-  - Entity: 23254453
+  - Entity: 12837192831273
     TagComponent:
-      Tag: SecondCamera
+      Tag: Green Square
+    TransformComponent:
+      Translation: [2.4000001, 0, -4.80000019]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0, 1, 0, 1]
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Red Square
+    TransformComponent:
+      Translation: [0, 1.10000002, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0, 1]
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Camera A
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
@@ -18,11 +36,11 @@ Entities:
         OrthographicFar: 1
       Primary: false
       FixedAspectRatio: false
-  - Entity: 23254453
+  - Entity: 12837192831273
     TagComponent:
-      Tag: Camera
+      Tag: Camera B
     TransformComponent:
-      Translation: [0, 0, 7]
+      Translation: [0.899999976, 0, 6]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
@@ -36,21 +54,3 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
-  - Entity: 23254453
-    TagComponent:
-      Tag: Red Square
-    TransformComponent:
-      Translation: [1.60000002, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [1, 0, 0, 1]
-  - Entity: 23254453
-    TagComponent:
-      Tag: Green Square
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [0, 1, 0, 1]
