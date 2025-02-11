@@ -210,6 +210,8 @@ namespace Hazel {
 				//const Camera& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
 				//const glm::mat4& cameraProjection = camera.GetProjection();
 				//glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTranform());
+				
+				//EditorCamera only in EditorLayer, no register in Scene
 				const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
 				glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
