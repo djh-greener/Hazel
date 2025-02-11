@@ -241,7 +241,7 @@ namespace Hazel {
 				//if (ImGui::Button("deg"))
 				//	component.Rotation = glm::degrees(component.Rotation)
 				DrawVec3Control("Position", component.Position);
-				DrawVec3Control("Rotation", component.Rotation);
+				DrawVec3Control("Rotation", glm::degrees(component.Rotation));
 				DrawVec3Control("Scale", component.Scale, 1.f);
 			});
 

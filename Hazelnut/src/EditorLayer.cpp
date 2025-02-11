@@ -10,7 +10,7 @@
 namespace Hazel {
 
 	EditorLayer::EditorLayer()
-		: Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
+		: Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
 	{
 	}
 
@@ -18,7 +18,7 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
+		//m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
 
 		FramebufferSpecification fbSpec;
 		fbSpec.Width = 1280;
@@ -76,6 +76,7 @@ namespace Hazel {
 #endif
 		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
 
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
 	}
 
@@ -94,18 +95,19 @@ namespace Hazel {
 		{
 			m_Framebuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_EditorCamera.OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 		if(m_ViewportFocused)
 			m_CameraController.OnUpdate(ts);
-
+		m_EditorCamera.OnUpdate(ts);
 
 		// Render
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
-		m_ActiveScene->OnUpdate(ts);
+		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 		m_Framebuffer->Unbind();
 	}
 
@@ -156,15 +158,15 @@ namespace Hazel {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New...", "Ctrl+N"))
+				if (ImGui::MenuItem("New..."))
 				{
 					NewScene();
 				}
-				if (ImGui::MenuItem("Open...","Ctrl+O"))
+				if (ImGui::MenuItem("Open..."))
 				{
 					OpenScene();
 				}
-				if (ImGui::MenuItem("Save As...","Ctrl+Shift+S"))
+				if (ImGui::MenuItem("Save As..."))
 				{
 					SaveSceneAs();
 				}
@@ -202,11 +204,14 @@ namespace Hazel {
 				float windowWidth = ImGui::GetWindowWidth();
 				float windowHeight = ImGui::GetWindowHeight();
 				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
-				//Camera
-				auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-				const Camera& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-				const glm::mat4& cameraProjection = camera.GetProjection();
-				glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTranform());
+				
+				// Runtime camera from entity
+				//auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+				//const Camera& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+				//const glm::mat4& cameraProjection = camera.GetProjection();
+				//glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTranform());
+				const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+				glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
 				//Entity Transform
 				auto& tc = selectedEntity.GetComponent<TransformComponent>();
@@ -224,12 +229,12 @@ namespace Hazel {
 				
 				if (ImGuizmo::IsUsing())
 				{
-					glm::vec3 position, rotation, scale;
-					Math::DeComposeTransform(transform, position, rotation, scale);
+					//glm::vec3 position, rotation, scale;
+					Math::DeComposeTransform(transform, tc.Position, tc.Rotation, tc.Scale);
 					//glm::vec3 deltaRotation = rotation - tc.Rotation;
-					tc.Position = position;
-					tc.Rotation = glm::degrees(rotation);
-					tc.Scale = scale;
+					//tc.Position = position;
+					//tc.Rotation = rotation;
+					//tc.Scale = scale;
 				}
 			}
 		ImGui::End();
@@ -246,6 +251,7 @@ namespace Hazel {
 		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 
 		m_CameraController.OnEvent(e);
+		m_EditorCamera.OnEvent(e);
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -254,32 +260,10 @@ namespace Hazel {
 		if (e.GetKeyRepeatCount() > 0)
 			return false;
 
-		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
-		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+		//bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		//bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 		switch (e.GetKeyCode())
 		{
-		case Key::N:
-		{
-			if (control)
-				NewScene();
-
-			break;
-		}
-		case Key::O:
-		{
-			if (control)
-				OpenScene();
-
-			break;
-		}
-		case Key::S:
-		{
-			if (control && shift)
-				SaveSceneAs();
-
-			break;
-		}
-
 		case Key::Q:
 		{
 			m_GizmoType = -1;

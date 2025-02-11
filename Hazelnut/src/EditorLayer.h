@@ -26,24 +26,16 @@ namespace Hazel {
 	private:
 		Hazel::OrthographicCameraController m_CameraController;
 
-		// Temp
-		Ref<VertexArray> m_SquareVA;
-		Ref<Shader> m_FlatColorShader;
 		Ref<Framebuffer> m_Framebuffer;
-
-		Ref<Texture2D> m_CheckerboardTexture;
 
 		Ref<Scene>m_ActiveScene;
 
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
-
+		EditorCamera m_EditorCamera;
 		bool m_PrimaryCamera = true;
 
 		glm::vec2 m_ViewportSize;
-		glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
-
-
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 
 		// Panels

@@ -119,6 +119,17 @@ namespace Hazel {
 		StartBatch();
 	}
 
+    void Renderer2D::BeginScene(const EditorCamera& camera)
+    {
+		HZ_PROFILE_FUNCTION();
+
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->SetMat4("u_Projection", camera.GetProjection());
+		s_Data.TextureShader->SetMat4("u_View", camera.GetViewMatrix());
+
+		StartBatch();
+    }
+
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		HZ_PROFILE_FUNCTION();
