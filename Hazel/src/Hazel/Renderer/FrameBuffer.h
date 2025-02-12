@@ -9,7 +9,7 @@ namespace Hazel {
 
 		//Color
 		RGBA8,
-
+		RED_INTEGER,
 		//Depth/Stencil
 		DEPTH24STENCIL8,
 
@@ -51,6 +51,9 @@ namespace Hazel {
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
 		virtual void Resize(float width, float height) = 0;
+		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
+
+		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
 		virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;

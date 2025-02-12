@@ -9,17 +9,21 @@ namespace Hazel {
 
 	namespace Utils {
 		//FramebufferTextureFormat--->GLTextureFormat
-		static GLenum TextureFormatSwitch(FramebufferTextureFormat& format)
+		static GLenum HazelFBTextureFormatToGL(FramebufferTextureFormat& format)
 		{
 			switch (format)
 			{
-			case FramebufferTextureFormat::RGBA8:
-				return GL_RGBA8;
-			case FramebufferTextureFormat::DEPTH24STENCIL8:
-				return GL_DEPTH24_STENCIL8;
+			case FramebufferTextureFormat::RGBA8:									return GL_RGBA8;
+			case FramebufferTextureFormat::RED_INTEGER:						return GL_RED_INTEGER;
+			case FramebufferTextureFormat::DEPTH24STENCIL8:				return GL_DEPTH24_STENCIL8;
 			}
+
+			HZ_CORE_ASSERT(false);
 			return 0;
 		}
+
+
+
 
 		static GLenum TextureTarget(FramebufferSpecification& spec )
 		{
@@ -29,17 +33,17 @@ namespace Hazel {
 			return spec.Samples > 1 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 		}
 
-		static void AttachColorTexture(uint32_t id, FramebufferSpecification& spec, GLenum format, int index)
+		static void AttachColorTexture(uint32_t id, FramebufferSpecification& spec, GLenum internalFormat, GLenum format, int index)
 		{
 			//MSAA
 			bool multisample = spec.Samples> 1;
 			if (multisample)
 			{
-				glTexImage2DMultisample(TextureTarget(spec), spec.Samples, format, spec.Width, spec.Height, GL_FALSE);
+				glTexImage2DMultisample(TextureTarget(spec), spec.Samples, internalFormat, spec.Width, spec.Height, GL_FALSE);
 			}
 			else
 			{
-				glTexImage2D(TextureTarget(spec), 0, format, spec.Width, spec.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE,nullptr);
+				glTexImage2D(TextureTarget(spec), 0, internalFormat, spec.Width, spec.Height, 0, format, GL_UNSIGNED_BYTE,nullptr);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -125,7 +129,17 @@ namespace Hazel {
 			{
 				FramebufferTextureFormat TextureFormat = m_ColorAttachmentSpecifications[i].TextureFormat;
 				glBindTexture(Utils::TextureTarget(m_Specification), m_ColorAttachments[i]);
-				Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification, Utils::TextureFormatSwitch(TextureFormat), i);
+
+				switch (TextureFormat)
+				{
+				case Hazel::FramebufferTextureFormat::RGBA8:
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification, GL_RGBA8,GL_RGBA, i);
+					break;
+				case Hazel::FramebufferTextureFormat::RED_INTEGER:
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification, GL_R32I, GL_RED_INTEGER, i);
+					break;
+				}
+				
 			}
 		}
 		//Add Depth
@@ -183,5 +197,23 @@ namespace Hazel {
 		Invalidate();
 	}
 
+	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
+	{
+		HZ_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
 
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		return pixelData;
+
+	}
+
+	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
+		HZ_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+
+		auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0,
+			Utils::HazelFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
+	}
 }

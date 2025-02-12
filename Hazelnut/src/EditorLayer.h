@@ -36,6 +36,7 @@ namespace Hazel {
 		bool m_PrimaryCamera = true;
 
 		glm::vec2 m_ViewportSize;
+		glm::vec2 m_ViewportBounds[2];
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 
 		// Panels
