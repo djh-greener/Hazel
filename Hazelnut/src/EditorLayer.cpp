@@ -108,23 +108,25 @@ namespace Hazel {
 		m_Framebuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
-		// Clear our entity ID attachment to -1
-		m_Framebuffer->ClearAttachment(1, -1);
-
+		m_Framebuffer->ClearAttachment(1, -1);		// Clear our entity ID attachment to -1
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
-		auto [mx, my] = ImGui::GetMousePos();
-		mx -= m_ViewportBounds[0].x;
-		my -= m_ViewportBounds[0].y;
-		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-		my = viewportSize.y - my;
-		int mouseX = (int)mx;
-		int mouseY = (int)my;
-
-		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+		//Mouse Picking
+		if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
 		{
-			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-			HZ_CORE_WARN("Pixel data = {0}", pixelData);
+			auto [mx, my] = ImGui::GetMousePos();
+			mx -= m_ViewportBounds[0].x;
+			my -= m_ViewportBounds[0].y;
+			glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+			my = viewportSize.y - my;
+			if (m_ViewportHovered)//(mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+			{
+				int pixelData = m_Framebuffer->ReadPixel(1, (int)mx, (int)my);
+				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
+				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+				if (!ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+					m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+			}
 		}
 		m_Framebuffer->Unbind();
 	}
@@ -196,8 +198,9 @@ namespace Hazel {
 
 
 		m_SceneHierarchyPanel.OnImGuiRender();
-		ImGui::Begin("Renderer2D Stats");
+		ImGui::Begin("Stats");
 			auto stats = Renderer2D::GetStats();
+			ImGui::Text("Renderer2D Stats");
 			ImGui::Text("fps: %.2f", ImGui::GetIO().Framerate);
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 			ImGui::Text("Quads: %d", stats.QuadCount);
@@ -207,21 +210,16 @@ namespace Hazel {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
-			auto viewportOffset = ImGui::GetCursorPos();//title bar offset
-			auto windowSize = ImGui::GetWindowSize();
-			ImVec2 minBound = ImGui::GetWindowPos();//ViewPort LeftTop Pos in Hole WindowScreen
-			minBound.x += viewportOffset.x;
-			minBound.y += viewportOffset.y;
-			ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
-			m_ViewportBounds[0] = { minBound.x, minBound.y };
-			m_ViewportBounds[1] = { maxBound.x, maxBound.y };
-			
+			auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+			auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+			auto viewportOffset = ImGui::GetWindowPos();
+			m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+			m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 
 			m_ViewportFocused = ImGui::IsWindowFocused();
 			m_ViewportHovered = ImGui::IsWindowHovered();
 			Application::Get().GetImGuiLayer()->LetEventGo(m_ViewportFocused || m_ViewportHovered);
-			//m_ViewportSize = *(glm::vec2*)&ImGui::GetContentRegionAvail();
-			m_ViewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+			m_ViewportSize = *(glm::vec2*)&ImGui::GetContentRegionAvail();
 			uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
@@ -232,9 +230,8 @@ namespace Hazel {
 			{
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
-				float windowWidth = ImGui::GetWindowWidth();
-				float windowHeight = ImGui::GetWindowHeight();
-				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+				ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
+
 				
 				// Runtime camera from entity
 				//auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
@@ -248,7 +245,7 @@ namespace Hazel {
 
 				//Entity Transform
 				auto& tc = selectedEntity.GetComponent<TransformComponent>();
-				glm::mat4 transform = tc.GetTranform();
+				glm::mat4 transform = tc.GetTransform();
 				// Snapping
 				bool snap = Input::IsKeyPressed(Key::LeftControl);
 				float snapValue = 0.5f; // Snap to 0.5m for translation/scale

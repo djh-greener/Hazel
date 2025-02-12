@@ -27,7 +27,8 @@ namespace Hazel {
 		{
 			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-			Renderer2D::DrawQuad(transform.GetTranform(), sprite.Color);
+			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+
 		}
 
 		Renderer2D::EndScene();
@@ -65,7 +66,7 @@ namespace Hazel {
 				if (camera.Primary)
 				{
 					mainCamera = &camera.Camera;
-					cameraTransform = transform.GetTranform();
+					cameraTransform = transform.GetTransform();
 					break;
 				}
 			}
@@ -80,7 +81,7 @@ namespace Hazel {
 			{
 				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::DrawQuad(transform.GetTranform(), sprite.Color);
+				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 
 			Renderer2D::EndScene();

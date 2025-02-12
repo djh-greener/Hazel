@@ -27,7 +27,7 @@ namespace Hazel {
 		TransformComponent(const glm::vec3& Position)
 			: Position(Position) {}
 
-		glm::mat4 GetTranform()const
+		glm::mat4 GetTransform()const
 		{
 			glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 				//glm::rotate(glm::mat4(1.f), glm::radians(Rotation.x), { 1,0,0 })
