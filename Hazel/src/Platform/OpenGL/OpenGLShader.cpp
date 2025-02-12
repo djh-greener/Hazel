@@ -84,6 +84,12 @@ namespace Hazel {
 
 		UploadUniformFloat3(name, value);
 	}
+	void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& value)
+	{
+		HZ_PROFILE_FUNCTION();
+
+		UploadUniformFloat2(name, value);
+	}
 	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
 	{
 		HZ_PROFILE_FUNCTION();
