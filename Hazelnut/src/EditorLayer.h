@@ -19,21 +19,17 @@ namespace Hazel {
 
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
-		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void NewScene();
 		void OpenScene();
 		void SaveSceneAs();
 	private:
-		Hazel::OrthographicCameraController m_CameraController;
-
-		Ref<Framebuffer> m_Framebuffer;
+		std::unordered_map<std::string,Ref<Framebuffer>> m_Framebuffers;
 
 		Ref<Scene>m_ActiveScene;
 
 		Entity m_CameraEntity;
-		Entity m_SecondCamera;
-		EditorCamera m_EditorCamera;
+		//EditorCamera m_EditorCamera;
 		bool m_PrimaryCamera = true;
 
 		glm::vec2 m_ViewportSize;

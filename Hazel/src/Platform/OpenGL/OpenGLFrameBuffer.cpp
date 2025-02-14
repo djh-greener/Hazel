@@ -22,9 +22,6 @@ namespace Hazel {
 			return 0;
 		}
 
-
-
-
 		static GLenum TextureTarget(FramebufferSpecification& spec )
 		{
 			if (spec.IsCubeMap)
@@ -39,7 +36,8 @@ namespace Hazel {
 			bool multisample = spec.Samples> 1;
 			if (multisample)
 			{
-				glTexImage2DMultisample(TextureTarget(spec), spec.Samples, internalFormat, spec.Width, spec.Height, GL_FALSE);
+				
+				glTexImage2DMultisample(TextureTarget(spec), spec.Samples, internalFormat, spec.Width, spec.Height, GL_TRUE);
 			}
 			else
 			{
@@ -58,11 +56,11 @@ namespace Hazel {
 			bool multisampled = spec.Samples> 1;
 			if (multisampled)
 			{
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, spec.Samples, format, spec.Width, spec.Height, GL_FALSE);
+				glTexImage2DMultisample(TextureTarget(spec), spec.Samples, format, spec.Width, spec.Height, GL_TRUE);
 			}
 			else
 			{
-				glTexStorage2D(GL_TEXTURE_2D, 1, format, spec.Width, spec.Height);
+				glTexStorage2D(TextureTarget(spec), 1, format, spec.Width, spec.Height);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -139,7 +137,7 @@ namespace Hazel {
 					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification, GL_R32I, GL_RED_INTEGER, i);
 					break;
 				}
-				
+				glBindTexture(Utils::TextureTarget(m_Specification), 0);
 			}
 		}
 		//Add Depth
@@ -153,6 +151,7 @@ namespace Hazel {
 				Utils::AttachDepthTexture(m_DepthAttachment, m_Specification, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT);
 				break;
 			}
+			glBindTexture(Utils::TextureTarget(m_Specification), 0);
 		}
 
 		if (m_ColorAttachments.size() > 1)
@@ -173,16 +172,16 @@ namespace Hazel {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void OpenGLFramebuffer::Bind()
+	void OpenGLFramebuffer::Bind(unsigned int target)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glBindFramebuffer(target, m_RendererID);
 		
 		glViewport(0, 0, (uint32_t)m_Specification.Width, (uint32_t)m_Specification.Height);
 	}
 
-	void OpenGLFramebuffer::Unbind()
+	void OpenGLFramebuffer::Unbind(unsigned int target)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(target, 0);
 	}
 
 	void OpenGLFramebuffer::Resize(float width, float height)

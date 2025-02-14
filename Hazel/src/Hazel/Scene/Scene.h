@@ -7,7 +7,7 @@ namespace Hazel {
 
 	class Scene {
 	public:
-		Scene();
+		Scene(uint32_t ViewportWidth, uint32_t ViewportHeight);
 		~Scene();
 		//run scripts,only render meshes
 		void OnUpdateRuntime(Timestep ts);

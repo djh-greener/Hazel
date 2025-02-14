@@ -48,8 +48,9 @@ namespace Hazel {
 	{
 	public:
 		virtual ~Framebuffer() = default;
-		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
+		
+		virtual void Bind(unsigned int target = 0x8D40) = 0;//0x8D40 == GL_FRAMEBUFFER
+		virtual void Unbind(unsigned int target = 0x8D40) = 0;
 		virtual void Resize(float width, float height) = 0;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 

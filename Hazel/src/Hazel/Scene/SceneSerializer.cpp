@@ -5,7 +5,29 @@
 #include<yaml-cpp/yaml.h>
 
 namespace YAML {
+	template<>
+	struct convert<glm::vec2>
+	{
+		static Node encode(const glm::vec2& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
 
+		static bool decode(const Node& node, glm::vec2& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			return true;
+		}
+	};
+	
 	template<>
 	struct convert<glm::vec3>
 	{
@@ -60,6 +82,12 @@ namespace YAML {
 
 }
 namespace Hazel {
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
+	{
+		out << YAML::Flow;
+		out << YAML::BeginSeq << v.x << v.y<< YAML::EndSeq;
+		return out;
+	}
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
 	{
 		out << YAML::Flow;
@@ -82,55 +110,55 @@ namespace Hazel {
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << "23254453";
+		out << YAML::Key << "Entity" << YAML::Value << (uint32_t)entity;
 
 		if (entity.HasComponent<TagComponent>())
 		{
 			out << YAML::Key << "TagComponent";
 			out << YAML::BeginMap; 
-
 			auto& tag = entity.GetComponent<TagComponent>().Tag;
 			out << YAML::Key << "Tag" << YAML::Value << tag;
+			std::cout << tag << std::endl;
 
 			out << YAML::EndMap; 
 		}
 		if (entity.HasComponent<TransformComponent>())
 		{
 			out << YAML::Key << "TransformComponent";
-			out << YAML::BeginMap; // TransformComponent
 
 			auto& tc = entity.GetComponent<TransformComponent>();
-			out << YAML::Key << "Translation" << YAML::Value << tc.Position;
-			out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
-			out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
-
-			out << YAML::EndMap; // TransformComponent
+			out << YAML::BeginMap; 
+				out << YAML::Key << "Translation" << YAML::Value << tc.Position;
+				out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
+				out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
+			out << YAML::EndMap; 
 		}
 		if (entity.HasComponent<CameraComponent>())
 		{
-			out << YAML::Key << "CameraComponent";
-			out << YAML::BeginMap; // CameraComponent
-
 			auto& cameraComponent = entity.GetComponent<CameraComponent>();
 			auto& camera = cameraComponent.Camera;
+			out << YAML::Key << "CameraComponent";
+			out << YAML::BeginMap; 
+				out << YAML::Key << "Camera" << YAML::Value;
+				out << YAML::BeginMap; 
+					out << YAML::Key << "PerspectiveFOV" << YAML::Value << camera.GetPerspectiveVerticalFOV();
+					out << YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
+					out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
+				out << YAML::EndMap; 
 
-			out << YAML::Key << "Camera" << YAML::Value;
-			out << YAML::BeginMap; // Camera
-			out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
-			out << YAML::Key << "PerspectiveFOV" << YAML::Value << camera.GetPerspectiveVerticalFOV();
-			out << YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
-			out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
-			out << YAML::Key << "OrthographicSize" << YAML::Value << camera.GetOrthographicSize();
-			out << YAML::Key << "OrthographicNear" << YAML::Value << camera.GetOrthographicNearClip();
-			out << YAML::Key << "OrthographicFar" << YAML::Value << camera.GetOrthographicFarClip();
-			out << YAML::EndMap; // Camera
-
-			out << YAML::Key << "Primary" << YAML::Value << cameraComponent.Primary;
-			out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
-
+				//out << YAML::Key << "Position" << YAML::Value << cameraComponent.Position;
+				//out << YAML::Key << "Front" << YAML::Value << cameraComponent.Front;
+				//out << YAML::Key << "Up" << YAML::Value << cameraComponent.Up;
+				//out << YAML::Key << "Right" << YAML::Value << cameraComponent.Right;
+				//out << YAML::Key << "Yaw" << YAML::Value << cameraComponent.Yaw;
+				//out << YAML::Key << "Pitch" << YAML::Value << cameraComponent.Pitch;
+				out << YAML::Key << "MoveSpeed" << YAML::Value << cameraComponent.MoveSpeed;
+				out << YAML::Key << "RotateSpeed" << YAML::Value << cameraComponent.RotateSpeed;
+				out << YAML::Key << "LastMousePos" << YAML::Value << cameraComponent.LastMousePos;
+				out << YAML::Key << "Primary" << YAML::Value << cameraComponent.Primary;
+				out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
 			out << YAML::EndMap; // CameraComponent
 		}
-
 		if (entity.HasComponent<SpriteRendererComponent>())
 		{
 			out << YAML::Key << "SpriteRendererComponent";
@@ -142,16 +170,6 @@ namespace Hazel {
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
 
-
-
-
-
-
-
-
-
-
-
 		out << YAML::EndMap;
 	}
 
@@ -160,15 +178,16 @@ namespace Hazel {
 		YAML::Emitter out;
 		out << YAML::BeginMap;
 		out << YAML::Key<<"Scene"<< YAML::Value << "Untitled";
-
 		out << YAML::Key << "Entities"<< YAML::Value << YAML::BeginSeq;
-		m_Scene->m_Registry.view<entt::entity>().each([&](auto entityID)
-			{
-				Entity entity = { entityID,m_Scene.get() };
-				if (!entity)
-					return;
-				SerializeEntity(out, entity);
-			});
+		//entt's view is reverse, so reverse to save
+		auto view = m_Scene->m_Registry.view<entt::entity>();
+		for (auto it = view.rbegin(), last = view.rend(); it != last; ++it) {
+			Entity entity = { *it, m_Scene.get() };
+			if (!entity) {
+				continue;
+			}
+			SerializeEntity(out, entity);
+		}
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
@@ -195,7 +214,7 @@ namespace Hazel {
 			return true;
 		//reverse DeSerialize entities
 		std::vector<YAML::Node>entities(entitiesRootNode.begin(), entitiesRootNode.end());
-		for (auto it = entities.rbegin(); it !=entities.rend(); it++)
+		for (auto it = entities.begin(); it !=entities.end(); it++)
 		{
 			YAML::Node entity = *it;
 			uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
@@ -225,16 +244,20 @@ namespace Hazel {
 				auto& cc = deserializedEntity.AddComponent<CameraComponent>();
 
 				auto& cameraProps = cameraComponent["Camera"];
-				cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
 
 				cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
 				cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
 				cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
 
-				cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
-				cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
-				cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
-
+				//cc.Position = cameraComponent["Position"].as<glm::vec3>();
+				//cc.Front = cameraComponent["Front"].as<glm::vec3>();
+				//cc.Up = cameraComponent["Up"].as<glm::vec3>();
+				//cc.Right = cameraComponent["Right"].as<glm::vec3>();
+				//cc.Yaw = cameraComponent["Yaw"].as<float>();
+				//cc.Pitch = cameraComponent["Pitch"].as<float>();
+				cc.MoveSpeed = cameraComponent["MoveSpeed"].as<float>();
+				cc.RotateSpeed = cameraComponent["RotateSpeed"].as<float>();
+				cc.LastMousePos = cameraComponent["LastMousePos"].as<glm::vec2>();
 				cc.Primary = cameraComponent["Primary"].as<bool>();
 				cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 			}

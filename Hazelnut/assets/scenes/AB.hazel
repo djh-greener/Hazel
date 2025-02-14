@@ -1,0 +1,28 @@
+Scene: Untitled
+Entities:
+  - Entity: 0
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-0.674716055, 0.0769516155, 5.81038809]
+      Rotation: [0.0119999181, -1.51099789, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+      MoveSpeed: 10
+      RotateSpeed: 0.100000001
+      LastMousePos: [73, 80]
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 1
+    TagComponent:
+      Tag: Empty Enity
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]

@@ -74,4 +74,27 @@ namespace Hazel::Math {
 		return true;
 	}
 	
+	void EulerToDirectionVectors(const glm::vec3 eulerAngles, glm::vec3& front, glm::vec3& right, glm::vec3& up) {
+		// 计算 front 向量
+		front.x = cos(eulerAngles.y) * cos(eulerAngles.x);
+		front.y = sin(eulerAngles.x);
+		front.z = sin(eulerAngles.y) * cos(eulerAngles.x);
+		front = glm::normalize(front);
+
+		// 计算 right 向量
+		right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
+
+		// 计算 up 向量
+		up = glm::normalize(glm::cross(right, front));
+	}
+
+
+	void DirectionVectorsToEuler(const glm::vec3 front, const glm::vec3 right, const glm::vec3 up, glm::vec3& eulerAngles) {
+		eulerAngles.x = atan2(front.y, glm::sqrt(front.x * front.x + front.z * front.z));
+		eulerAngles.y = atan2(front.z, front.x);
+		eulerAngles.z = atan2(up.y, right.y);
+	}
+
+
+
 }

@@ -23,6 +23,7 @@ namespace Hazel
 
 		HZ_CORE_ASSERT(false, "Unknown severity level!");
 	}
+
 	void OpenGLRendererAPI::Init()
 	{
 		HZ_PROFILE_FUNCTION();
@@ -36,6 +37,7 @@ namespace Hazel
 #endif
 
 		glEnable(GL_BLEND);
+		glEnable(GL_MULTISAMPLE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
 	}

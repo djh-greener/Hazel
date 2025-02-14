@@ -18,8 +18,6 @@
 #include"Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/Framebuffer.h"
 //Camera
-#include"Hazel/Camera/OrthographicCamera.h"
-#include"Hazel/Camera/OrthographicCameraController.h"
 
 //ECS
 #include"Hazel/Scene/Scene.h"

@@ -67,8 +67,9 @@ project "Hazel"
         runtime "Release"
         optimize "on"
 
+
     filter "configurations:Dist"
         defines "HZ_DIST"
         runtime "Release"
         optimize "on"
-    
+

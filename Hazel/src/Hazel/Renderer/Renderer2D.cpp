@@ -44,7 +44,6 @@ namespace Hazel {
 		Renderer2D::Statistics Stats;
 	};
 
-
 	static Renderer2DData s_Data;
 
 	void Renderer2D::Init()
@@ -134,13 +133,13 @@ namespace Hazel {
 		StartBatch();
     }
 
-	void Renderer2D::BeginScene(const OrthographicCamera& camera)
+	void Renderer2D::BeginScene(CameraComponent& cameraComp)
 	{
 		HZ_PROFILE_FUNCTION();
 
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_Projection", camera.GetProjectionMatrix());
-		s_Data.TextureShader->SetMat4("u_View", camera.GetViewMatrix());
+		s_Data.TextureShader->SetMat4("u_Projection", cameraComp.GetProjMatrix());
+		s_Data.TextureShader->SetMat4("u_View", cameraComp.GetViewMatrix());
 
 		StartBatch();
 	}

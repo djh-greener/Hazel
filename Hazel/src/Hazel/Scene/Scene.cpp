@@ -8,7 +8,9 @@
 
 namespace Hazel {
 
-	Scene::Scene()
+	Scene::Scene(uint32_t ViewportWidth, uint32_t ViewportHeight):
+		m_ViewportWidth(ViewportWidth),
+		m_ViewportHeight(ViewportHeight)
 	{
 
 	}
@@ -36,27 +38,13 @@ namespace Hazel {
 
 	void Scene::OnUpdateRuntime(Timestep ts)
 	{
-		// -----------------------------Scripts-----------------------------------------------//
-		{
-			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
-				{
-					//TODO:Move To Scene::OnPlay
-					if (!nsc.Instance)
-					{
-						nsc.Instance = nsc.InstantiateScript();
-						nsc.Instance->m_Entity = Entity{ entity, this };
+		// -----------------------------Update Components-----------------------------------------------//
 
-						nsc.Instance->OnCreate();
-					}
-
-						nsc.Instance->OnUpdate( ts);
-				});
-		}
 
 		//-------------------------------------Render--------------------------------------//
 		//Find MainCamera
-		Camera* mainCamera = nullptr;
-		glm::mat4 cameraTransform;
+		//Camera* mainCamera = nullptr;
+		CameraComponent *MainCameraComp = nullptr;
 		{
 			auto view = m_Registry.view<TransformComponent, CameraComponent>();
 			for (auto entity : view)
@@ -65,16 +53,18 @@ namespace Hazel {
 
 				if (camera.Primary)
 				{
-					mainCamera = &camera.Camera;
-					cameraTransform = transform.GetTransform();
+					//Input
+					camera.OnUpdate(ts);
+
+					MainCameraComp = &camera;
 					break;
 				}
 			}
 		}
 		//if Find MainCamera, then Render Scene
-		if (mainCamera)
+		if (MainCameraComp)
 		{
-			Renderer2D::BeginScene(*mainCamera, cameraTransform);
+			Renderer2D::BeginScene(*MainCameraComp);
 
 			auto group = m_Registry.group<TransformComponent, SpriteRendererComponent>();
 			for (auto entity : group)
@@ -97,7 +87,6 @@ namespace Hazel {
 		auto view = m_Registry.view<CameraComponent>();
 		for (auto entity : view)
 		{
-
 			auto& cameraComponent = view.get<CameraComponent>(entity);
 			if (!cameraComponent.FixedAspectRatio)
 				cameraComponent.Camera.SetViewportSize(width, height);
@@ -145,6 +134,7 @@ namespace Hazel {
 	template<>
 	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{
+		component.Owner = entity;
 		component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 	}
 
@@ -158,8 +148,8 @@ namespace Hazel {
 	{
 	}
 
-	template<>
-	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
-	{
-	}
+	//template<>
+	//void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+	//{
+	//}
 }

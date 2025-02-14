@@ -21,7 +21,7 @@ project "Hazelnut"
         "%{IncludeDir.glm}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.ImGuizmo}",
-
+		"%{IncludeDir.GLAD}",
     }
 
     links

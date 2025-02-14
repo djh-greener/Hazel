@@ -21,11 +21,12 @@ namespace Hazel {
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Scene Hierarchy");
-		m_Scene->m_Registry.view<entt::entity>().each([&](auto entityID)
-			{
-				Entity entity{ entityID , m_Scene.get() };
-				DrawEntityNode(entity);
-			});
+		//entt's view is reverse, so reverse to show
+		auto view = m_Scene->m_Registry.view<entt::entity>();
+		for (auto it = view.rbegin(), last = view.rend(); it != last; ++it) {
+			Entity entity = { *it, m_Scene.get() };
+			DrawEntityNode(entity);
+		}
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			m_SelectionEntity = {};
 		//Right Click on Blank Space
@@ -43,8 +44,6 @@ namespace Hazel {
 		if (m_SelectionEntity)
 		{
 			DrawComponents(m_SelectionEntity);
-
-			
 		}
 		ImGui::End();
 	}
@@ -243,8 +242,6 @@ namespace Hazel {
 
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
-				//if (ImGui::Button("deg"))
-				//	component.Rotation = glm::degrees(component.Rotation)
 				DrawVec3Control("Position", component.Position);
 				DrawVec3Control("Rotation", glm::degrees(component.Rotation));
 				DrawVec3Control("Scale", component.Scale, 1.f);
@@ -256,54 +253,18 @@ namespace Hazel {
 				auto& camera = component.Camera;
 				ImGui::Checkbox("Primary", &component.Primary);
 
-				const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
-				const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
-				if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
-				{
-					for (size_t i = 0; i < 2; i++)
-					{
-						bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
-						if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
-						{
-							currentProjectionTypeString = projectionTypeStrings[i];
-							camera.SetProjectionType((SceneCamera::ProjectionType)i);
-						}
-						if (isSelected)
-							ImGui::SetItemDefaultFocus();
-					}
-					ImGui::EndCombo();
-				}
-				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
-				{
-					float verticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
-					if (ImGui::DragFloat("Vertical FOV", &verticalFov))
-						camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
+				float verticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
+				if (ImGui::DragFloat("Vertical FOV", &verticalFov))
+					camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
 
-					float orthoNear = camera.GetPerspectiveNearClip();
-					if (ImGui::DragFloat("Near", &orthoNear))
-						camera.SetPerspectiveNearClip(orthoNear);
+				float orthoNear = camera.GetPerspectiveNearClip();
+				if (ImGui::DragFloat("Near", &orthoNear))
+					camera.SetPerspectiveNearClip(orthoNear);
 
-					float orthoFar = camera.GetPerspectiveFarClip();
-					if (ImGui::DragFloat("Far", &orthoFar))
-						camera.SetPerspectiveFarClip(orthoFar);
-				}
+				float orthoFar = camera.GetPerspectiveFarClip();
+				if (ImGui::DragFloat("Far", &orthoFar))
+					camera.SetPerspectiveFarClip(orthoFar);
 
-				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
-				{
-					float orthoSize = camera.GetOrthographicSize();
-					if (ImGui::DragFloat("Size", &orthoSize))
-						camera.SetOrthographicSize(orthoSize);
-
-					float orthoNear = camera.GetOrthographicNearClip();
-					if (ImGui::DragFloat("Near", &orthoNear))
-						camera.SetOrthographicNearClip(orthoNear);
-
-					float orthoFar = camera.GetOrthographicFarClip();
-					if (ImGui::DragFloat("Far", &orthoFar))
-						camera.SetOrthographicFarClip(orthoFar);
-
-					ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
-				}
 			});
 
 		DrawComponent<SpriteRendererComponent>("SpriteRenderer", entity, [](auto& component)

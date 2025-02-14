@@ -12,8 +12,8 @@ namespace Hazel {
 
 		void Invalidate();
 
-		virtual void Bind() override;
-		virtual void Unbind() override;
+		virtual void Bind(unsigned int target) override;
+		virtual void Unbind(unsigned int target) override;
 
 		virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
 
