@@ -81,6 +81,7 @@ namespace Hazel {
 				int pixelData = m_Framebuffers["Default"]->ReadPixel(1, (int)mx, (int)my);
 				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+
 				if (!ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
 					m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
 			}
@@ -155,6 +156,8 @@ namespace Hazel {
 
 
 		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.OnImGuiRender();
+
 		ImGui::Begin("Stats");
 			auto stats = Renderer2D::GetStats();
 			ImGui::Text("Renderer2D Stats");

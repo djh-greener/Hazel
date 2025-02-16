@@ -98,14 +98,15 @@ namespace Hazel {
 		void Rotate(glm::vec3& Rotation)
 		{
 			auto MousePos = Input::GetMousePosition();
+
 			if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
 			{
 				float xoffset = MousePos.x - LastMousePos.x;
 				float yoffset = LastMousePos.y - MousePos.y;
 				xoffset *= RotateSpeed;
 				yoffset *= RotateSpeed;
-				Rotation.y += xoffset*0.01;//Yaw
-				Rotation.x += yoffset*0.01;//Pitch
+				Rotation.y += xoffset*(float)0.01;//Yaw
+				Rotation.x += yoffset*(float)0.01;//Pitch
 
 				// make sure that when pitch is out of bounds, screen doesn't get flipped
 				float AngleLimit = glm::radians(89.0f);

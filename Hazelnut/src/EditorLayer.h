@@ -2,6 +2,7 @@
 
 #include "Hazel.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 namespace Hazel {
 
 	class EditorLayer : public Layer
@@ -41,7 +42,7 @@ namespace Hazel {
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
-
+		ContentBrowserPanel m_ContentBrowserPanel;
 		//Gizmo
 		int m_GizmoType = -1;
 	};

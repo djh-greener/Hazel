@@ -4,9 +4,10 @@
 #include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/RenderCommand.h"
+#include "Hazel/Renderer/UniformBuffer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Hazel {
 
@@ -42,6 +43,14 @@ namespace Hazel {
 
 		glm::vec4 QuadVertexPositions[4];
 		Renderer2D::Statistics Stats;
+
+		struct CameraData
+		{
+			glm::mat4 View;
+			glm::mat4 Projection;
+		};
+		CameraData CameraBuffer;
+		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
 	static Renderer2DData s_Data;
@@ -103,6 +112,8 @@ namespace Hazel {
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 	}
 
 	void Renderer2D::Shutdown()
@@ -110,7 +121,7 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 		delete[] s_Data.QuadVertexBufferBase;
 	}
-
+	//No Use
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
 	{
 		HZ_PROFILE_FUNCTION();
@@ -121,7 +132,7 @@ namespace Hazel {
 
 		StartBatch();
 	}
-
+	//No Use
     void Renderer2D::BeginScene(const EditorCamera& camera)
     {
 		HZ_PROFILE_FUNCTION();
@@ -132,14 +143,17 @@ namespace Hazel {
 
 		StartBatch();
     }
-
+	//Is Use
 	void Renderer2D::BeginScene(CameraComponent& cameraComp)
 	{
 		HZ_PROFILE_FUNCTION();
 
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_Projection", cameraComp.GetProjMatrix());
-		s_Data.TextureShader->SetMat4("u_View", cameraComp.GetViewMatrix());
+		//s_Data.TextureShader->SetMat4("u_Projection", cameraComp.GetProjMatrix());
+		//s_Data.TextureShader->SetMat4("u_View", cameraComp.GetViewMatrix());
+		s_Data.CameraBuffer.View = cameraComp.GetProjMatrix();
+		s_Data.CameraBuffer.Projection = cameraComp.GetViewMatrix();
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}
@@ -161,7 +175,7 @@ namespace Hazel {
 		// Bind textures
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
-
+		s_Data.TextureShader->Bind();
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 		s_Data.Stats.DrawCalls++;
 	}
