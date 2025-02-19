@@ -1,18 +1,19 @@
 #pragma once
 #include"entt.hpp"
 #include"Hazel/Core/Timestep.h"
-#include"Hazel/Camera/EditorCamera.h"
+//#include"Hazel/Camera/EditorCamera.h"
 namespace Hazel {
 	class Entity;
 
 	class Scene {
 	public:
-		Scene(uint32_t ViewportWidth, uint32_t ViewportHeight);
+		//uint32_t ViewportWidth, uint32_t ViewportHeight
+		Scene();
 		~Scene();
 		//run scripts,only render meshes
-		void OnUpdateRuntime(Timestep ts);
+		void OnUpdateRuntime(Timestep ts, bool ViewportHovered);
 		//show gizmos, floor grid ,outlines. And for scene in editor, the EditorCamera should be unvisiable, must pass in
-		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
+		//void OnUpdateEditor(Timestep ts, EditorCamera& camera);
 
 		void OnViewportResize(uint32_t width, uint32_t height);
 		

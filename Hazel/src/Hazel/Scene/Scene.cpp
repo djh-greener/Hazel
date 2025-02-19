@@ -1,42 +1,45 @@
 #include"hzpch.h"
 #include "Scene.h"
 #include<glm/glm.hpp>
-#include"Hazel/Scene/Components.h"
+//#include"Hazel/Scene/Components.h"
 #include "Hazel/Scene/Entity.h"
 
 #include"Hazel/Renderer/Renderer2D.h"
-
+#include"Hazel/Camera/CameraComponent.h"
 namespace Hazel {
 
-	Scene::Scene(uint32_t ViewportWidth, uint32_t ViewportHeight):
-		m_ViewportWidth(ViewportWidth),
-		m_ViewportHeight(ViewportHeight)
+	//Scene::Scene(uint32_t ViewportWidth, uint32_t ViewportHeight):
+	//	m_ViewportWidth(ViewportWidth),
+	//	m_ViewportHeight(ViewportHeight)
+	//{
+	//
+	//}
+	Scene::Scene() 
 	{
 
 	}
-
 
 	Scene::~Scene()
 	{
 	}
 
-	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
-	{
-		Renderer2D::BeginScene(camera);
+	//void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	//{
+	//	Renderer2D::BeginScene(camera);
+	//
+	//	auto group = m_Registry.group<TransformComponent, SpriteRendererComponent>();
+	//	for (auto entity : group)
+	//	{
+	//		auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+	//
+	//		Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+	//
+	//	}
+	//
+	//	Renderer2D::EndScene();
+	//}
 
-		auto group = m_Registry.group<TransformComponent, SpriteRendererComponent>();
-		for (auto entity : group)
-		{
-			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-
-			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
-
-		}
-
-		Renderer2D::EndScene();
-	}
-
-	void Scene::OnUpdateRuntime(Timestep ts)
+	void Scene::OnUpdateRuntime(Timestep ts,bool ViewportHovered)
 	{
 		// -----------------------------Update Components-----------------------------------------------//
 
@@ -51,10 +54,14 @@ namespace Hazel {
 			{
 				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
 
-				if (camera.Primary)
+				if (camera.IsPrimary())
 				{
 					//Input
-					camera.OnUpdate(ts);
+					if (ViewportHovered)
+					{
+						camera.OnInput(ts);
+
+					}
 
 					MainCameraComp = &camera;
 					break;
@@ -111,7 +118,7 @@ namespace Hazel {
 		for (auto& entity : view)
 		{
 			const auto& camera = view.get<CameraComponent>(entity);
-			if (camera.Primary)
+			if (camera.IsPrimary())
 			{
 				return Entity{ entity,this };
 			}

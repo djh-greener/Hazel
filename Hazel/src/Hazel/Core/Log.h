@@ -1,5 +1,7 @@
 #pragma once
-#include"Hazel/Core/Core.h"
+#include "Hazel/Core/Core.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include<spdlog/spdlog.h>
 #include<spdlog/fmt/ostr.h>
 namespace Hazel {

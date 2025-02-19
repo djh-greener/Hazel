@@ -1,7 +1,7 @@
 #pragma once
-#include <sstream>
 #include"Hazel/Core/Core.h"
 #include"Hazel/Events/Event.h"
+#include <sstream>
 
 namespace Hazel {
 	struct WindowProps

@@ -1,11 +1,14 @@
+#include "hzpch.h"
 #include "SceneHierarchyPanel.h"
+#include "Hazel/Scene/Components.h"
+#include"Hazel/Camera/CameraComponent.h"
 
 #include <imgui/imgui.h>
 #include<imgui/imgui_internal.h>
 #include<glm/gtc/type_ptr.hpp>
-#include "Hazel/Scene/Components.h"
 
 namespace Hazel {
+	extern const std::filesystem::path g_AssetPath;
 
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene)
 	{
@@ -16,6 +19,8 @@ namespace Hazel {
 	{
 		m_Scene = scene;
 		m_SelectionEntity = {};
+		m_DefaultTextureIcon = Texture2D::Create("Resources/Icons/SceneHierarchyPanel/TextureIcon.png");
+
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
@@ -219,22 +224,8 @@ namespace Hazel {
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
-			if (ImGui::MenuItem("Camera Component"))
-			{
-				if (!m_SelectionEntity.HasComponent<CameraComponent>())
-					m_SelectionEntity.AddComponent<CameraComponent>();
-				else
-					HZ_CORE_WARN("This entity already has the Camera Component!");
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::MenuItem("Sprite Renderer Component"))
-			{
-				if (!m_SelectionEntity.HasComponent<SpriteRendererComponent>())
-					m_SelectionEntity.AddComponent<SpriteRendererComponent>();
-				else
-					HZ_CORE_WARN("This entity already has the Sprite Renderer Component!");
-				ImGui::CloseCurrentPopup();
-			}
+			DisplayAddComponentEntry<CameraComponent>("Camera");
+			DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -243,7 +234,11 @@ namespace Hazel {
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
 				DrawVec3Control("Position", component.Position);
-				DrawVec3Control("Rotation", glm::degrees(component.Rotation));
+
+				glm::vec3 rotation = glm::degrees(component.Rotation);
+				DrawVec3Control("Rotation", rotation);
+				component.Rotation = glm::radians(rotation);
+
 				DrawVec3Control("Scale", component.Scale, 1.f);
 			});
 
@@ -251,27 +246,75 @@ namespace Hazel {
 		DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
 			{
 				auto& camera = component.Camera;
-				ImGui::Checkbox("Primary", &component.Primary);
+				bool Primary = component.IsPrimary();
+				if (ImGui::Checkbox("Primary", &Primary))
+				{
+					if (Primary)
+						component.SetPrimary();
+					else
+						component.SetNoPrimary();
+				}
 
 				float verticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
-				if (ImGui::DragFloat("Vertical FOV", &verticalFov))
+				if (ImGui::DragFloat("Vertical FOV", &verticalFov,1.f,1.f,90.f))
 					camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
 
 				float orthoNear = camera.GetPerspectiveNearClip();
-				if (ImGui::DragFloat("Near", &orthoNear))
+				if (ImGui::DragFloat("Near", &orthoNear,0.01f,0.01f,1.f))
 					camera.SetPerspectiveNearClip(orthoNear);
 
 				float orthoFar = camera.GetPerspectiveFarClip();
-				if (ImGui::DragFloat("Far", &orthoFar))
+				if (ImGui::DragFloat("Far", &orthoFar,10.f,50.f,1000.f))
 					camera.SetPerspectiveFarClip(orthoFar);
+
+				
+				ImGui::DragFloat("MoveSpeed", &component.MoveSpeed,1.f,5.f,20.f);
+				ImGui::DragFloat("RotateSpeed", &component.RotateSpeed,0.01f,0.05f,0.2f);
 
 			});
 
-		DrawComponent<SpriteRendererComponent>("SpriteRenderer", entity, [](auto& component)
+		DrawComponent<SpriteRendererComponent>("SpriteRenderer", entity, [&](auto& component)
 			{
 				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				ImGui::Text("Texture", ImVec2(100.0f, 0.0f));
+				if (component.Texture)
+				{
+					ImGui::Image((ImTextureID)(uint64_t)component.Texture->GetRendererID(), ImVec2(128, 128));
+				}
+				else
+				{
+					ImGui::Image((ImTextureID)(uint64_t)(m_DefaultTextureIcon->GetRendererID()), ImVec2(128, 128));
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+					{
+						const wchar_t* path = (const wchar_t*)payload->Data;
+						std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+						//TODO:Check if texturePath is picture
+						std::string fileExtension = texturePath.extension().string();
+						HZ_ASSERT(fileExtension == ".png" || fileExtension == ".jpg", "HAZEL now only support .png or .jpg as texture")
+
+						component.Texture = Texture2D::Create(texturePath.string());
+					}
+					ImGui::EndDragDropTarget();
+				}
+				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+
 			});
 		
 	}
 
+	template<typename T>
+	void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entryName) {
+		if (!m_SelectionEntity.HasComponent<T>())
+		{
+			if (ImGui::MenuItem(entryName.c_str()))
+			{
+				m_SelectionEntity.AddComponent<T>();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+	}
 }

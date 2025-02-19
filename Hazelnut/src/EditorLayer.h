@@ -23,6 +23,7 @@ namespace Hazel {
 
 		void NewScene();
 		void OpenScene();
+		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
 	private:
 		std::unordered_map<std::string,Ref<Framebuffer>> m_Framebuffers;

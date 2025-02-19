@@ -1,4 +1,4 @@
---include "./vendor/premake/premake_customization/solution_items.lua"
+
 include "Dependencies.lua"
 workspace "Hazel"
     architecture "x86_64"
@@ -10,10 +10,6 @@ workspace "Hazel"
         "Dist"
     }
 
-    --solution_items
-	--{
-	--	".editorconfig"
-	--}
 	flags
 	{
 		"MultiProcessorCompile"
@@ -23,12 +19,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 
 group "Dependencies"
-    --include "vendor/premake"
     include "Hazel/vendor/GLAD"
     include "Hazel/vendor/imgui"
-    include "Hazel/vendor/GLFW"--include GLFW's premake5.lua
+    include "Hazel/vendor/GLFW"
     include "Hazel/vendor/yaml-cpp"
 group ""
 include "Hazel"
-include "Sandbox"
+--include "Sandbox" --this project is no use
 include "Hazelnut"

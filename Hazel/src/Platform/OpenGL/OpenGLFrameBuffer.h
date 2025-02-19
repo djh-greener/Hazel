@@ -22,7 +22,7 @@ namespace Hazel {
 			HZ_CORE_ASSERT(index < m_ColorAttachments.size()); return m_ColorAttachments[index];
 		}
 
-		virtual void Resize(float width, float height)override;
+		virtual void Resize(uint32_t width, uint32_t height)override;
 
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;

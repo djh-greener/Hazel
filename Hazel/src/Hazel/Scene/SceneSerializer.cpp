@@ -2,6 +2,7 @@
 #include"SceneSerializer.h"
 #include"Entity.h"
 #include"Components.h"
+#include"Hazel/Camera/CameraComponent.h"
 #include<yaml-cpp/yaml.h>
 
 namespace YAML {
@@ -146,28 +147,25 @@ namespace Hazel {
 					out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
 				out << YAML::EndMap; 
 
-				//out << YAML::Key << "Position" << YAML::Value << cameraComponent.Position;
-				//out << YAML::Key << "Front" << YAML::Value << cameraComponent.Front;
-				//out << YAML::Key << "Up" << YAML::Value << cameraComponent.Up;
-				//out << YAML::Key << "Right" << YAML::Value << cameraComponent.Right;
-				//out << YAML::Key << "Yaw" << YAML::Value << cameraComponent.Yaw;
-				//out << YAML::Key << "Pitch" << YAML::Value << cameraComponent.Pitch;
 				out << YAML::Key << "MoveSpeed" << YAML::Value << cameraComponent.MoveSpeed;
 				out << YAML::Key << "RotateSpeed" << YAML::Value << cameraComponent.RotateSpeed;
 				out << YAML::Key << "LastMousePos" << YAML::Value << cameraComponent.LastMousePos;
-				out << YAML::Key << "Primary" << YAML::Value << cameraComponent.Primary;
+				out << YAML::Key << "PrimaryID" << YAML::Value << cameraComponent.PrimaryID;
 				out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
-			out << YAML::EndMap; // CameraComponent
+			out << YAML::EndMap; 
 		}
 		if (entity.HasComponent<SpriteRendererComponent>())
 		{
 			out << YAML::Key << "SpriteRendererComponent";
-			out << YAML::BeginMap; // SpriteRendererComponent
+			out << YAML::BeginMap; 
+				auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
+				out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
+				if (spriteRendererComponent.Texture)
+					out << YAML::Key << "TexturePath" << YAML::Value << spriteRendererComponent.Texture->GetPath();
 
-			auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
-			out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
+				out << YAML::Key << "TilingFactor" << YAML::Value << spriteRendererComponent.TilingFactor;
 
-			out << YAML::EndMap; // SpriteRendererComponent
+			out << YAML::EndMap; 
 		}
 
 		out << YAML::EndMap;
@@ -202,7 +200,16 @@ namespace Hazel {
 	}
 	bool SceneSerializer::DeSerialize(const std::string& filepath)
 	{
-		YAML::Node data = YAML::LoadFile(filepath);
+		YAML::Node data;
+		try
+		{
+			data = YAML::LoadFile(filepath);
+		}
+		catch (YAML::ParserException e)
+		{
+			HZ_CORE_ERROR("Failed to load .hazel file '{0}'\n     {1}", filepath, e.what());
+			return false;
+		}
 		if (!data["Scene"])
 			return false;
 
@@ -217,7 +224,7 @@ namespace Hazel {
 		for (auto it = entities.begin(); it !=entities.end(); it++)
 		{
 			YAML::Node entity = *it;
-			uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+			uint64_t uuid = entity["Entity"].as<uint64_t>(); 
 
 			std::string name;
 			auto tagComponent = entity["TagComponent"];
@@ -249,16 +256,10 @@ namespace Hazel {
 				cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
 				cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
 
-				//cc.Position = cameraComponent["Position"].as<glm::vec3>();
-				//cc.Front = cameraComponent["Front"].as<glm::vec3>();
-				//cc.Up = cameraComponent["Up"].as<glm::vec3>();
-				//cc.Right = cameraComponent["Right"].as<glm::vec3>();
-				//cc.Yaw = cameraComponent["Yaw"].as<float>();
-				//cc.Pitch = cameraComponent["Pitch"].as<float>();
 				cc.MoveSpeed = cameraComponent["MoveSpeed"].as<float>();
 				cc.RotateSpeed = cameraComponent["RotateSpeed"].as<float>();
 				cc.LastMousePos = cameraComponent["LastMousePos"].as<glm::vec2>();
-				cc.Primary = cameraComponent["Primary"].as<bool>();
+				cc.PrimaryID = cameraComponent["PrimaryID"].as<int>();
 				cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 			}
 
@@ -267,6 +268,11 @@ namespace Hazel {
 			{
 				auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 				src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+				if (spriteRendererComponent["TexturePath"])
+					src.Texture = Texture2D::Create(spriteRendererComponent["TexturePath"].as<std::string>());
+				if (spriteRendererComponent["TilingFactor"])
+					src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();
+
 			}
 		}
 

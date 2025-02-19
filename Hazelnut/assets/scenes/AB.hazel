@@ -2,10 +2,49 @@ Scene: Untitled
 Entities:
   - Entity: 0
     TagComponent:
-      Tag: Camera
+      Tag: CameraA
     TransformComponent:
-      Translation: [-0.674716055, 0.0769516155, 5.81038809]
-      Rotation: [0.0119999181, -1.51099789, 0]
+      Translation: [-0.985531032, 0.0979027823, 5.81336641]
+      Rotation: [-0.0440005697, 4.74701786, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.100000001
+        PerspectiveFar: 1000
+      MoveSpeed: 20
+      RotateSpeed: 0.100000001
+      LastMousePos: [508, 331]
+      PrimaryID: 0
+      FixedAspectRatio: false
+  - Entity: 1
+    TagComponent:
+      Tag: A
+    TransformComponent:
+      Translation: [-0.108179986, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.874301672, 0.0561702289, 0.0561702289, 1]
+      TexturePath: assets\textures\ChernoLogo.png
+      TilingFactor: 1
+  - Entity: 2
+    TagComponent:
+      Tag: B
+    TransformComponent:
+      Translation: [-1.14533818, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 1
+  - Entity: 3
+    TagComponent:
+      Tag: CameraB
+    TransformComponent:
+      Translation: [-11.9622316, 0.737421334, -3.95002747]
+      Rotation: [-0.101000026, 0.121000022, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -14,15 +53,6 @@ Entities:
         PerspectiveFar: 1000
       MoveSpeed: 10
       RotateSpeed: 0.100000001
-      LastMousePos: [73, 80]
-      Primary: true
+      LastMousePos: [536, 542]
+      PrimaryID: 0
       FixedAspectRatio: false
-  - Entity: 1
-    TagComponent:
-      Tag: Empty Enity
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [1, 1, 1, 1]

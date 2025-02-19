@@ -5,9 +5,11 @@
 #include"Hazel/Camera/OrthographicCamera.h"
 #include"Hazel/Core/Timestep.h"
 #include"Hazel/Renderer/Renderer.h"
-#include<GLFW/glfw3.h>
-#include<glad/glad.h>
 
+
+//#include<GLFW/glfw3.h>
+//#include<glad/glad.h>
+#include"Hazel/Utils/PlatformUtils.h"
 #include <thread>
 #include <chrono>
 int main(int argc, char** argv);
@@ -91,7 +93,7 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 		while (m_Running) {
 			HZ_PROFILE_SCOPE("RunLoop");
-			float time = (float)glfwGetTime();
+			float time = Time::GetTime();
 			float ts = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 

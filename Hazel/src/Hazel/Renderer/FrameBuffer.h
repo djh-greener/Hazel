@@ -38,7 +38,7 @@ namespace Hazel {
 	struct FramebufferSpecification
 	{
 		FramebufferAttachmentSpecification Attachments;
-		float Width=0, Height=0;
+		uint32_t Width=0, Height=0;
 		uint32_t Samples = 1;
 		bool SwapChainTarget = false;
 		bool IsCubeMap = false;
@@ -51,7 +51,7 @@ namespace Hazel {
 		
 		virtual void Bind(unsigned int target = 0x8D40) = 0;//0x8D40 == GL_FRAMEBUFFER
 		virtual void Unbind(unsigned int target = 0x8D40) = 0;
-		virtual void Resize(float width, float height) = 0;
+		virtual void Resize(uint32_t width, uint32_t height) = 0;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
 		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;

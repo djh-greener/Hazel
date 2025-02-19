@@ -98,8 +98,9 @@ namespace Hazel {
 
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
+
 		glDeleteFramebuffers(1, &m_RendererID);
-		glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
+		glDeleteTextures((int)m_ColorAttachments.size(), m_ColorAttachments.data());
 		glDeleteTextures(1, &m_DepthAttachment);
 
 	}
@@ -110,7 +111,7 @@ namespace Hazel {
 		if (m_RendererID)
 		{
 			glDeleteFramebuffers(1, &m_RendererID);
-			glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
+			glDeleteTextures((int)m_ColorAttachments.size(), m_ColorAttachments.data());
 			glDeleteTextures(1, &m_DepthAttachment);
 			m_ColorAttachments.clear();
 			m_DepthAttachment = 0;
@@ -122,7 +123,7 @@ namespace Hazel {
 		if (m_ColorAttachmentSpecifications.size())
 		{
 			m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
-			glCreateTextures(Utils::TextureTarget(m_Specification), m_ColorAttachments.size(), m_ColorAttachments.data());
+			glCreateTextures(Utils::TextureTarget(m_Specification), (int)m_ColorAttachments.size(), m_ColorAttachments.data());
 			for (int i = 0; i < m_ColorAttachments.size(); ++i)
 			{
 				FramebufferTextureFormat TextureFormat = m_ColorAttachmentSpecifications[i].TextureFormat;
@@ -158,7 +159,7 @@ namespace Hazel {
 		{
 			HZ_CORE_ASSERT(m_ColorAttachments.size() <= 4);
 			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-			glDrawBuffers(m_ColorAttachments.size(), buffers);
+			glDrawBuffers((int)m_ColorAttachments.size(), buffers);
 		}
 		else if (m_ColorAttachments.empty())
 		{
@@ -184,7 +185,7 @@ namespace Hazel {
 		glBindFramebuffer(target, 0);
 	}
 
-	void OpenGLFramebuffer::Resize(float width, float height)
+	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
 		if (width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize)
 		{

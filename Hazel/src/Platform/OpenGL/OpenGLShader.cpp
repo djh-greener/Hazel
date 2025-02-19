@@ -1,10 +1,11 @@
 #include "hzpch.h"
 #include "OpenGLShader.h"
+#include"OpenGLDebug.h"
+
 #include<glad/glad.h>
 #include<glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <filesystem>
-#include"OpenGLDebug.h"
 namespace Hazel {
 
 	static GLenum ShaderTypeFromString(const std::string& type)
