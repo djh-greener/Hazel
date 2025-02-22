@@ -40,14 +40,15 @@ project "Hazel"
         "%{IncludeDir.entt}",
         "%{IncludeDir.yaml_cpp}",
         "%{IncludeDir.ImGuizmo}",
-    
+		"%{IncludeDir.assimp}",
     }
     links{
         "GLFW",
         "GLAD",
         "imgui",
         "yaml-cpp",
-        "opengl32.lib"
+        "opengl32.lib",
+		"assimp"
     }
 
 	filter "files:vendor/ImGuizmo/**.cpp"

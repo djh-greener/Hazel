@@ -11,6 +11,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 namespace Hazel {
 	extern const std::filesystem::path g_AssetPath;
 	EditorLayer::EditorLayer()
@@ -22,22 +23,13 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		FramebufferSpecification fbSpec;
-		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
-		fbSpec.Width = 1280;
-		fbSpec.Height = 720;
-		fbSpec.Samples = 1;
-		m_Framebuffers["Default"] = Framebuffer::Create(fbSpec);
-		
-
-
-		m_ActiveScene = CreateRef<Scene>();//(uint32_t)fbSpec.Width, (uint32_t)fbSpec.Height
-
+		m_ActiveScene = CreateRef<Scene>();
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
 		m_CameraEntity.AddComponent<CameraComponent>();
-
 		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
-
+		//TODO:REMOVE
+		m_Model = CreateRef<Model>("assets/models/nanosuit/nanosuit.obj");
+		m_ModelShader = Shader::Create("assets/shaders/Model.glsl");
 	}
 
 	void EditorLayer::OnDetach()
@@ -50,23 +42,24 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 		
 		// Update ImGui Viewport & Camera
-		glm::vec2 FrameBufferSize = { m_Framebuffers["Default"]->GetSpecification().Width, m_Framebuffers["Default"]->GetSpecification().Height};
+		Framebuffer& Framebuffer = Renderer2D::GetLastFramebuffer();
+		glm::vec2 FrameBufferSize = { Framebuffer.GetSpecification().Width, Framebuffer.GetSpecification().Height};
 		if (m_ViewportSize != FrameBufferSize&& m_ViewportSize.x>0.0f&& m_ViewportSize.y>0.0f)
 		{
-			for(auto&fbo:m_Framebuffers)
-				fbo.second->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		// Render
 		Renderer2D::ResetStats();
-		m_Framebuffers["Default"]->Bind();
+		Framebuffer.Bind();
 		RenderCommand::SetClearColor({ 0.13f, 0.13f, 0.13f, 1 });
 		RenderCommand::Clear();
-		m_Framebuffers["Default"]->ClearAttachment(1, -1);		// Clear our entity ID attachment to -1
-		//m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
-		m_ActiveScene->OnUpdateRuntime(ts, m_ViewportHovered);
-
+		Framebuffer.ClearAttachment(1, -1);		// Clear our entity ID attachment to -1
+		m_ActiveScene->OnUpdateRuntime(ts, m_ViewportHovered); // Render Scene
+		m_ModelShader->Bind();
+		m_ModelShader->SetMat4("u_Model", glm::mat4(1));
+		m_Model->DrawModel(m_ModelShader);
+		
 		//Mouse Picking
 		if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
 		{
@@ -75,9 +68,9 @@ namespace Hazel {
 			my -= m_ViewportBounds[0].y;
 			glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
 			my = viewportSize.y - my;
-			if (m_ViewportHovered)//(mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+			if (m_ViewportHovered)
 			{
-				int pixelData = m_Framebuffers["Default"]->ReadPixel(1, (int)mx, (int)my);
+				int pixelData = Framebuffer.ReadPixel(1, (int)mx, (int)my);
 				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 
@@ -85,7 +78,7 @@ namespace Hazel {
 					m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
 			}
 		}
-		m_Framebuffers["Default"]->Unbind();
+		Framebuffer.Unbind();
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -180,7 +173,8 @@ namespace Hazel {
 			Application::Get().GetImGuiLayer()->LetEventGo(m_ViewportFocused || m_ViewportHovered);
 			m_ViewportSize = *(glm::vec2*)&ImGui::GetContentRegionAvail();
 
-			uint64_t textureID = m_Framebuffers["Default"]->GetColorAttachmentRendererID(0);
+
+			uint64_t textureID = Renderer2D::GetLastFramebuffer().GetColorAttachmentRendererID(0);
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -240,8 +234,7 @@ namespace Hazel {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 
-		//m_CameraController.OnEvent(e);
-		//m_EditorCamera.OnEvent(e);
+
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -250,8 +243,6 @@ namespace Hazel {
 		if (e.IsRepeat())
 			return false;
 
-		//bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
-		//bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 		switch (e.GetKeyCode())
 		{
 			case Key::Q:
@@ -284,8 +275,7 @@ namespace Hazel {
 
 	void EditorLayer::NewScene()
 	{
-		FramebufferSpecification spec = m_Framebuffers["Default"]->GetSpecification();
-		m_ActiveScene = CreateRef<Scene>();//(uint32_t)spec.Width, (uint32_t)spec.Height
+		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
 	}

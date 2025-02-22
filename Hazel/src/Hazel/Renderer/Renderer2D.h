@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hazel/Camera/OrthographicCamera.h"
+//#include "Hazel/Camera/OrthographicCamera.h"
 #include"Hazel/Camera/CameraComponent.h"
 #include "Hazel/Renderer/Texture.h"
 #include "Hazel/Camera/Camera.h"
@@ -8,7 +8,7 @@
 #include "Hazel/Scene/Components.h"
 
 namespace Hazel {
-
+	class Framebuffer;
 	class Renderer2D
 	{
 	public:
@@ -40,6 +40,9 @@ namespace Hazel {
 
 		static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID);
 
+		static Framebuffer& GetLastFramebuffer();
+
+		static void OnViewportResize(uint32_t ViewportWidth, uint32_t ViewportHeight);
 		// Stats
 		struct Statistics
 		{

@@ -16,6 +16,7 @@ namespace Hazel
 		virtual uint32_t GetHeight()const override {return m_Height;}
 		virtual uint32_t GetRendererID()const override { return m_RendererID; }
 		virtual const std::string& GetPath() const override { return m_Path; }
+		virtual std::string& GetShaderUniformName() override { return m_ShaderUniformName; }
 
 		virtual bool IsLoaded() const override { return m_IsLoaded; }
 
@@ -26,7 +27,7 @@ namespace Hazel
 			return m_RendererID == other.GetRendererID();
 		}
 	private:
-		std::string m_Path;
+		std::string m_Path, m_ShaderUniformName;
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
 		GLenum m_InternalFormat, m_DataFormat;

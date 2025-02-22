@@ -3,6 +3,9 @@
 #include "Hazel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
+//REMOVE
+#include"Hazel/Renderer/Model.h"
+#include"Hazel/Renderer/Shader.h"
 namespace Hazel {
 
 	class EditorLayer : public Layer
@@ -26,20 +29,19 @@ namespace Hazel {
 		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
 	private:
-		std::unordered_map<std::string,Ref<Framebuffer>> m_Framebuffers;
 
 		Ref<Scene>m_ActiveScene;
-
 		Entity m_CameraEntity;
-		//EditorCamera m_EditorCamera;
-		bool m_PrimaryCamera = true;
+		Entity m_HoveredEntity;
+		//REMOVE
+		Ref<Model>m_Model;
+		Ref<Shader>m_ModelShader;
 
+		bool m_PrimaryCamera = true;
 		glm::vec2 m_ViewportSize;
 		glm::vec2 m_ViewportBounds[2];
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 
-
-		Entity m_HoveredEntity;
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;

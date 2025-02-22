@@ -5,70 +5,41 @@
 #include "Hazel/Scene/Entity.h"
 
 #include"Hazel/Renderer/Renderer2D.h"
+
+#include"Hazel/Renderer/RenderCommand.h"
 #include"Hazel/Camera/CameraComponent.h"
 namespace Hazel {
-
-	//Scene::Scene(uint32_t ViewportWidth, uint32_t ViewportHeight):
-	//	m_ViewportWidth(ViewportWidth),
-	//	m_ViewportHeight(ViewportHeight)
-	//{
-	//
-	//}
 	Scene::Scene() 
 	{
-
 	}
 
 	Scene::~Scene()
 	{
 	}
 
-	//void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
-	//{
-	//	Renderer2D::BeginScene(camera);
-	//
-	//	auto group = m_Registry.group<TransformComponent, SpriteRendererComponent>();
-	//	for (auto entity : group)
-	//	{
-	//		auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-	//
-	//		Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
-	//
-	//	}
-	//
-	//	Renderer2D::EndScene();
-	//}
-
 	void Scene::OnUpdateRuntime(Timestep ts,bool ViewportHovered)
 	{
-		// -----------------------------Update Components-----------------------------------------------//
-
-
 		//-------------------------------------Render--------------------------------------//
 		//Find MainCamera
-		//Camera* mainCamera = nullptr;
 		CameraComponent *MainCameraComp = nullptr;
 		{
-			auto view = m_Registry.view<TransformComponent, CameraComponent>();
+			auto view = m_Registry.view< CameraComponent>();
 			for (auto entity : view)
 			{
-				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-
+				auto &camera = view.get< CameraComponent>(entity);
 				if (camera.IsPrimary())
 				{
-					//Input
 					if (ViewportHovered)
-					{
 						camera.OnInput(ts);
-
-					}
-
 					MainCameraComp = &camera;
 					break;
 				}
 			}
 		}
-		//if Find MainCamera, then Render Scene
+
+
+		//Render Scene Using Renderer2D API
+
 		if (MainCameraComp)
 		{
 			Renderer2D::BeginScene(*MainCameraComp);
@@ -80,15 +51,19 @@ namespace Hazel {
 
 				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
-
 			Renderer2D::EndScene();
 		}
+		//Render Scene Using Renderer3D API
+		//Only Need To Call Renderer3D to Render Scene
+		//beLike: Renderer3D::RendererScene(MainCameraComp,m_Registry);
+
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
+		Renderer2D::OnViewportResize(m_ViewportWidth, m_ViewportHeight);
 
 		// Resize our non-FixedAspectRatio cameras
 		auto view = m_Registry.view<CameraComponent>();
@@ -156,8 +131,5 @@ namespace Hazel {
 	{
 	}
 
-	//template<>
-	//void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
-	//{
-	//}
+
 }

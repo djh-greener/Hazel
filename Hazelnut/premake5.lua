@@ -22,6 +22,7 @@ project "Hazelnut"
         "%{IncludeDir.entt}",
         "%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.GLAD}",
+		"%{IncludeDir.assimp}",--TODO:REMOVE
     }
 
     links

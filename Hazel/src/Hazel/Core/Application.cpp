@@ -30,7 +30,7 @@ namespace Hazel {
 
 		 m_ImGuiLayer = new ImGuiLayer;
 		 PushOverlay(m_ImGuiLayer);
-	 }
+	 } 
 	 Application::~Application()
 	 {
 		 HZ_PROFILE_FUNCTION();
@@ -83,7 +83,7 @@ namespace Hazel {
 		 }
 
 		 m_Minimized = false;
-		 Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+		 //Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
 		 return false;
 	 }

@@ -23,7 +23,8 @@ group "Dependencies"
     include "Hazel/vendor/imgui"
     include "Hazel/vendor/GLFW"
     include "Hazel/vendor/yaml-cpp"
+	include "Hazel/vendor/assimp"
 group ""
 include "Hazel"
---include "Sandbox" --this project is no use
+
 include "Hazelnut"

@@ -5,6 +5,7 @@
 #include "Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/RenderCommand.h"
 #include "Hazel/Renderer/UniformBuffer.h"
+#include"Hazel/Renderer/Framebuffer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -25,7 +26,7 @@ namespace Hazel {
 
 	struct Renderer2DData
 	{
-		static const uint32_t MaxQuads = 20000;
+		static const uint32_t MaxQuads = 200;
 		static const uint32_t MaxVertices = MaxQuads * 4;
 		static const uint32_t MaxIndices = MaxQuads * 6;
 		static const uint32_t MaxTextureSlots = 32; // TODO: RenderCaps
@@ -51,6 +52,9 @@ namespace Hazel {
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
+
+		std::unordered_map<std::string, Ref<Framebuffer>> m_Framebuffers;
+
 	};
 
 	static Renderer2DData s_Data;
@@ -66,7 +70,7 @@ namespace Hazel {
 			{ ShaderDataType::Float3,		"a_Position"			},
 			{ ShaderDataType::Float4,		"a_Color"				},
 			{ ShaderDataType::Float2,		"a_TexCoord"		},
-			{ ShaderDataType::Int,			"a_TexIndex"		},
+			{ ShaderDataType::Int,				"a_TexIndex"		},
 			{ ShaderDataType::Float,			"a_TilingFactor"	},
 			{ ShaderDataType::Int,				"a_EntityID"			},
 
@@ -114,6 +118,14 @@ namespace Hazel {
 		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
 		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+
+
+		FramebufferSpecification fbSpec;
+		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		fbSpec.Width = 1280;
+		fbSpec.Height = 720;
+		fbSpec.Samples = 1;
+		s_Data.m_Framebuffers["Default"] = Framebuffer::Create(fbSpec);
 	}
 
 	void Renderer2D::Shutdown()
@@ -153,7 +165,7 @@ namespace Hazel {
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
 		s_Data.TextureShader->Bind();
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);//, 
 		s_Data.Stats.DrawCalls++;
 	}
 
@@ -253,7 +265,7 @@ namespace Hazel {
 		s_Data.Stats.QuadCount++;
 	}
 
-	//Todo: uniform DrawRotatedQuad And DrawQuad, Its only one params diff!
+
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
 	{
 		DrawRotatedQuad({ position.x, position.y, 0.0f }, size, rotation, color);
@@ -301,6 +313,18 @@ namespace Hazel {
 			DrawQuad(transform, src.Texture, src.TilingFactor, src.Color, entityID);
 		else
 			DrawQuad(transform, src.Color, entityID);
+	}
+
+	Framebuffer& Renderer2D::GetLastFramebuffer()
+	{
+		return *s_Data.m_Framebuffers["Default"];
+	}
+
+	void Renderer2D::OnViewportResize(uint32_t ViewportWidth, uint32_t ViewportHeight)
+	{
+		for (auto& fbo : s_Data.m_Framebuffers)
+			fbo.second->Resize(ViewportWidth, ViewportHeight);
+
 	}
 
 	void Renderer2D::StartBatch()
