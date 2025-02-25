@@ -4,6 +4,7 @@
 #include"Hazel/Utils/PlatformUtils.h"
 #include"Hazel/Math/Math.h"
 #include"Hazel/Camera/CameraComponent.h"
+#include"Hazel/Renderer/RenderCommand.h"
 #include"Hazel/Renderer/Renderer3D.h"
 #include <glad/glad.h>
 #include <imgui/imgui.h>
@@ -24,14 +25,16 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		m_ActiveScene = CreateRef<Scene>();
-		m_CameraEntity = m_ActiveScene->CreateEntity("Main Camera");
-		m_CameraEntity.AddComponent<CameraComponent>();
-		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
-		//TODO:REMOVE
-		//m_StaticMeshEntity = m_ActiveScene->CreateEntity("Static Mesh1");
-		//m_StaticMeshEntity.AddComponent<StaticMeshComponent>("assets/models/nanosuit/nanosuit.obj", m_StaticMeshEntity);
-		//
-		//m_ModelShader = Shader::Create("assets/shaders/Model.glsl");
+
+		auto CameraEntity = m_ActiveScene->CreateEntity("Main Camera");
+		CameraEntity.AddComponent<CameraComponent>();
+
+		m_SceneHierarchyPanel = CreateRef<SceneHierarchyPanel>();
+		m_SceneHierarchyPanel->SetScene(m_ActiveScene);
+
+		m_ContentBrowserPanel = CreateRef<ContentBrowserPanel>();
+		RenderCommand::Init();
+		Renderer3D::Init();
 	}
 
 	void EditorLayer::OnDetach()
@@ -81,7 +84,7 @@ namespace Hazel {
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 
 				if (!ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
-					m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+					m_SceneHierarchyPanel->SetSelectedEntity(m_HoveredEntity);
 			}
 		}
 		Framebuffer.Unbind();
@@ -153,8 +156,8 @@ namespace Hazel {
 		}
 
 
-		m_SceneHierarchyPanel.OnImGuiRender();
-		m_ContentBrowserPanel.OnImGuiRender();
+		m_SceneHierarchyPanel->OnImGuiRender();
+		m_ContentBrowserPanel->OnImGuiRender();
 
 		ImGui::Begin("Stats");
 			//auto stats = Renderer2D::GetStats();
@@ -193,7 +196,7 @@ namespace Hazel {
 			}
 
 			//Gizmo
-			Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+			Entity selectedEntity = m_SceneHierarchyPanel->GetSelectedEntity();
 			if (selectedEntity&&m_GizmoType!=-1)
 			{
 				ImGuizmo::SetOrthographic(false);
@@ -293,7 +296,7 @@ namespace Hazel {
 	{
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+		m_SceneHierarchyPanel->SetScene(m_ActiveScene);
 	}
 
 	void EditorLayer::OpenScene()
@@ -317,7 +320,7 @@ namespace Hazel {
 		{
 			m_ActiveScene = newScene;
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+			m_SceneHierarchyPanel->SetScene(m_ActiveScene);
 
 			m_ActiveScenePath = path;
 		}

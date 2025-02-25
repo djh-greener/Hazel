@@ -22,7 +22,7 @@ namespace Hazel {
 	{
 		m_VertexArray = VertexArray::Create();
 
-		m_VertexBuffer = VertexBuffer::Create(vertices.size() * sizeof(StaticMeshVertex));
+		m_VertexBuffer = VertexBuffer::Create((uint32_t)(vertices.size() * sizeof(StaticMeshVertex)));
 		m_VertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,		"a_Position"			},
 			{ ShaderDataType::Float3,		"a_Normal"			},
@@ -31,9 +31,9 @@ namespace Hazel {
 			{ ShaderDataType::Float3,		"a_BiTangent"		},
 			{ ShaderDataType::Int,				"a_EntityID"			},
 			});
-		m_VertexBuffer->SetData(vertices.data(), vertices.size() * sizeof(StaticMeshVertex));
+		m_VertexBuffer->SetData(vertices.data(), (uint32_t)(vertices.size() * sizeof(StaticMeshVertex)));
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		Ref<IndexBuffer> quadIB = IndexBuffer::Create(indices.data(), indices.size());
+		Ref<IndexBuffer> quadIB = IndexBuffer::Create(indices.data(), (uint32_t)(indices.size()));
 		m_VertexArray->SetIndexBuffer(quadIB);
 
 		//TODO: Set vertices¡¢indices empty

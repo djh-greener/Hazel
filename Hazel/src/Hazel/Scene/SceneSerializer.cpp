@@ -3,6 +3,7 @@
 #include"Entity.h"
 #include"Components.h"
 #include"Hazel/Camera/CameraComponent.h"
+#include"Hazel/Renderer/StaticMeshComponent.h"
 #include<yaml-cpp/yaml.h>
 
 namespace YAML {
@@ -167,7 +168,16 @@ namespace Hazel {
 
 			out << YAML::EndMap; 
 		}
-
+		if (entity.HasComponent<StaticMeshComponent>())
+		{
+			out << YAML::Key << "StaticMeshComponent";
+			out << YAML::BeginMap;
+			auto& staticMeshComp = entity.GetComponent<StaticMeshComponent>();
+			if (!staticMeshComp.directory.empty())
+				out << YAML::Key << "Path" << YAML::Value << (staticMeshComp.directory / staticMeshComp.name).string();
+		
+			out << YAML::EndMap;
+		}
 		out << YAML::EndMap;
 	}
 
@@ -274,6 +284,19 @@ namespace Hazel {
 					src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();
 
 			}
+
+			auto StaticMeshComp = entity["StaticMeshComponent"];
+			if (StaticMeshComp)
+			{
+				auto& src = deserializedEntity.AddComponent<StaticMeshComponent>();
+				if (StaticMeshComp["Path"])
+				{
+					fspath path = StaticMeshComp["Path"].as<std::string>();
+					src.loadStaticMesh(path);
+				}
+
+			}
+
 		}
 
 

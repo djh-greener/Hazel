@@ -4,10 +4,11 @@
 
 #include "Hazel/Scene/Entity.h"
 
-#include"Hazel/Renderer/Renderer2D.h"
 #include"Hazel/Renderer/Renderer3D.h"
 
 #include"Hazel/Renderer/RenderCommand.h"
+
+#include"Hazel/Scene/Components.h"
 #include"Hazel/Camera/CameraComponent.h"
 #include"Hazel/Renderer/StaticMeshComponent.h"
 namespace Hazel {

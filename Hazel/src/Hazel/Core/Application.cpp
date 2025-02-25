@@ -4,7 +4,7 @@
 #include"Hazel/Core/Input.h"
 #include"Hazel/Camera/OrthographicCamera.h"
 #include"Hazel/Core/Timestep.h"
-#include"Hazel/Renderer/Renderer.h"
+//#include"Hazel/Renderer/Renderer.h"
 
 
 //#include<GLFW/glfw3.h>
@@ -26,7 +26,7 @@ namespace Hazel {
 		 m_Window = Window::Create(WindowProps(name));
 		 m_Window->SetEventCallback(HZ_BIND_EVENT_FN(Application::OnEvent));
 		 m_Window->SetVSync(true);
-		 Renderer::Init();
+		 //Renderer::Init();
 
 		 m_ImGuiLayer = new ImGuiLayer;
 		 PushOverlay(m_ImGuiLayer);
@@ -34,7 +34,7 @@ namespace Hazel {
 	 Application::~Application()
 	 {
 		 HZ_PROFILE_FUNCTION();
-		 Renderer::Shutdown();
+		 //Renderer::Shutdown();
 	 }
 	 void Application::OnEvent(Event& e)
 	 {

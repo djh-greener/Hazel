@@ -5,7 +5,7 @@ Entities:
       Tag: Main Camera
     TransformComponent:
       Translation: [-8.61074448, 1.4162426, 12.8743076]
-      Rotation: [0.108999796, -1.02899909, 0]
+      Rotation: [0.143999875, -0.538998604, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -14,7 +14,7 @@ Entities:
         PerspectiveFar: 1000
       MoveSpeed: 10
       RotateSpeed: 0.100000001
-      LastMousePos: [398, 528]
+      LastMousePos: [1668, 458]
       PrimaryID: 0
       FixedAspectRatio: false
   - Entity: 1
@@ -24,6 +24,8 @@ Entities:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+    StaticMeshComponent:
+      Path: assets\models\nanosuit\nanosuit.obj
   - Entity: 2
     TagComponent:
       Tag: Floor

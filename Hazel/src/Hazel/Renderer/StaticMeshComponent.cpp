@@ -39,14 +39,16 @@ namespace Hazel {
 			return mesh;
 		for (auto childnode : node->children)
 			return GetStaticMeshRecursive(childnode);
+
+		return {};
 	}
 
 
 
-	void StaticMeshComponent::loadStaticMesh(std::string path)
+	void StaticMeshComponent::loadStaticMesh(fspath path)
 	{
 		Assimp::Importer importer;
-		auto scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		auto scene = importer.ReadFile(path.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -54,8 +56,8 @@ namespace Hazel {
 			return;
 		}
 		fs::path fs_path(path);
-		directory = fs_path.parent_path().string();
-		name = fs_path.filename().string();
+		directory = fs_path.parent_path();
+		name = fs_path.filename();
 
 		RootNode = CreateRef<StaticMeshNode>();
 		processNode(scene->mRootNode, RootNode, scene);
@@ -64,11 +66,11 @@ namespace Hazel {
 
 	void StaticMeshComponent::processNode(aiNode* ainode, Ref<StaticMeshNode> node, const aiScene* scene)
 	{
-		for (int i = 0; i < ainode->mNumMeshes; i++) {
+		for (uint32_t i = 0; i < ainode->mNumMeshes; i++) {
 			aiMesh* aimesh = scene->mMeshes[ainode->mMeshes[i]];
 			node->meshes.push_back(processStaticMesh(aimesh, scene));
 		}
-		for (int i = 0; i < ainode->mNumChildren; i++) {
+		for (uint32_t i = 0; i < ainode->mNumChildren; i++) {
 			node->children.push_back(CreateRef<StaticMeshNode>());
 			processNode(ainode->mChildren[i], node->children[i], scene);
 		}

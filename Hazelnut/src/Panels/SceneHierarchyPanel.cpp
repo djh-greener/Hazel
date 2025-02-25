@@ -309,11 +309,10 @@ namespace Hazel {
 				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 
 			});
-
 		DrawComponent<StaticMeshComponent>("StaticMesh", entity, [&](auto& component)
 			{
 				if(!component.name.empty())
-					ImGui::Text(component.name.c_str(), ImVec2(100.0f, 100.0f));
+					ImGui::Text(component.name.string().c_str(), ImVec2(100.0f, 100.0f));
 				else
 					ImGui::Text("Empty", ImVec2(100.0f, 100.0f));
 				if (ImGui::BeginDragDropTarget())

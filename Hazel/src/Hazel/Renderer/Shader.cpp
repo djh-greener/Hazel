@@ -1,11 +1,11 @@
 #include "hzpch.h"
 #include "Hazel/Renderer/Shader.h"
-#include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/RendererAPI.h"
 #include"Platform/OpenGL/OpenGLShader.h"
 namespace Hazel {
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		switch (Renderer::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::None:			HZ_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
 		case RendererAPI::API::OpenGL:		return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
@@ -16,7 +16,7 @@ namespace Hazel {
 	}
 	Ref<Shader> Shader::Create(const std::string& filePath)
 	{
-		switch (Renderer::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::None:			HZ_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
 		case RendererAPI::API::OpenGL:		return CreateRef<OpenGLShader>(filePath);
