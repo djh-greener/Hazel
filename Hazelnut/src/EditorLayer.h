@@ -4,7 +4,7 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 //REMOVE
-#include"Hazel/Renderer/Model.h"
+#include"Hazel/Renderer/StaticMeshComponent.h"
 #include"Hazel/Renderer/Shader.h"
 namespace Hazel {
 
@@ -27,15 +27,18 @@ namespace Hazel {
 		void NewScene();
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
+		void SaveScene();
 		void SaveSceneAs();
 	private:
 
 		Ref<Scene>m_ActiveScene;
+		std::filesystem::path m_ActiveScenePath;
+
 		Entity m_CameraEntity;
 		Entity m_HoveredEntity;
-		//REMOVE
-		Ref<Model>m_Model;
-		Ref<Shader>m_ModelShader;
+		//TODO:REMOVE
+		//Entity m_StaticMeshEntity;
+		//Ref<Shader>m_ModelShader;
 
 		bool m_PrimaryCamera = true;
 		glm::vec2 m_ViewportSize;

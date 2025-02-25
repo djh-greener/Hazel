@@ -11,7 +11,7 @@ namespace Hazel {
 	class VertexBuffer;
 	class Texture2D;
 
-	struct Vertex {
+	struct StaticMeshVertex {
 		glm::vec3 Position;
 		glm::vec3 Normal;
 		glm::vec2 TexCoords;
@@ -20,22 +20,22 @@ namespace Hazel {
 		uint32_t	EntityID;
 	};
 
-	class Mesh
+	class StaticMesh
 	{
 	public:
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 
-		std::vector<Vertex>vertices;
+		std::vector<StaticMeshVertex>vertices;
 		std::vector<uint32_t>indices;
 		std::vector<Ref<Texture2D>> textures;
 
 
 		//Mesh(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Ref<Texture2D>>&& textures);
-		Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Ref<Texture2D>> textures);
+		StaticMesh(std::vector<StaticMeshVertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Ref<Texture2D>>&& textures);
 
-		void SetupMesh();
-		void DrawMesh(Ref<Shader> shader);
+		void SetupStaticMesh();
+		void DrawStaticMesh(Ref<Shader> shader);
 
 	};
 

@@ -16,6 +16,8 @@ namespace Hazel {
 		Entity GetSelectedEntity() const{ return m_SelectionEntity; }
 		void SetSelectedEntity(Entity entity);
 		void OnImGuiRender();
+
+
 	private:
 		template<typename T>
 		void DisplayAddComponentEntry(const std::string& entryName);

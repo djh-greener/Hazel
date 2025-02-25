@@ -1,87 +1,108 @@
 #include"hzpch.h"
-#include "Model.h"
-#include"Hazel/Renderer/Mesh.h"
+#include "StaticMeshComponent.h"
+
+#include"Hazel/Scene/Components.h"
+#include"Hazel/Renderer/StaticMesh.h"
 #include"Hazel/Renderer/Shader.h"
 #include"Hazel/Renderer/Texture.h"
+#include"Hazel/Core/Timer.h"
 
+#include "assimp/Importer.hpp"
+#include "assimp/postprocess.h"
+
+#include <filesystem>
+namespace fs = std::filesystem;
 namespace Hazel {
-	void Model::DrawModelRecursive(Ref<MeshNode> node, Ref<Shader> shader)
+
+	void StaticMeshComponent::DrawStaticMesh(Ref<Shader> shader)
 	{
+		shader->Bind();
+		auto& transformComp = Owner.GetComponent<TransformComponent>();
+		shader->SetMat4("u_Model", transformComp.GetTransform());
+		DrawStaticMeshRecursive(RootNode, shader);
+	}
+
+	void StaticMeshComponent::DrawStaticMeshRecursive(Ref<StaticMeshNode> node, Ref<Shader> shader)
+	{
+		if (!node)
+			return;
 		for (auto mesh : node->meshes)
-			mesh->DrawMesh(shader);
+			mesh->DrawStaticMesh(shader);
 		for (auto childnode : node->children) {
-			DrawModelRecursive(childnode, shader);
+			DrawStaticMeshRecursive(childnode, shader);
 		}
 	}
 
-	Ref<Mesh> Model::GetMeshRecursive(Ref<MeshNode> node)
+	Ref<StaticMesh> StaticMeshComponent::GetStaticMeshRecursive(Ref<StaticMeshNode> node)
 	{
 		for (auto mesh : node->meshes)
 			return mesh;
 		for (auto childnode : node->children)
-			return GetMeshRecursive(childnode);
+			return GetStaticMeshRecursive(childnode);
 	}
 
-	Ref<Mesh> Model::GetMesh()
-	{
-		return GetMeshRecursive(RootNode);
-	}
 
-	void Model::loadModel(std::string path)
+
+	void StaticMeshComponent::loadStaticMesh(std::string path)
 	{
 		Assimp::Importer importer;
 		auto scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			HZ_ERROR("ASSIMP::", importer.GetErrorString());
 			return;
 		}
-		directory = path.substr(0, path.find_last_of('/')) + "/";
-		RootNode = CreateRef<MeshNode>();
+		fs::path fs_path(path);
+		directory = fs_path.parent_path().string();
+		name = fs_path.filename().string();
+
+		RootNode = CreateRef<StaticMeshNode>();
 		processNode(scene->mRootNode, RootNode, scene);
+
 	}
 
-	void Model::processNode(aiNode* ainode, Ref<MeshNode> node, const aiScene* scene)
+	void StaticMeshComponent::processNode(aiNode* ainode, Ref<StaticMeshNode> node, const aiScene* scene)
 	{
 		for (int i = 0; i < ainode->mNumMeshes; i++) {
 			aiMesh* aimesh = scene->mMeshes[ainode->mMeshes[i]];
-			node->meshes.push_back(processMesh(aimesh, scene));
+			node->meshes.push_back(processStaticMesh(aimesh, scene));
 		}
 		for (int i = 0; i < ainode->mNumChildren; i++) {
-			node->children.push_back(CreateRef<MeshNode>());
+			node->children.push_back(CreateRef<StaticMeshNode>());
 			processNode(ainode->mChildren[i], node->children[i], scene);
 		}
 	}
 
-	Ref<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene)
+	Ref<StaticMesh> StaticMeshComponent::processStaticMesh(aiMesh* mesh, const aiScene* scene)
 	{
-		std::vector<Vertex>vertices;
+
+		std::vector<StaticMeshVertex>vertices(mesh->mNumVertices);
 		std::vector<unsigned int>indices;
 		std::vector<Ref<Texture2D>>textures;
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
-			Vertex v;
-			v.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-			v.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+			vertices[i].Position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
+			vertices[i].Normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 			if (mesh->mTextureCoords[0]) {
-				v.TexCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-				v.Tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-				v.BiTangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+				vertices[i].TexCoords = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+				vertices[i].Tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
+				vertices[i].BiTangent = { mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z };
 			}
 			else
 			{
-				v.TexCoords = glm::vec2(0);
-				v.Tangent = glm::vec3(0);
-				v.BiTangent = glm::vec3(0);
+				vertices[i].TexCoords = { 0,0 };
+				vertices[i].Tangent = { 0,0,0 };
+				vertices[i].BiTangent = { 0,0,0 };
 			}
-			v.EntityID = 100;
-			vertices.push_back(v);
+			vertices[i].EntityID = (uint32_t)Owner;
 		}
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 			aiFace& face = mesh->mFaces[i];
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
 				indices.push_back(face.mIndices[j]);
 		}
+
 		if (mesh->mMaterialIndex > 0)
 		{
 			auto* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -97,29 +118,31 @@ namespace Hazel {
 		}
 		else
 			HZ_ERROR("Loading No Material In This Mesh." );
-		//return CreateRef<Mesh>(std::move(vertices), std::move(indices), std::move(textures));
-		return CreateRef<Mesh>(vertices, (indices), (textures));
 
+		return CreateRef<StaticMesh>(std::move(vertices), std::move(indices), std::move(textures));
 	}
 
-	std::vector< Ref<Texture2D>> Model::loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)
+	std::vector< Ref<Texture2D>> StaticMeshComponent::loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)
 	{
 		std::vector< Ref<Texture2D>>textures;
 		int a = material->GetTextureCount(type);
 		for (unsigned int i = 0; i < material->GetTextureCount(type); i++) {
 			aiString str;
 			material->GetTexture(type, i, &str);//按照默认命名规则，获取纹理文件名
-			std::string path = directory + str.C_Str();
+			std::string path = (fs::path(directory) / fs::path(str.C_Str())).string();
 			bool skip = false;
-			for (auto tex : textures_loaded) {
-				if (path == tex->GetPath()) {
+			for (auto tex : textures_loaded) 
+			{
+				if (path == tex->GetPath()) 
+				{
 					textures.push_back(tex);
 					skip = true;
 					break;
 				}
 			}
 			if (!skip) {
-				auto texture =Texture2D::Create(path);
+				auto texture =Texture2D::Create(path,true,false);
+
 				texture->GetShaderUniformName() = typeName;
 				textures.push_back(texture);
 				textures_loaded.push_back(texture);

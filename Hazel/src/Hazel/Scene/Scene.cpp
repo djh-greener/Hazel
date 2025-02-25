@@ -1,13 +1,15 @@
 #include"hzpch.h"
 #include "Scene.h"
 #include<glm/glm.hpp>
-//#include"Hazel/Scene/Components.h"
+
 #include "Hazel/Scene/Entity.h"
 
 #include"Hazel/Renderer/Renderer2D.h"
+#include"Hazel/Renderer/Renderer3D.h"
 
 #include"Hazel/Renderer/RenderCommand.h"
 #include"Hazel/Camera/CameraComponent.h"
+#include"Hazel/Renderer/StaticMeshComponent.h"
 namespace Hazel {
 	Scene::Scene() 
 	{
@@ -40,30 +42,30 @@ namespace Hazel {
 
 		//Render Scene Using Renderer2D API
 
-		if (MainCameraComp)
-		{
-			Renderer2D::BeginScene(*MainCameraComp);
-
-			auto group = m_Registry.group<TransformComponent, SpriteRendererComponent>();
-			for (auto entity : group)
-			{
-				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-
-				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
-			}
-			Renderer2D::EndScene();
-		}
+		//if (MainCameraComp)
+		//{
+		//	Renderer2D::BeginScene(*MainCameraComp);
+		//
+		//	auto group = m_Registry.group<TransformComponent, SpriteRendererComponent>();
+		//	for (auto entity : group)
+		//	{
+		//		auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+		//
+		//		Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+		//	}
+		//	Renderer2D::EndScene();
+		//}
 		//Render Scene Using Renderer3D API
 		//Only Need To Call Renderer3D to Render Scene
 		//beLike: Renderer3D::RendererScene(MainCameraComp,m_Registry);
-
+		Renderer3D::RendererScene(m_Registry);
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
-		Renderer2D::OnViewportResize(m_ViewportWidth, m_ViewportHeight);
+		Renderer3D::OnViewportResize(m_ViewportWidth, m_ViewportHeight);
 
 		// Resize our non-FixedAspectRatio cameras
 		auto view = m_Registry.view<CameraComponent>();
@@ -101,13 +103,20 @@ namespace Hazel {
 		return Entity{};
 	}
 
-
+	bool Scene::IsEntityExist(Entity entity) {
+		return m_Registry.valid(entity);
+	}
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component)
 	{
 		static_assert(false);
 	}
 
+
+	template<>
+	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+	{
+	}
 	template<>
 	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
 	{
@@ -127,8 +136,9 @@ namespace Hazel {
 	}
 
 	template<>
-	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+	void Scene::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component)
 	{
+		component.Owner = entity;
 	}
 
 

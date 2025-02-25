@@ -57,7 +57,9 @@ out vec4 FragColor;
 out int entityID;
 void main()
 {
+	vec3 a = vec3(texture(material.specular1, fs_in.TexCoord));
 	vec3 result = vec3(texture(material.diffuse1, fs_in.TexCoord));
-	FragColor = vec4(result, 1.0);
+
+	FragColor = vec4(pow(result, vec3(1/2.2)), 1.0);
 	entityID = v_EntityID;
 }

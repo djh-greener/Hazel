@@ -1,6 +1,8 @@
 #include"hzpch.h"
 #include"Renderer.h"
-#include "Hazel/Renderer/Renderer2D.h"
+//#include "Hazel/Renderer/Renderer2D.h"
+#include "Hazel/Renderer/Renderer3D.h"
+
 
 #include"Hazel/Renderer/Shader.h"
 #include"Hazel/Camera/OrthographicCamera.h"
@@ -12,11 +14,13 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		RenderCommand::Init();
-		Renderer2D::Init();
+		//Renderer2D::Init();
+		Renderer3D::Init();
+
 	}
 	void Renderer::Shutdown()
 	{
-		Renderer2D::Shutdown();
+		//Renderer2D::Shutdown();
 	}
 	void Renderer::BeginScene(OrthographicCamera& camera)
     {

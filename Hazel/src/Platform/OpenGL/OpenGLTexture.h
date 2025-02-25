@@ -9,7 +9,7 @@ namespace Hazel
 	{
 	public:
 		OpenGLTexture2D(uint32_t width, uint32_t height);
-		OpenGLTexture2D(const std::string& path,bool gamma = false);
+		OpenGLTexture2D(const std::string& path,bool gamma = false,bool flip = true);
 		virtual ~OpenGLTexture2D();
 
 		virtual uint32_t GetWidth()const override { return m_Width; }

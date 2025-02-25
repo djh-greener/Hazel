@@ -4,7 +4,7 @@
 #include"Hazel/Utils/PlatformUtils.h"
 #include"Hazel/Math/Math.h"
 #include"Hazel/Camera/CameraComponent.h"
-
+#include"Hazel/Renderer/Renderer3D.h"
 #include <glad/glad.h>
 #include <imgui/imgui.h>
 #include"ImGuizmo.h"
@@ -24,12 +24,14 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		m_ActiveScene = CreateRef<Scene>();
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
+		m_CameraEntity = m_ActiveScene->CreateEntity("Main Camera");
 		m_CameraEntity.AddComponent<CameraComponent>();
 		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
 		//TODO:REMOVE
-		m_Model = CreateRef<Model>("assets/models/nanosuit/nanosuit.obj");
-		m_ModelShader = Shader::Create("assets/shaders/Model.glsl");
+		//m_StaticMeshEntity = m_ActiveScene->CreateEntity("Static Mesh1");
+		//m_StaticMeshEntity.AddComponent<StaticMeshComponent>("assets/models/nanosuit/nanosuit.obj", m_StaticMeshEntity);
+		//
+		//m_ModelShader = Shader::Create("assets/shaders/Model.glsl");
 	}
 
 	void EditorLayer::OnDetach()
@@ -42,7 +44,7 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 		
 		// Update ImGui Viewport & Camera
-		Framebuffer& Framebuffer = Renderer2D::GetLastFramebuffer();
+		Framebuffer& Framebuffer = Renderer3D::GetLastFramebuffer();
 		glm::vec2 FrameBufferSize = { Framebuffer.GetSpecification().Width, Framebuffer.GetSpecification().Height};
 		if (m_ViewportSize != FrameBufferSize&& m_ViewportSize.x>0.0f&& m_ViewportSize.y>0.0f)
 		{
@@ -50,16 +52,18 @@ namespace Hazel {
 		}
 
 		// Render
-		Renderer2D::ResetStats();
+		//Renderer2D::ResetStats();
 		Framebuffer.Bind();
 		RenderCommand::SetClearColor({ 0.13f, 0.13f, 0.13f, 1 });
 		RenderCommand::Clear();
 		Framebuffer.ClearAttachment(1, -1);		// Clear our entity ID attachment to -1
 		m_ActiveScene->OnUpdateRuntime(ts, m_ViewportHovered); // Render Scene
-		m_ModelShader->Bind();
-		m_ModelShader->SetMat4("u_Model", glm::mat4(1));
-		m_Model->DrawModel(m_ModelShader);
-		
+
+		//m_ModelShader->Bind();
+		//m_ModelShader->SetMat4("u_Model", glm::mat4(1));
+		//m_StaticMeshEntity.GetComponent<StaticMeshComponent>().DrawStaticMesh(m_ModelShader);
+		//m_ModelShader->UnBind();
+
 		//Mouse Picking
 		if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
 		{
@@ -71,7 +75,9 @@ namespace Hazel {
 			if (m_ViewportHovered)
 			{
 				int pixelData = Framebuffer.ReadPixel(1, (int)mx, (int)my);
-				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
+				HZ_CORE_WARN("Pixel data = {0}", pixelData);
+				if (pixelData == -858993460)
+					HZ_ASSERT(-1);
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 
 				if (!ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
@@ -151,13 +157,13 @@ namespace Hazel {
 		m_ContentBrowserPanel.OnImGuiRender();
 
 		ImGui::Begin("Stats");
-			auto stats = Renderer2D::GetStats();
-			ImGui::Text("Renderer2D Stats");
+			//auto stats = Renderer2D::GetStats();
+			//ImGui::Text("Renderer2D Stats");
 			ImGui::Text("fps: %.2f", ImGui::GetIO().Framerate);
-			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-			ImGui::Text("Quads: %d", stats.QuadCount);
-			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+			//ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+			//ImGui::Text("Quads: %d", stats.QuadCount);
+			//ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+			//ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
@@ -174,7 +180,7 @@ namespace Hazel {
 			m_ViewportSize = *(glm::vec2*)&ImGui::GetContentRegionAvail();
 
 
-			uint64_t textureID = Renderer2D::GetLastFramebuffer().GetColorAttachmentRendererID(0);
+			uint64_t textureID = Renderer3D::GetLastFramebuffer().GetColorAttachmentRendererID(0);
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -242,7 +248,8 @@ namespace Hazel {
 		// Shortcuts
 		if (e.IsRepeat())
 			return false;
-
+		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		//bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 		switch (e.GetKeyCode())
 		{
 			case Key::Q:
@@ -269,6 +276,15 @@ namespace Hazel {
 					m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 			}
+			case Key::S:
+			{
+				if (control)
+				{
+						SaveScene();
+				}
+
+				break;
+			}
 		}
 		return false;
 	}
@@ -290,12 +306,31 @@ namespace Hazel {
 	}
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
-		m_ActiveScene = CreateRef<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+		if (path.extension().string() != ".hazel")
+		{
+			HZ_WARN("Could not load {0} - not a scene file", path.filename().string());
+			return;
+		}
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer(newScene);
+		if (serializer.DeSerialize(path.string()))
+		{
+			m_ActiveScene = newScene;
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetScene(m_ActiveScene);
 
-		SceneSerializer serializer(m_ActiveScene);
-		serializer.DeSerialize(path.string());
+			m_ActiveScenePath = path;
+		}
+	}
+	void EditorLayer::SaveScene()
+	{
+		if (!m_ActiveScenePath.empty())
+		{
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(m_ActiveScenePath.string());
+		}
+		else
+			SaveSceneAs();
 	}
 	void EditorLayer::SaveSceneAs()
 	{

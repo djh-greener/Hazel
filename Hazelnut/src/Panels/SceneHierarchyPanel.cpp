@@ -2,7 +2,7 @@
 #include "SceneHierarchyPanel.h"
 #include "Hazel/Scene/Components.h"
 #include"Hazel/Camera/CameraComponent.h"
-
+#include"Hazel/Renderer/StaticMeshComponent.h"
 #include <imgui/imgui.h>
 #include<imgui/imgui_internal.h>
 #include<glm/gtc/type_ptr.hpp>
@@ -53,6 +53,7 @@ namespace Hazel {
 		ImGui::End();
 	}
 
+
 	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
 	{
 		m_SelectionEntity = entity;
@@ -60,6 +61,8 @@ namespace Hazel {
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
+		if (!m_Scene->IsEntityExist(entity))
+			return;
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
 		ImGuiTreeNodeFlags flags = ((m_SelectionEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -83,15 +86,16 @@ namespace Hazel {
 		if (opened)
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow  ;
-			bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
+			bool opened = ImGui::TreeNodeEx((void*)9817239, flags, "Null");//tag.c_str()
 			if (opened)
 				ImGui::TreePop();
 			ImGui::TreePop();
 		}
 		if (EntityDeleted) {
-			m_Scene->DestroyEntity(entity);
 			if (m_SelectionEntity == entity)
 				m_SelectionEntity = {};
+			m_Scene->DestroyEntity(entity);
+
 		}
 
 	}
@@ -225,7 +229,9 @@ namespace Hazel {
 		if (ImGui::BeginPopup("AddComponent"))
 		{
 			DisplayAddComponentEntry<CameraComponent>("Camera");
-			DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
+			DisplayAddComponentEntry<SpriteRendererComponent>("SpriteRenderer");
+			DisplayAddComponentEntry<StaticMeshComponent>("StaticMesh");
+
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -303,7 +309,26 @@ namespace Hazel {
 				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 
 			});
-		
+
+		DrawComponent<StaticMeshComponent>("StaticMesh", entity, [&](auto& component)
+			{
+				if(!component.name.empty())
+					ImGui::Text(component.name.c_str(), ImVec2(100.0f, 100.0f));
+				else
+					ImGui::Text("Empty", ImVec2(100.0f, 100.0f));
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+					{
+						const wchar_t* path = (const wchar_t*)payload->Data;
+						std::filesystem::path modelPath = std::filesystem::path(g_AssetPath) / path;
+						std::string fileExtension = modelPath.extension().string();
+						HZ_ASSERT(fileExtension == ".obj", "HAZEL now only support .obj ");
+						component.loadStaticMesh(modelPath.string());
+					}
+					ImGui::EndDragDropTarget();
+				}
+			});
 	}
 
 	template<typename T>

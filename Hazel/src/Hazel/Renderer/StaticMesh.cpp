@@ -1,5 +1,5 @@
 #include"hzpch.h"
-#include "Mesh.h"
+#include "StaticMesh.h"
 
 
 
@@ -11,18 +11,18 @@
 
 namespace Hazel {
 
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Ref<Texture2D>> textures):
-		vertices((vertices)),
-		indices((indices)),
-		textures((textures))
+	StaticMesh::StaticMesh(std::vector<StaticMeshVertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Ref<Texture2D>>&& textures):
+		vertices(std::move(vertices)),
+		indices(std::move(indices)),
+		textures(std::move(textures))
 	{
-		SetupMesh();
+		SetupStaticMesh();
 	}
-	void Mesh::SetupMesh()
+	void StaticMesh::SetupStaticMesh()
 	{
 		m_VertexArray = VertexArray::Create();
 
-		m_VertexBuffer = VertexBuffer::Create(vertices.size() * sizeof(Vertex));
+		m_VertexBuffer = VertexBuffer::Create(vertices.size() * sizeof(StaticMeshVertex));
 		m_VertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,		"a_Position"			},
 			{ ShaderDataType::Float3,		"a_Normal"			},
@@ -31,16 +31,14 @@ namespace Hazel {
 			{ ShaderDataType::Float3,		"a_BiTangent"		},
 			{ ShaderDataType::Int,				"a_EntityID"			},
 			});
-		m_VertexBuffer->SetData(vertices.data(), vertices.size() * sizeof(Vertex));
+		m_VertexBuffer->SetData(vertices.data(), vertices.size() * sizeof(StaticMeshVertex));
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 		Ref<IndexBuffer> quadIB = IndexBuffer::Create(indices.data(), indices.size());
 		m_VertexArray->SetIndexBuffer(quadIB);
-		m_VertexArray->UnBind();
-		m_VertexBuffer->UnBind();
-		quadIB->UnBind();
+
 		//TODO: Set vertices¡¢indices empty
 	}
-	void Mesh::DrawMesh(Ref<Shader> shader)
+	void StaticMesh::DrawStaticMesh(Ref<Shader> shader)
 	{
 		unsigned int diffuseNr = 0, specularNr = 0, ambientNr = 0, normalNr = 0;
 		for (int i = 0; i < textures.size(); i++) {
