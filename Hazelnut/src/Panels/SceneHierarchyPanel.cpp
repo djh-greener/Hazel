@@ -1,8 +1,14 @@
-#include "hzpch.h"
+﻿#include "hzpch.h"
 #include "SceneHierarchyPanel.h"
+
 #include "Hazel/Scene/Components.h"
 #include"Hazel/Camera/CameraComponent.h"
-#include"Hazel/Renderer/StaticMeshComponent.h"
+#include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
+#include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
+#include"Hazel/Renderer/Light/PointLightComponent.h"
+
+#include"UI.h"
+
 #include <imgui/imgui.h>
 #include<imgui/imgui_internal.h>
 #include<glm/gtc/type_ptr.hpp>
@@ -99,70 +105,8 @@ namespace Hazel {
 		}
 
 	}
-	//TODO:Move To UI.h
-	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100)
-	{
-		ImGui::PushID(label.c_str());
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, columnWidth);
-		ImGui::Text(label.c_str());
-		ImGui::NextColumn();
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2({ 0,0 }));
-
-		ImGuiIO& io = ImGui::GetIO();
-		auto boldFont = io.Fonts->Fonts[0];
-		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y*2.0f;
-		ImVec2 ButtonSize = { lineHeight + 3.f,lineHeight };
 
 
-		ImVec4 RedColor = { 0.8f,0.1f,0.15f,1.f };
-		ImVec4 GreenColor = { 0.2f,0.7f,0.3f,1.f };
-		ImVec4 BlueColor = { 0.1f,0.25f,0.8f,1.f };
-		auto ImVec4Multi = [](ImVec4& vec, float value) {return ImVec4{ vec.x * value,vec.y * value, vec.z * value, vec.w  }; };
-
-		ImGui::PushStyleColor(ImGuiCol_Button, RedColor);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4Multi(RedColor,1.3f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, RedColor);
-		ImGui::PushFont(boldFont);
-		if (ImGui::Button("X",ButtonSize))
-			values.x = resetValue;
-		ImGui::PopFont();
-		ImGui::SameLine();
-		ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
-		ImGui::PopStyleColor(3);
-
-		ImGui::PushStyleColor(ImGuiCol_Button, GreenColor);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4Multi(GreenColor, 1.3f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, GreenColor);
-		ImGui::PushFont(boldFont);
-		if (ImGui::Button("Y", ButtonSize))
-			values.y = resetValue;
-		ImGui::PopFont();
-		ImGui::SameLine();
-		ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
-		ImGui::PopStyleColor(3);
-
-		ImGui::PushStyleColor(ImGuiCol_Button, BlueColor);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4Multi(BlueColor, 1.3f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, BlueColor);
-		ImGui::PushFont(boldFont);
-		if (ImGui::Button("Z", ButtonSize))
-			values.z = resetValue;
-		ImGui::PopFont();
-		ImGui::SameLine();
-		ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
-		ImGui::PopItemWidth();
-		ImGui::PopStyleColor(3);
-
-		ImGui::PopStyleVar();
-		ImGui::Columns(1);
-		ImGui::PopID();
-	}
 	
 	template<typename T,typename UIFunction>
 	static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
@@ -229,8 +173,9 @@ namespace Hazel {
 		if (ImGui::BeginPopup("AddComponent"))
 		{
 			DisplayAddComponentEntry<CameraComponent>("Camera");
-			DisplayAddComponentEntry<SpriteRendererComponent>("SpriteRenderer");
+			DisplayAddComponentEntry<BaseGeometryComponent>("BaseGeometry");
 			DisplayAddComponentEntry<StaticMeshComponent>("StaticMesh");
+			DisplayAddComponentEntry<PointLightComponent>("PointLight");
 
 			ImGui::EndPopup();
 		}
@@ -239,15 +184,14 @@ namespace Hazel {
 
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
-				DrawVec3Control("Position", component.Position);
+				UI::DrawVec3Control("Position", component.Position);
 
 				glm::vec3 rotation = glm::degrees(component.Rotation);
-				DrawVec3Control("Rotation", rotation);
+				UI::DrawVec3Control("Rotation", rotation);
 				component.Rotation = glm::radians(rotation);
 
-				DrawVec3Control("Scale", component.Scale, 1.f);
+				UI::DrawVec3Control("Scale", component.Scale, 1.f);
 			});
-
 
 		DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
 			{
@@ -279,36 +223,51 @@ namespace Hazel {
 
 			});
 
-		DrawComponent<SpriteRendererComponent>("SpriteRenderer", entity, [&](auto& component)
+		DrawComponent<BaseGeometryComponent>("BaseGeometry", entity, [&](auto& component)
 			{
-				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				//Type Select
+				const char* GeometryTypeNames[] = {"None","Cube","Sphere","Cylinder" };
+
+				int CurrentType= component.GetType();
+				if (ImGui::Combo("Type", &CurrentType, GeometryTypeNames, 4, 4)) 
+				{
+					component.SetTypeName(GeometryTypeNames[CurrentType]);
+				}
+				//Show Texture
 				ImGui::Text("Texture", ImVec2(100.0f, 0.0f));
-				if (component.Texture)
+				if (component.m_StaticMesh)
 				{
-					ImGui::Image((ImTextureID)(uint64_t)component.Texture->GetRendererID(), ImVec2(128, 128));
-				}
-				else
-				{
-					ImGui::Image((ImTextureID)(uint64_t)(m_DefaultTextureIcon->GetRendererID()), ImVec2(128, 128));
-				}
 
-				if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+					auto& textures = component.m_StaticMesh->textures;
+					if (!component.GetTexturePath().empty())
 					{
-						const wchar_t* path = (const wchar_t*)payload->Data;
-						std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-						//TODO:Check if texturePath is picture
-						std::string fileExtension = texturePath.extension().string();
-						HZ_ASSERT(fileExtension == ".png" || fileExtension == ".jpg", "HAZEL now only support .png or .jpg as texture")
-
-						component.Texture = Texture2D::Create(texturePath.string());
+						ImGui::Image((ImTextureID)(uint64_t)textures[0]->GetRendererID(), ImVec2(128, 128));
 					}
-					ImGui::EndDragDropTarget();
-				}
-				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+					else
+					{
+						ImGui::Image((ImTextureID)(uint64_t)(m_DefaultTextureIcon->GetRendererID()), ImVec2(128, 128));
+					}
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+						{
+							const wchar_t* path = (const wchar_t*)payload->Data;
+							std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+							//TODO:Check if texturePath is picture
+							std::string fileExtension = texturePath.extension().string();
+							HZ_ASSERT(fileExtension == ".png" || fileExtension == ".jpg", "HAZEL now only support .png or .jpg as texture");
 
-			});
+							component.SetTexturePath(texturePath);
+						}
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+		
+
+
+		});
+
 		DrawComponent<StaticMeshComponent>("StaticMesh", entity, [&](auto& component)
 			{
 				if(!component.name.empty())
@@ -328,7 +287,15 @@ namespace Hazel {
 					ImGui::EndDragDropTarget();
 				}
 			});
-	}
+
+		DrawComponent<PointLightComponent>("PointLight", entity, [&](auto& component)
+			{
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				ImGui::DragFloat("Linear", &component.Linear, 0.1f, 0.35f, 1.4f);
+				ImGui::DragFloat("Quadratic", &component.Quadratic, 0.1f, 0.9f, 3.6f);
+
+			});
+		}
 
 	template<typename T>
 	void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entryName) {

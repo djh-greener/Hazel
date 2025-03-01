@@ -95,6 +95,85 @@ namespace Hazel::Math {
 		eulerAngles.z = atan2(up.y, right.y);
 	}
 
+	GeometryData::CubeData GetCubeData(uint32_t id)
+    {
+		auto& vertices = s_GeometryData.s_CubeData.vertices;
+		auto& indices = s_GeometryData.s_CubeData.indices;
+
+		if (indices.empty()||vertices.empty())
+		{
+			vertices.clear();
+			vertices.resize(36);
+			indices.clear();
+			indices.resize(36);
+			float data[]= 
+			{
+				// positions				// normals				// texture coords
+				-0.5f, -0.5f, -0.5f,		 0.0f,  0.0f, -1.0f,		 0.0f,  0.0f,
+				 0.5f, -0.5f, -0.5f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,
+				 0.5f,  0.5f, -0.5f,		0.0f,  0.0f, -1.0f,		 1.0f,  1.0f,
+				 0.5f,  0.5f, -0.5f,		0.0f,  0.0f, -1.0f,		 1.0f,  1.0f,
+				-0.5f,  0.5f, -0.5f,		 0.0f,  0.0f, -1.0f,		 0.0f,  1.0f,
+				-0.5f, -0.5f, -0.5f,		 0.0f,  0.0f, -1.0f,		 0.0f,  0.0f,
+
+				-0.5f, -0.5f,  0.5f,		 0.0f,  0.0f,  1.0f,		 0.0f,  0.0f,
+				 0.5f, -0.5f,  0.5f,		 0.0f,  0.0f,  1.0f,		 1.0f,  0.0f,
+				 0.5f,  0.5f,  0.5f,		0.0f,  0.0f,  1.0f,		 1.0f,  1.0f,
+				 0.5f,  0.5f,  0.5f,		0.0f,  0.0f,  1.0f,		 1.0f,  1.0f,
+				-0.5f,  0.5f,  0.5f,		 0.0f,  0.0f,  1.0f,		 0.0f,  1.0f,
+				-0.5f, -0.5f,  0.5f,		 0.0f,  0.0f,  1.0f,		 0.0f,  0.0f,
+
+				-0.5f,  0.5f,  0.5f,		-1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
+				-0.5f,  0.5f, -0.5f,		-1.0f,  0.0f,  0.0f,		1.0f,  1.0f,
+				-0.5f, -0.5f, -0.5f,		 -1.0f,  0.0f,  0.0f,		 0.0f,  1.0f,
+				-0.5f, -0.5f, -0.5f,		 -1.0f,  0.0f,  0.0f,		 0.0f,  1.0f,
+				-0.5f, -0.5f,  0.5f,		-1.0f,  0.0f,  0.0f,		0.0f,  0.0f,
+				-0.5f,  0.5f,  0.5f,		-1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
+
+				 0.5f,  0.5f,  0.5f,		1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
+				 0.5f,  0.5f, -0.5f,		1.0f,  0.0f,  0.0f,		1.0f,  1.0f,
+				 0.5f, -0.5f, -0.5f,		 1.0f,  0.0f,  0.0f,		0.0f,  1.0f,
+				 0.5f, -0.5f, -0.5f,		 1.0f,  0.0f,  0.0f,		0.0f,  1.0f,
+				 0.5f, -0.5f,  0.5f,		1.0f,  0.0f,  0.0f,		0.0f,  0.0f,
+				 0.5f,  0.5f,  0.5f,		1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
+
+				-0.5f, -0.5f, -0.5f,		  0.0f, -1.0f,  0.0f,		 0.0f,  1.0f,
+				 0.5f, -0.5f, -0.5f,		  0.0f, -1.0f,  0.0f,		 1.0f,  1.0f,
+				 0.5f, -0.5f,  0.5f,		 0.0f, -1.0f,  0.0f,		1.0f,  0.0f,
+				 0.5f, -0.5f,  0.5f,		 0.0f, -1.0f,  0.0f,		1.0f,  0.0f,
+				-0.5f, -0.5f,  0.5f,		  0.0f, -1.0f,  0.0f,		 0.0f,  0.0f,
+				-0.5f, -0.5f, -0.5f,		  0.0f, -1.0f,  0.0f,		 0.0f,  1.0f,
+
+				-0.5f,  0.5f, -0.5f,		 0.0f,  1.0f,  0.0f,		 0.0f,  1.0f,
+				 0.5f,  0.5f, -0.5f,		 0.0f,  1.0f,  0.0f,		 1.0f,  1.0f,
+				 0.5f,  0.5f,  0.5f,		0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,
+				 0.5f,  0.5f,  0.5f,		0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,
+				-0.5f,  0.5f,  0.5f,		 0.0f,  1.0f,  0.0f,		 0.0f,  0.0f,
+				-0.5f,  0.5f, -0.5f,		 0.0f,  1.0f,  0.0f,		 0.0f,  1.0f
+			};
+
+			for (size_t i = 0; i < indices.size(); i++)
+				indices[i] = i;
+
+			for (int i = 0; i < 36; i++)
+			{
+				int numColumn = 3 + 3 + 2;
+				vertices[i].Position = glm::vec3(data[numColumn * i], data[numColumn * i + 1], data[numColumn * i + 2]);
+				vertices[i].Normal = glm::vec3(data[numColumn * i+3], data[numColumn * i + 4], data[numColumn * i + 5]);
+				vertices[i].TexCoords = glm::vec2(data[numColumn * i + 6], data[numColumn * i + 7]);
+				vertices[i].Tangent = glm::vec3(0);
+				vertices[i].BiTangent = glm::vec3(0);
+				vertices[i].EntityID = id;
+			}
+		}
+		else
+			for (int i = 0; i < 36; i++)
+				vertices[i].EntityID = id;
+		
+		return { vertices ,indices };
+    }
+
+
 
 
 }

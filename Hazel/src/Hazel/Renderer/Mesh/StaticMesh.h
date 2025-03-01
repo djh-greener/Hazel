@@ -26,17 +26,17 @@ namespace Hazel {
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 
-		std::vector<StaticMeshVertex>vertices;
-		std::vector<uint32_t>indices;
+		std::vector<StaticMeshVertex>vertices;//TODO:REMOVE
+		std::vector<uint32_t>indices;//TODO:REMOVE
 		std::vector<Ref<Texture2D>> textures;
 
-
-		//Mesh(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Ref<Texture2D>>&& textures);
+		
 		StaticMesh(std::vector<StaticMeshVertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Ref<Texture2D>>&& textures);
 
-		void SetupStaticMesh();
-		void DrawStaticMesh(Ref<Shader> shader);
 
+		void DrawStaticMesh(Ref<Shader>& shader);
+	private:
+		void SetupMesh();
 	};
 
 }

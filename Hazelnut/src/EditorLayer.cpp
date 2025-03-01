@@ -27,7 +27,9 @@ namespace Hazel {
 		m_ActiveScene = CreateRef<Scene>();
 
 		auto CameraEntity = m_ActiveScene->CreateEntity("Main Camera");
+		
 		CameraEntity.AddComponent<CameraComponent>();
+		CameraEntity.GetComponent<CameraComponent>().SetPrimary();
 
 		m_SceneHierarchyPanel = CreateRef<SceneHierarchyPanel>();
 		m_SceneHierarchyPanel->SetScene(m_ActiveScene);
@@ -78,7 +80,7 @@ namespace Hazel {
 			if (m_ViewportHovered)
 			{
 				int pixelData = Framebuffer.ReadPixel(1, (int)mx, (int)my);
-				HZ_CORE_WARN("Pixel data = {0}", pixelData);
+				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
 				if (pixelData == -858993460)
 					HZ_ASSERT(-1);
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());

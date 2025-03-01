@@ -3,8 +3,7 @@
 #include "Hazel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
-//REMOVE
-#include"Hazel/Renderer/StaticMeshComponent.h"
+
 #include"Hazel/Renderer/Shader.h"
 namespace Hazel {
 

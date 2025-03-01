@@ -16,7 +16,8 @@ namespace Hazel
 		virtual uint32_t GetHeight()const override {return m_Height;}
 		virtual uint32_t GetRendererID()const override { return m_RendererID; }
 		virtual const std::string& GetPath() const override { return m_Path; }
-		virtual std::string& GetShaderUniformName() override { return m_ShaderUniformName; }
+		virtual const std::string GetShaderUniformName() override { return m_ShaderUniformName; }
+		virtual void SetShaderUniformName(const std::string& name) override { m_ShaderUniformName = name; }
 
 		virtual bool IsLoaded() const override { return m_IsLoaded; }
 

@@ -61,7 +61,8 @@ namespace Hazel {
 
 			stbi_image_free(data);
 		}
-
+		else
+			HZ_CORE_ERROR("Cannot Load a Texture from {0}", path);
 
 	}
 	OpenGLTexture2D::~OpenGLTexture2D()

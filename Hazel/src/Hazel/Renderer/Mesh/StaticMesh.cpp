@@ -16,29 +16,10 @@ namespace Hazel {
 		indices(std::move(indices)),
 		textures(std::move(textures))
 	{
-		SetupStaticMesh();
+		SetupMesh();
 	}
-	void StaticMesh::SetupStaticMesh()
-	{
-		m_VertexArray = VertexArray::Create();
 
-		m_VertexBuffer = VertexBuffer::Create((uint32_t)(vertices.size() * sizeof(StaticMeshVertex)));
-		m_VertexBuffer->SetLayout({
-			{ ShaderDataType::Float3,		"a_Position"			},
-			{ ShaderDataType::Float3,		"a_Normal"			},
-			{ ShaderDataType::Float2,		"a_TexCoord"		},
-			{ ShaderDataType::Float3,		"a_Tangent"			},
-			{ ShaderDataType::Float3,		"a_BiTangent"		},
-			{ ShaderDataType::Int,				"a_EntityID"			},
-			});
-		m_VertexBuffer->SetData(vertices.data(), (uint32_t)(vertices.size() * sizeof(StaticMeshVertex)));
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		Ref<IndexBuffer> quadIB = IndexBuffer::Create(indices.data(), (uint32_t)(indices.size()));
-		m_VertexArray->SetIndexBuffer(quadIB);
-
-		//TODO: Set vertices¡¢indices empty
-	}
-	void StaticMesh::DrawStaticMesh(Ref<Shader> shader)
+	void StaticMesh::DrawStaticMesh(Ref<Shader> &shader)
 	{
 		unsigned int diffuseNr = 0, specularNr = 0, ambientNr = 0, normalNr = 0;
 		for (int i = 0; i < textures.size(); i++) {
@@ -60,6 +41,25 @@ namespace Hazel {
 		m_VertexArray->Bind();
 		RenderCommand::DrawIndexed(m_VertexArray);
 		m_VertexArray->UnBind();
+	}
+
+	void StaticMesh::SetupMesh()
+	{
+		m_VertexArray = VertexArray::Create();
+
+		m_VertexBuffer = VertexBuffer::Create((uint32_t)(vertices.size() * sizeof(StaticMeshVertex)));
+		m_VertexBuffer->SetLayout({
+			{ ShaderDataType::Float3,		"a_Position"			},
+			{ ShaderDataType::Float3,		"a_Normal"			},
+			{ ShaderDataType::Float2,		"a_TexCoord"		},
+			{ ShaderDataType::Float3,		"a_Tangent"			},
+			{ ShaderDataType::Float3,		"a_BiTangent"		},
+			{ ShaderDataType::Int,				"a_EntityID"			},
+			});
+		m_VertexBuffer->SetData(vertices.data(), (uint32_t)(vertices.size() * sizeof(StaticMeshVertex)));
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+		Ref<IndexBuffer> quadIB = IndexBuffer::Create(indices.data(), (uint32_t)(indices.size()));
+		m_VertexArray->SetIndexBuffer(quadIB);
 	}
 
 }

@@ -1,0 +1,35 @@
+Scene: Untitled
+Entities:
+  - Entity: 0
+    TagComponent:
+      Tag: Main Camera
+    TransformComponent:
+      Translation: [-1.83471644, 3.677912, 8.31258106]
+      Rotation: [0.425000489, -1.31900108, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+      MoveSpeed: 10
+      RotateSpeed: 0.100000001
+      LastMousePos: [497, 653]
+      PrimaryID: 0
+      FixedAspectRatio: false
+  - Entity: 1
+    TagComponent:
+      Tag: Nanosuit
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    StaticMeshComponent:
+      Path: assets\models\nanosuit\nanosuit.obj
+  - Entity: 2
+    TagComponent:
+      Tag: PointLight
+    TransformComponent:
+      Translation: [0, 6.54443264, 0.945822775]
+      Rotation: [0, -0, 0]
+      Scale: [0.100000001, 0.100000001, 0.100000001]

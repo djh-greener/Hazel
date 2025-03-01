@@ -5,12 +5,13 @@
 #include "Hazel/Scene/Entity.h"
 
 #include"Hazel/Renderer/Renderer3D.h"
-
+#include"Hazel/Renderer/Light/PointLightComponent.h"
 #include"Hazel/Renderer/RenderCommand.h"
 
 #include"Hazel/Scene/Components.h"
 #include"Hazel/Camera/CameraComponent.h"
-#include"Hazel/Renderer/StaticMeshComponent.h"
+#include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
+#include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 namespace Hazel {
 	Scene::Scene() 
 	{
@@ -141,6 +142,14 @@ namespace Hazel {
 	{
 		component.Owner = entity;
 	}
-
-
+	template<>
+	void Scene::OnComponentAdded<BaseGeometryComponent>(Entity entity, BaseGeometryComponent& component)
+	{
+		component.Owner = entity;
+	}
+	template<>
+	void Scene::OnComponentAdded<PointLightComponent>(Entity entity, PointLightComponent& component)
+	{
+		component.Owner = entity;
+	}
 }

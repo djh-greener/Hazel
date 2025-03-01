@@ -2,7 +2,7 @@
 #include "StaticMeshComponent.h"
 
 #include"Hazel/Scene/Components.h"
-#include"Hazel/Renderer/StaticMesh.h"
+#include"Hazel/Renderer/Mesh/StaticMesh.h"
 #include"Hazel/Renderer/Shader.h"
 #include"Hazel/Renderer/Texture.h"
 #include"Hazel/Core/Timer.h"
@@ -11,14 +11,11 @@
 #include "assimp/postprocess.h"
 
 #include <filesystem>
-namespace fs = std::filesystem;
+
 namespace Hazel {
 
 	void StaticMeshComponent::DrawStaticMesh(Ref<Shader> shader)
 	{
-		shader->Bind();
-		auto& transformComp = Owner.GetComponent<TransformComponent>();
-		shader->SetMat4("u_Model", transformComp.GetTransform());
 		DrawStaticMeshRecursive(RootNode, shader);
 	}
 
@@ -44,7 +41,7 @@ namespace Hazel {
 	}
 
 
-
+	namespace fs = std::filesystem;
 	void StaticMeshComponent::loadStaticMesh(fspath path)
 	{
 		Assimp::Importer importer;
@@ -80,7 +77,7 @@ namespace Hazel {
 	{
 
 		std::vector<StaticMeshVertex>vertices(mesh->mNumVertices);
-		std::vector<unsigned int>indices;
+		std::vector<uint32_t>indices;
 		std::vector<Ref<Texture2D>>textures;
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
@@ -143,9 +140,10 @@ namespace Hazel {
 				}
 			}
 			if (!skip) {
+				//TODO:only diffuse gamma is ture
 				auto texture =Texture2D::Create(path,true,false);
 
-				texture->GetShaderUniformName() = typeName;
+				texture->SetShaderUniformName(typeName);
 				textures.push_back(texture);
 				textures_loaded.push_back(texture);
 			}

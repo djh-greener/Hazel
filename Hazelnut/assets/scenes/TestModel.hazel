@@ -4,8 +4,8 @@ Entities:
     TagComponent:
       Tag: Main Camera
     TransformComponent:
-      Translation: [-8.61074448, 1.4162426, 12.8743076]
-      Rotation: [0.143999875, -0.538998604, 0]
+      Translation: [-10.5571213, 23.2962074, 13.2146416]
+      Rotation: [-0.655001462, -0.80399847, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -14,15 +14,15 @@ Entities:
         PerspectiveFar: 1000
       MoveSpeed: 10
       RotateSpeed: 0.100000001
-      LastMousePos: [1668, 458]
+      LastMousePos: [1678, 489]
       PrimaryID: 0
       FixedAspectRatio: false
   - Entity: 1
     TagComponent:
-      Tag: NanosuitMesh
+      Tag: PurpleLight
     TransformComponent:
       Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [1.70175937e-07, 0.0141400062, -2.63794764e-08]
       Scale: [1, 1, 1]
     StaticMeshComponent:
       Path: assets\models\nanosuit\nanosuit.obj
@@ -37,3 +37,50 @@ Entities:
       Color: [1, 1, 1, 1]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1
+    BaseGeometryComponent:
+      Type: Cube
+      TexturePath: assets\textures\Wallpaper.png
+  - Entity: 3
+    TagComponent:
+      Tag: WhiteLight
+    TransformComponent:
+      Translation: [0, 11.3417969, 1.28376007]
+      Rotation: [0, -0, 0]
+      Scale: [0.25, 0.264710873, 0.25]
+    PointLightComponent:
+      Color: [0, 0.865921736, 1]
+      Linear: 0.349999994
+      Quadratic: 1.79999995
+  - Entity: 4
+    TagComponent:
+      Tag: RedLight
+    TransformComponent:
+      Translation: [-1.50534666, 1.5517633, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    PointLightComponent:
+      Color: [1, 0, 0]
+      Linear: 0.699999988
+      Quadratic: 1.79999995
+  - Entity: 5
+    TagComponent:
+      Tag: GreenLight
+    TransformComponent:
+      Translation: [1.6609652, 1.20969844, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    PointLightComponent:
+      Color: [0, 0.734636903, 0.0328329466]
+      Linear: 0.699999988
+      Quadratic: 1.79999995
+  - Entity: 6
+    TagComponent:
+      Tag: PurpleLight
+    TransformComponent:
+      Translation: [0, 16.1738377, 0]
+      Rotation: [0, -1.55671203, 0]
+      Scale: [1.48065901, 0.38780126, 1]
+    PointLightComponent:
+      Color: [0.642457962, 0, 1]
+      Linear: 0.349999994
+      Quadratic: 3.5999999

@@ -3,7 +3,10 @@
 #include"Entity.h"
 #include"Components.h"
 #include"Hazel/Camera/CameraComponent.h"
-#include"Hazel/Renderer/StaticMeshComponent.h"
+#include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
+#include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
+#include"Hazel/Renderer/Light/PointLightComponent.h"
+
 #include<yaml-cpp/yaml.h>
 
 namespace YAML {
@@ -178,6 +181,29 @@ namespace Hazel {
 		
 			out << YAML::EndMap;
 		}
+		if (entity.HasComponent<BaseGeometryComponent>())
+		{
+			out << YAML::Key << "BaseGeometryComponent";
+			out << YAML::BeginMap;
+			auto& BaseGeometryComp = entity.GetComponent<BaseGeometryComponent>();
+			out << YAML::Key << "Type" << YAML::Value << BaseGeometryComp.GetTypeName();
+			auto path = BaseGeometryComp.GetTexturePath().string();
+			out << YAML::Key << "TexturePath" << YAML::Value << path;
+			out << YAML::EndMap;
+		}
+		if (entity.HasComponent<PointLightComponent>())
+		{
+			out << YAML::Key << "PointLightComponent";
+			out << YAML::BeginMap;
+			auto& PointLightComp = entity.GetComponent<PointLightComponent>();
+			out << YAML::Key << "Color" << YAML::Value << PointLightComp.Color;
+			out << YAML::Key << "Linear" << YAML::Value << PointLightComp.Linear;
+			out << YAML::Key << "Quadratic" << YAML::Value << PointLightComp.Quadratic;
+
+
+			out << YAML::EndMap;
+		}
+		
 		out << YAML::EndMap;
 	}
 
@@ -294,9 +320,34 @@ namespace Hazel {
 					fspath path = StaticMeshComp["Path"].as<std::string>();
 					src.loadStaticMesh(path);
 				}
-
 			}
 
+			auto BaseGeometryComp = entity["BaseGeometryComponent"];
+			if (BaseGeometryComp)
+			{
+				auto& src = deserializedEntity.AddComponent<BaseGeometryComponent>();
+				if (BaseGeometryComp["Type"])
+				{
+					std::string TypeName = BaseGeometryComp["Type"].as<std::string>();
+					src.SetTypeName(TypeName);
+				}
+				if (BaseGeometryComp["TexturePath"])
+				{
+					std::string TexturePath = BaseGeometryComp["TexturePath"].as<std::string>();
+					src.SetTexturePath(TexturePath);
+				}
+			}
+			auto PointLightComp = entity["PointLightComponent"];
+			if (PointLightComp)
+			{
+				auto& src = deserializedEntity.AddComponent<PointLightComponent>();
+				if (PointLightComp["Color"])
+					src.Color = PointLightComp["Color"].as<glm::vec3>();
+				if (PointLightComp["Linear"])
+					src.Linear = PointLightComp["Linear"].as<float>();
+				if (PointLightComp["Quadratic"])
+					src.Quadratic = PointLightComp["Quadratic"].as<float>();
+			}
 		}
 
 
