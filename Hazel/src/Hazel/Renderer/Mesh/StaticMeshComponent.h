@@ -18,7 +18,6 @@ namespace Hazel {
 	};
 	class StaticMeshComponent
 	{
-
 	public:
 		StaticMeshComponent() = default;
 		void DrawStaticMesh(Ref<Shader> shader);
@@ -33,7 +32,6 @@ namespace Hazel {
 
 		void DrawStaticMeshRecursive(Ref<StaticMeshNode> node, Ref<Shader> shader);
 		Ref<StaticMesh>GetStaticMeshRecursive(Ref<StaticMeshNode> node);
-
 
 		Entity Owner;
 		Ref<StaticMeshNode>RootNode;//the mesh tree that use same shader

@@ -8,18 +8,27 @@ namespace Hazel::Math{
 
 	void DirectionVectorsToEuler(const glm::vec3 front, const glm::vec3 right, const glm::vec3 up, glm::vec3& eulerAngles);
 
+	//Geometry
 	struct GeometryData {
-		struct CubeData
+		struct Data
 		{
 			std::vector<StaticMeshVertex>vertices;
 			std::vector<uint32_t>indices;
-		}s_CubeData;
+		};
+		struct SphereConfig
+		{
+			uint32_t numLatitudeLines;
+			uint32_t numLongitudeLines;
+		};
 
+		Data s_CubeData, s_SphereData;
+		SphereConfig s_SphereConfig;
 	};
 
 	static GeometryData s_GeometryData;
-	GeometryData::CubeData GetCubeData(uint32_t id);
-	
+
+	GeometryData::Data GetCubeData(uint32_t id);
+	GeometryData::Data GetSphereData(uint32_t id, uint32_t numLatitudeLines,uint32_t numLongitudeLines);
 
 }
 

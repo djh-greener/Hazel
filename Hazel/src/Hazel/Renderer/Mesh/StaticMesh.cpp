@@ -11,12 +11,10 @@
 
 namespace Hazel {
 
-	StaticMesh::StaticMesh(std::vector<StaticMeshVertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Ref<Texture2D>>&& textures):
-		vertices(std::move(vertices)),
-		indices(std::move(indices)),
+	StaticMesh::StaticMesh(std::vector<StaticMeshVertex>& vertices, std::vector<uint32_t>& indices, std::vector<Ref<Texture2D>>&& textures):
 		textures(std::move(textures))
 	{
-		SetupMesh();
+		SetupMesh(vertices, indices);
 	}
 
 	void StaticMesh::DrawStaticMesh(Ref<Shader> &shader)
@@ -43,7 +41,7 @@ namespace Hazel {
 		m_VertexArray->UnBind();
 	}
 
-	void StaticMesh::SetupMesh()
+	void StaticMesh::SetupMesh(std::vector<StaticMeshVertex>& vertices, std::vector<uint32_t>& indices)
 	{
 		m_VertexArray = VertexArray::Create();
 
@@ -60,6 +58,8 @@ namespace Hazel {
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 		Ref<IndexBuffer> quadIB = IndexBuffer::Create(indices.data(), (uint32_t)(indices.size()));
 		m_VertexArray->SetIndexBuffer(quadIB);
+		vertices.clear();
+		indices.clear();
 	}
 
 }

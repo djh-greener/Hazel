@@ -16,7 +16,7 @@ namespace Hazel {
 	struct Renderer3DData {
 		const uint32_t Max_PointLights = 32;
 		struct PointLightData
-		{
+		{//std140 layout
 			glm::vec3 Position;
 			float Pad1;
 			glm::vec3 Color;

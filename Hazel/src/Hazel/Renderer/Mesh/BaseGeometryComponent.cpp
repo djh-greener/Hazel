@@ -19,33 +19,44 @@ namespace Hazel {
 
 	void BaseGeometryComponent::SetType(GeometryType type)
 	{
-		Type = type;
-		switch (Type)
+		if (Type!=type)
 		{
-		case GeometryType::None:
-			m_StaticMesh.reset();
-			break;
-		case GeometryType::Cube:
-			generateCube();
-			break;
-		default:
-			HZ_CORE_ERROR("No Support GeometryType");
-			break;
+			Type = type;
+			switch (Type)
+			{
+			case GeometryType::None:
+				m_StaticMesh.reset();
+				break;
+			case GeometryType::Cube:
+				generateCube();
+				break;
+			default:
+				HZ_CORE_ERROR("No Support GeometryType");
+				break;
+			}
 		}
+
 	}
 
 	void BaseGeometryComponent::SetTexturePath(std::filesystem::path path)
 	{
-		if (TexturePath!=path)
+		if (!m_StaticMesh)
 		{
-			TexturePath = path;
-			auto Texture = Texture2D::Create(TexturePath.string(), true, false);
-			Texture->SetShaderUniformName("diffuse");
-			if (m_StaticMesh)
+			if (m_StaticMesh->textures[0]->GetPath() != path.string())
 			{
+				TexturePath = path;
+				auto Texture = Texture2D::Create(TexturePath.string(), true, false);
+				Texture->SetShaderUniformName("diffuse");
 				m_StaticMesh->textures[0] = Texture;
 			}
 		}
+		else
+			HZ_CORE_WARN("Please Select a Geometry Type");
+	}
+
+	std::filesystem::path BaseGeometryComponent::GetTexturePath() const
+	{
+		return TexturePath;
 	}
 
 
@@ -63,20 +74,11 @@ namespace Hazel {
 		std::vector<uint32_t> indices = CubeData.indices;
 		std::vector<Ref<Texture2D>>textures;
 
-		if (TexturePath.empty())
-		{
-			auto defaultTexture = Texture2D::Create("Resources/Icons/SceneHierarchyPanel/TextureIcon.png", true, false);
-			defaultTexture->SetShaderUniformName("diffuse");
-			textures.push_back(std::move(defaultTexture));
-		}
-		else
-		{
-			auto Texture = Texture2D::Create(TexturePath.string(), true, false);
-			Texture->SetShaderUniformName("diffuse");
-			textures.push_back(std::move(Texture));
-		}
+		auto defaultTexture = Texture2D::Create("Resources/Icons/SceneHierarchyPanel/TextureIcon.png", true, false);
+		defaultTexture->SetShaderUniformName("diffuse");
+		textures.push_back(std::move(defaultTexture));
 
-		m_StaticMesh = CreateRef<StaticMesh>(std::move(vertices), std::move(indices), std::move(textures));
+		m_StaticMesh = CreateRef<StaticMesh>(vertices, indices, std::move(textures));
 		SetTexturePath(TexturePath);
 	}
 	void BaseGeometryComponent::generateSphere()

@@ -9,7 +9,7 @@ namespace Hazel {
 	public:
 		//TODO: Sphere,			Cylinder
 		enum GeometryType {
-			None,Cube,
+			None,Cube, Sphere
 		};
 		BaseGeometryComponent() {		Type = GeometryType::None;		}
 
@@ -22,7 +22,7 @@ namespace Hazel {
 		GeometryType& GetType() { return Type; }
 
 		void SetTexturePath(std::filesystem::path path);
-		const std::filesystem::path& GetTexturePath()const { return TexturePath; }
+		std::filesystem::path GetTexturePath()const;
 		void DrawMesh(Ref<Shader>&shader);
 	private:
 		void generateCube();

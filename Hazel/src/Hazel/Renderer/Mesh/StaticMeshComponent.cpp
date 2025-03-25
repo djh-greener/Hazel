@@ -58,7 +58,6 @@ namespace Hazel {
 
 		RootNode = CreateRef<StaticMeshNode>();
 		processNode(scene->mRootNode, RootNode, scene);
-
 	}
 
 	void StaticMeshComponent::processNode(aiNode* ainode, Ref<StaticMeshNode> node, const aiScene* scene)
@@ -118,7 +117,7 @@ namespace Hazel {
 		else
 			HZ_ERROR("Loading No Material In This Mesh." );
 
-		return CreateRef<StaticMesh>(std::move(vertices), std::move(indices), std::move(textures));
+		return CreateRef<StaticMesh>(vertices, indices, std::move(textures));
 	}
 
 	std::vector< Ref<Texture2D>> StaticMeshComponent::loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)

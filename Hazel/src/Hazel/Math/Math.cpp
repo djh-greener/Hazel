@@ -1,7 +1,9 @@
 #include "hzpch.h"
 #include "Math.h"
 #define GLM_ENABLE_EXPERIMENTAL
+#define M_PI 3.1415926
 #include <glm/gtx/matrix_decompose.hpp>
+
 
 namespace Hazel::Math {
 	bool DeComposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
@@ -95,7 +97,7 @@ namespace Hazel::Math {
 		eulerAngles.z = atan2(up.y, right.y);
 	}
 
-	GeometryData::CubeData GetCubeData(uint32_t id)
+	GeometryData::Data GetCubeData(uint32_t id)
     {
 		auto& vertices = s_GeometryData.s_CubeData.vertices;
 		auto& indices = s_GeometryData.s_CubeData.indices;
@@ -172,6 +174,57 @@ namespace Hazel::Math {
 		
 		return { vertices ,indices };
     }
+
+	GeometryData::Data GetSphereData(uint32_t id, uint32_t numLatitudeLines, uint32_t numLongitudeLines)
+	{
+		auto& vertices = s_GeometryData.s_SphereData.vertices;
+		auto& indices = s_GeometryData.s_SphereData.indices;
+
+		if (vertices.empty()||indices.empty()|| 
+			numLatitudeLines!=s_GeometryData.s_SphereConfig.numLatitudeLines|| 
+			numLongitudeLines != s_GeometryData.s_SphereConfig.numLongitudeLines)
+		{
+			vertices.clear();
+			vertices.resize(numLatitudeLines * numLongitudeLines * 2);
+			indices.clear();
+			indices.resize(numLatitudeLines * numLongitudeLines * 6);
+		}
+		vertices.reserve(numLatitudeLines * numLongitudeLines * 2);
+
+		float latitudeSpacing = 1.0f / (numLatitudeLines + 1.0f);
+		float longitudeSpacing = 2.0f * 3.1415 / numLongitudeLines;
+
+		for (int latitude = 0; latitude <= numLatitudeLines; ++latitude) {
+			float phi = (latitude * M_PI) / numLatitudeLines;
+			float sinPhi = sin(phi);
+			float cosPhi = cos(phi);
+
+			for (int longitude = 0; longitude < numLongitudeLines; ++longitude) {
+				float theta = longitude * longitudeSpacing;
+				float sinTheta = sin(theta);
+				float cosTheta = cos(theta);
+
+				// 顶点位置
+				glm::vec3 position = glm::vec3(sinPhi * cosTheta, cosPhi, sinPhi * sinTheta);
+				vertices.push_back({ position, position, glm::vec2(longitude * longitudeSpacing, 1.0f - (latitude + 1) * latitudeSpacing) });
+
+				// 顶点法线（与顶点位置相同）
+				if (latitude != 0 && latitude != numLatitudeLines) {
+					float nextPhi = (latitude + 1) * M_PI / numLatitudeLines;
+					float nextSinPhi = sin(nextPhi);
+					float nextCosPhi = cos(nextPhi);
+
+					glm::vec3 nextPosition = glm::vec3(nextSinPhi * cosTheta, nextCosPhi, nextSinPhi * sinTheta);
+					glm::vec3 edge1 = position - glm::vec3(sinPhi * cosTheta, cosPhi, sinPhi * sinTheta);
+					glm::vec3 edge2 = nextPosition - position;
+					glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
+					vertices.push_back({ nextPosition, normal, glm::vec2(longitude * longitudeSpacing, 1.0f - (latitude + 1) * latitudeSpacing) });
+				}
+			}
+		}
+
+		return { vertices,indices };
+	}
 
 
 

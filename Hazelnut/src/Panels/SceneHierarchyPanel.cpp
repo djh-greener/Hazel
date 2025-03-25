@@ -263,9 +263,6 @@ namespace Hazel {
 					}
 				}
 
-		
-
-
 		});
 
 		DrawComponent<StaticMeshComponent>("StaticMesh", entity, [&](auto& component)
