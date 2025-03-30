@@ -1,7 +1,7 @@
 # Hazel
 基于OpenGL的渲染器
 
-![引擎界面](D:\Dev\Hazel\doc\引擎界面.png)
+![引擎界面](doc\引擎界面.png)
 
 ## 摄像机操作
 
