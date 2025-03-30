@@ -1,10 +1,8 @@
 #pragma once
 #include"entt.hpp"
 #include"Hazel/Core/Timestep.h"
-
 namespace Hazel {
 	class Entity;
-
 	class Scene {
 	public:
 
@@ -19,6 +17,7 @@ namespace Hazel {
 		void DestroyEntity(Entity entity);
 		Entity GetPrimaryCameraEntity();
 		bool IsEntityExist(Entity entity);
+
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);

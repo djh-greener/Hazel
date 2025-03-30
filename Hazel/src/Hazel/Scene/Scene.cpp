@@ -1,8 +1,6 @@
 #include"hzpch.h"
 #include "Scene.h"
-#include<glm/glm.hpp>
 
-#include "Hazel/Scene/Entity.h"
 
 #include"Hazel/Renderer/Renderer3D.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
@@ -12,6 +10,8 @@
 #include"Hazel/Camera/CameraComponent.h"
 #include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
 #include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
+
+#include<glm/glm.hpp>
 namespace Hazel {
 	Scene::Scene() 
 	{

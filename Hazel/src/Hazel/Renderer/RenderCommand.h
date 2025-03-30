@@ -1,6 +1,7 @@
 #pragma once
+#include"Hazel/Core/Core.h"
 #include"Hazel/Renderer/RendererAPI.h"
- 
+
 namespace Hazel {
 	
 	class RenderCommand {

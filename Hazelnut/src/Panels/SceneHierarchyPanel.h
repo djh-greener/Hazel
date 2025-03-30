@@ -13,7 +13,7 @@ namespace Hazel {
 		SceneHierarchyPanel(const Ref<Scene>& scene);
 
 		void SetScene(const Ref<Scene>& scene);
-		Entity GetSelectedEntity() const{ return m_SelectionEntity; }
+		Entity GetSelectedEntity() const;
 		void SetSelectedEntity(Entity entity);
 		void OnImGuiRender();
 
@@ -26,7 +26,6 @@ namespace Hazel {
 		void DrawComponents(Entity entity);
 	private:
 		Ref<Scene> m_Scene;
-		Entity m_SelectionEntity;
 		Ref<Texture2D>m_DefaultTextureIcon;
 	};
 

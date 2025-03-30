@@ -1,6 +1,7 @@
 #include "hzpch.h"
 #include "Renderer3D.h"
 
+#include"Hazel/Core/GlobalData.h"
 #include "Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/UniformBuffer.h"
 #include"Hazel/Scene/Components.h"
@@ -8,7 +9,10 @@
 #include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 #include "Hazel/Camera/CameraComponent.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
+#include"Hazel/Scene/Scene.h"
 
+
+#include<glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 namespace Hazel {
@@ -51,6 +55,7 @@ namespace Hazel {
 
 		s_Data.Shaders["Mesh"] = Shader::Create("assets/shaders/Mesh.shader");
 		s_Data.Shaders["PointLight"] = Shader::Create("assets/shaders/PointLight.shader");
+		s_Data.Shaders["SingleColor"] = Shader::Create("assets/shaders/SingleColor.shader");
 
 		FramebufferSpecification fbSpec;
 		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
@@ -63,7 +68,9 @@ namespace Hazel {
 	void Renderer3D::RendererScene(entt::registry& SceneRegistry)
 	{
 		//Find Main Camera, Set Shader's CameraUniformBlock 
+		glStencilMask(0x00);//禁止写入
 		
+		//Set CameraUniformBlock
 		auto CameraView = SceneRegistry.view< CameraComponent,TransformComponent>();
 		for (auto entity : CameraView)
 		{
@@ -80,6 +87,7 @@ namespace Hazel {
 				break;
 			}
 		}
+
 
 		//Set LightUniformBlock
 		s_Data.Shaders["PointLight"]->Bind();
@@ -99,31 +107,84 @@ namespace Hazel {
 			s_Data.PointLightsBuffer[numLights].Quadratic = PointLightComp.Quadratic;
 			numLights++;
 		}
-
 		s_Data.PointLightsUniformBuffer->SetData(s_Data.PointLightsBuffer.data(), sizeof(Renderer3DData::PointLightData)* numLights);
-		s_Data.Shaders["Mesh"]->Bind();
-		s_Data.Shaders["Mesh"]->SetInt("numPointLights", numLights);
+
 
 		//Draw Static Mesh
+		s_Data.Shaders["Mesh"]->Bind();
+		s_Data.Shaders["Mesh"]->SetInt("numPointLights", numLights);
+		auto& SelectedEntity =  GlobalData::GetGlobalData().SelectedEntity;// Entity();
 		auto MeshView = SceneRegistry.view<TransformComponent,StaticMeshComponent>();
-		for (auto &entity : MeshView)
+		for (auto& entity : MeshView)
 		{
+			if (entity == SelectedEntity)
+				continue;
 			auto &[TransformComp,StaticMeshComp ]= MeshView.get< TransformComponent, StaticMeshComponent>(entity);
-			//TODO: Instance
-
+			
 			s_Data.Shaders["Mesh"]->SetMat4("u_Model", TransformComp.GetTransform());
 			StaticMeshComp.DrawStaticMesh(s_Data.Shaders["Mesh"]);
+			
 		}
 		//Draw Base Geometry Mesh
 		auto BaseMeshView = SceneRegistry.view<TransformComponent, BaseGeometryComponent>();
-		for (auto entity : BaseMeshView)
+		for (auto& entity : BaseMeshView)
 		{
+			if (entity == SelectedEntity)
+				continue;
 			auto [TransformComp, BaseMeshComp] = BaseMeshView.get< TransformComponent, BaseGeometryComponent>(entity);
 			s_Data.Shaders["Mesh"]->SetMat4("u_Model", TransformComp.GetTransform());
 			BaseMeshComp.DrawMesh(s_Data.Shaders["Mesh"]);
 		}
 
+
+		//处理选中物体边框
+		//写入模板缓冲
+		if (SelectedEntity)
+		{
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);//一直通过测试，参考值1
+			glStencilMask(0xFF);//允许写入
+			if (SelectedEntity.HasComponent<StaticMeshComponent>())
+			{
+				auto& TransformComp = SelectedEntity.GetComponent<TransformComponent>();
+				auto& MeshComp = SelectedEntity.GetComponent<StaticMeshComponent>();
+				s_Data.Shaders["Mesh"]->SetMat4("u_Model", TransformComp.GetTransform());
+				MeshComp.DrawStaticMesh(s_Data.Shaders["Mesh"]);
+			}
+			if (SelectedEntity.HasComponent<BaseGeometryComponent>())
+			{
+				auto& TransformComp = SelectedEntity.GetComponent<TransformComponent>();
+				auto& MeshComp = SelectedEntity.GetComponent<BaseGeometryComponent>();
+				s_Data.Shaders["Mesh"]->SetMat4("u_Model", TransformComp.GetTransform());
+				MeshComp.DrawMesh(s_Data.Shaders["Mesh"]);
+			}
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);//不为1的通过测试
+			glStencilMask(0x00);//禁止写入
+			//glDisable(GL_DEPTH_TEST);
+			s_Data.Shaders["SingleColor"]->Bind();
+			if (SelectedEntity.HasComponent<StaticMeshComponent>())
+			{
+				auto& TransformComp = SelectedEntity.GetComponent<TransformComponent>();
+				auto LargeTransformComp = TransformComp;
+				//LargeTransformComp.Scale *= 1.05;
+				auto& MeshComp = SelectedEntity.GetComponent<StaticMeshComponent>();
+				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", LargeTransformComp.GetTransform());
+				MeshComp.DrawStaticMesh(s_Data.Shaders["SingleColor"]);
+			}
+			if (SelectedEntity.HasComponent<BaseGeometryComponent>())
+			{
+				auto& TransformComp = SelectedEntity.GetComponent<TransformComponent>();
+				auto LargeTransformComp = TransformComp;
+				//LargeTransformComp.Scale *= 1.05;
+				auto& MeshComp = SelectedEntity.GetComponent<BaseGeometryComponent>();
+				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", LargeTransformComp.GetTransform());
+				MeshComp.DrawMesh(s_Data.Shaders["SingleColor"]);
+			}
+			glStencilMask(0xFF);
+			glEnable(GL_DEPTH_TEST);
+		}
+
 	}
+	
 	void Renderer3D::OnViewportResize(uint32_t ViewportWidth, uint32_t ViewportHeight)
 	{
 		for (auto& fbo : s_Data.Framebuffers)

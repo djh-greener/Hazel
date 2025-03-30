@@ -7,6 +7,7 @@
 #include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
 
+#include"Hazel/Core/GlobalData.h"
 #include"UI.h"
 
 #include <imgui/imgui.h>
@@ -24,10 +25,15 @@ namespace Hazel {
 	void SceneHierarchyPanel::SetScene(const Ref<Scene>& scene)
 	{
 		m_Scene = scene;
-		m_SelectionEntity = {};
+		//GlobalData::GetGlobalData().SelectedEntity = {};
 		m_DefaultTextureIcon = Texture2D::Create("Resources/Icons/SceneHierarchyPanel/TextureIcon.png");
 
 	}
+
+    Entity SceneHierarchyPanel::GetSelectedEntity() const
+    {
+		 return GlobalData::GetGlobalData().SelectedEntity; 
+    }
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
@@ -39,7 +45,7 @@ namespace Hazel {
 			DrawEntityNode(entity);
 		}
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-			m_SelectionEntity = {};
+			GlobalData::GetGlobalData().SelectedEntity = {};
 		//Right Click on Blank Space
 		if (ImGui::BeginPopupContextWindow(0, 1, false))
 		{
@@ -52,17 +58,18 @@ namespace Hazel {
 		ImGui::End();
 
 		ImGui::Begin("Properties");
-		if (m_SelectionEntity)
+		if (GlobalData::GetGlobalData().SelectedEntity)
 		{
-			DrawComponents(m_SelectionEntity);
+			DrawComponents(GlobalData::GetGlobalData().SelectedEntity);
 		}
 		ImGui::End();
+
 	}
 
 
 	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
 	{
-		m_SelectionEntity = entity;
+		GlobalData::GetGlobalData().SelectedEntity =entity;
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
@@ -71,12 +78,12 @@ namespace Hazel {
 			return;
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-		ImGuiTreeNodeFlags flags = ((m_SelectionEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		ImGuiTreeNodeFlags flags = ((GlobalData::GetGlobalData().SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 		if (ImGui::IsItemClicked())
 		{
-			m_SelectionEntity = entity;
+			GlobalData::GetGlobalData().SelectedEntity = entity;
 		}
 		 
 		bool EntityDeleted = false;
@@ -98,8 +105,8 @@ namespace Hazel {
 			ImGui::TreePop();
 		}
 		if (EntityDeleted) {
-			if (m_SelectionEntity == entity)
-				m_SelectionEntity = {};
+			if (GlobalData::GetGlobalData().SelectedEntity == entity)
+				GlobalData::GetGlobalData().SelectedEntity = {};
 			m_Scene->DestroyEntity(entity);
 
 		}
@@ -296,11 +303,11 @@ namespace Hazel {
 
 	template<typename T>
 	void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entryName) {
-		if (!m_SelectionEntity.HasComponent<T>())
+		if (!GlobalData::GetGlobalData().SelectedEntity.HasComponent<T>())
 		{
 			if (ImGui::MenuItem(entryName.c_str()))
 			{
-				m_SelectionEntity.AddComponent<T>();
+				GlobalData::GetGlobalData().SelectedEntity.AddComponent<T>();
 				ImGui::CloseCurrentPopup();
 			}
 		}

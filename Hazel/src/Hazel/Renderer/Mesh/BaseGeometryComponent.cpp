@@ -40,7 +40,7 @@ namespace Hazel {
 
 	void BaseGeometryComponent::SetTexturePath(std::filesystem::path path)
 	{
-		if (!m_StaticMesh)
+		if (m_StaticMesh)
 		{
 			if (m_StaticMesh->textures[0]->GetPath() != path.string())
 			{
