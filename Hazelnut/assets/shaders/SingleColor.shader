@@ -18,12 +18,13 @@ layout(std140, binding = 0) uniform CameraBlock
 
 void main()
 {
-	vec4 clipPos = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
-	mat3 normalMatrix = transpose(inverse(mat3(u_Model)));
-	vec3 worldNormal = normalize(normalMatrix * a_Normal);
-	vec4 clipNormal = u_Projection * u_View * vec4(worldNormal, 0.0); 
 
-	clipPos += normalize(clipNormal) * 0.2;
+	vec4 clipPos = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
+	vec3 worldNormal = normalize(mat3(u_Model) * a_Normal);
+	vec4 clipNormal = u_Projection * u_View * vec4(worldNormal, 0.0);
+
+	vec2 screenNormal = normalize(clipNormal.xy);
+	clipPos.xy += screenNormal * 0.01 * clipPos.w;
 
 	gl_Position = clipPos;
 }
@@ -35,5 +36,7 @@ layout(location = 0) out vec4 color;
 
 void main()
 {
-	color = vec4(0.04, 0.28, 0.26, 1.0);
+	color = vec4(0.44, 0.48, 0.06, 1.0);
 }
+
+

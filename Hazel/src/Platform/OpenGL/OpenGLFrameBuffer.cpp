@@ -14,6 +14,7 @@ namespace Hazel {
 			switch (format)
 			{
 			case FramebufferTextureFormat::RGBA8:									return GL_RGBA8;
+			case FramebufferTextureFormat::RGBA16F:									return GL_RGBA16F;
 			case FramebufferTextureFormat::RED_INTEGER:						return GL_RED_INTEGER;
 			case FramebufferTextureFormat::DEPTH24STENCIL8:				return GL_DEPTH24_STENCIL8;
 			}
@@ -134,6 +135,9 @@ namespace Hazel {
 				case Hazel::FramebufferTextureFormat::RGBA8:
 					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification, GL_RGBA8,GL_RGBA, i);
 					break;
+				case Hazel::FramebufferTextureFormat::RGBA16F:
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification, GL_RGBA16F, GL_RGBA, i);
+					break;
 				case Hazel::FramebufferTextureFormat::RED_INTEGER:
 					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification, GL_R32I, GL_RED_INTEGER, i);
 					break;
@@ -199,6 +203,10 @@ namespace Hazel {
 
 	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
 	{
+		if (x<0||x>m_Specification.Width||y<0||y>m_Specification.Height)
+		{
+			return -1;
+		}
 		HZ_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
 
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);

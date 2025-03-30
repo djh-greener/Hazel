@@ -199,7 +199,7 @@ namespace Hazel {
 			out << YAML::Key << "Color" << YAML::Value << PointLightComp.Color;
 			out << YAML::Key << "Linear" << YAML::Value << PointLightComp.Linear;
 			out << YAML::Key << "Quadratic" << YAML::Value << PointLightComp.Quadratic;
-
+			out << YAML::Key << "Intensity" << YAML::Value << PointLightComp.Intensity;
 
 			out << YAML::EndMap;
 		}
@@ -347,6 +347,9 @@ namespace Hazel {
 					src.Linear = PointLightComp["Linear"].as<float>();
 				if (PointLightComp["Quadratic"])
 					src.Quadratic = PointLightComp["Quadratic"].as<float>();
+				if (PointLightComp["Intensity"])
+					src.Intensity = PointLightComp["Intensity"].as<float>();
+				
 			}
 		}
 

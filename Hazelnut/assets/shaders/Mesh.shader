@@ -88,7 +88,7 @@ void main()
 		vec3 HalfDir = normalize(LightDir + ViewDir);
 
 		vec3 diffuse = max(dot(Normal, LightDir), 0.0) * texColor * PointLights[i].Color;
-		vec3 specular = pow(max(dot(Normal, HalfDir), 0.0), 16.0) * texColor * PointLights[i].Color;
+		vec3 specular = pow(max(dot(Normal, HalfDir), 0.0), 64.0) * texColor * PointLights[i].Color;
 
 		float distance = length(PointLights[i].Position - Input.FragPos);
 		float attenuation = 1.0 / (1.0 + PointLights[i].Linear * distance + PointLights[i].Quadratic * distance * distance);

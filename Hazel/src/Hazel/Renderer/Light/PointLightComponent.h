@@ -13,6 +13,7 @@ namespace Hazel {
 			Color = glm::vec3(1.f); 
 			Linear = 0.7f;
 			Quadratic = 1.8f;
+			Intensity = 1.f;
 		};
 		
 		void DrawMesh(Ref<Shader>& shader);
@@ -24,5 +25,6 @@ namespace Hazel {
 		glm::vec3 Color;
 		float Linear;
 		float Quadratic;
+		float Intensity;
 	};
 }

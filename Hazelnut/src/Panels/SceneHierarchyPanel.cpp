@@ -297,6 +297,8 @@ namespace Hazel {
 				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 				ImGui::DragFloat("Linear", &component.Linear, 0.1f, 0.35f, 1.4f);
 				ImGui::DragFloat("Quadratic", &component.Quadratic, 0.1f, 0.9f, 3.6f);
+				ImGui::DragFloat("Intensity", &component.Intensity, 0.1f, 0.1f, 100.f);
+
 
 			});
 		}

@@ -81,8 +81,6 @@ namespace Hazel {
 			{
 				int pixelData = Framebuffer.ReadPixel(1, (int)mx, (int)my);
 				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
-				if (pixelData == -858993460)
-					HZ_ASSERT(-1);
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 
 				if (!ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))

@@ -58,7 +58,7 @@ namespace Hazel {
 		s_Data.Shaders["SingleColor"] = Shader::Create("assets/shaders/SingleColor.shader");
 
 		FramebufferSpecification fbSpec;
-		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		fbSpec.Attachments = { FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		fbSpec.Samples = 1;
@@ -98,11 +98,11 @@ namespace Hazel {
 			auto &[TransformComp, PointLightComp] = LightView.get< TransformComponent, PointLightComponent>(entity);
 			//Draw PointLightCube
 			s_Data.Shaders["PointLight"]->SetMat4("u_Model", TransformComp.GetTransform());
-			s_Data.Shaders["PointLight"]->SetFloat3("u_Color", PointLightComp.Color);
+			s_Data.Shaders["PointLight"]->SetFloat3("u_Color", PointLightComp.Color * PointLightComp.Intensity);
 			PointLightComp.DrawMesh(s_Data.Shaders["PointLight"]);
 			//Set PointLight UnifromBuffer
 			s_Data.PointLightsBuffer[numLights].Position = TransformComp.Position;
-			s_Data.PointLightsBuffer[numLights].Color = PointLightComp.Color;
+			s_Data.PointLightsBuffer[numLights].Color = PointLightComp.Color * PointLightComp.Intensity;
 			s_Data.PointLightsBuffer[numLights].Linear = PointLightComp.Linear;
 			s_Data.PointLightsBuffer[numLights].Quadratic = PointLightComp.Quadratic;
 			numLights++;
@@ -164,19 +164,15 @@ namespace Hazel {
 			if (SelectedEntity.HasComponent<StaticMeshComponent>())
 			{
 				auto& TransformComp = SelectedEntity.GetComponent<TransformComponent>();
-				auto LargeTransformComp = TransformComp;
-				//LargeTransformComp.Scale *= 1.05;
 				auto& MeshComp = SelectedEntity.GetComponent<StaticMeshComponent>();
-				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", LargeTransformComp.GetTransform());
+				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", TransformComp.GetTransform());
 				MeshComp.DrawStaticMesh(s_Data.Shaders["SingleColor"]);
 			}
 			if (SelectedEntity.HasComponent<BaseGeometryComponent>())
 			{
 				auto& TransformComp = SelectedEntity.GetComponent<TransformComponent>();
-				auto LargeTransformComp = TransformComp;
-				//LargeTransformComp.Scale *= 1.05;
 				auto& MeshComp = SelectedEntity.GetComponent<BaseGeometryComponent>();
-				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", LargeTransformComp.GetTransform());
+				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", TransformComp.GetTransform());
 				MeshComp.DrawMesh(s_Data.Shaders["SingleColor"]);
 			}
 			glStencilMask(0xFF);

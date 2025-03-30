@@ -9,6 +9,7 @@ namespace Hazel {
 
 		//Color
 		RGBA8,
+		RGBA16F,
 		RED_INTEGER,
 		//Depth/Stencil
 		DEPTH24STENCIL8,

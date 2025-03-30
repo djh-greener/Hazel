@@ -4,8 +4,8 @@ Entities:
     TagComponent:
       Tag: Main Camera
     TransformComponent:
-      Translation: [-1.83471644, 3.677912, 8.31258106]
-      Rotation: [0.425000489, -1.31900108, 0]
+      Translation: [-1.50362492, 4.8780365, 6.41143417]
+      Rotation: [-0.658998787, -1.44700229, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -14,22 +14,28 @@ Entities:
         PerspectiveFar: 1000
       MoveSpeed: 10
       RotateSpeed: 0.100000001
-      LastMousePos: [497, 653]
+      LastMousePos: [1196, 655]
       PrimaryID: 0
       FixedAspectRatio: false
   - Entity: 1
     TagComponent:
-      Tag: Nanosuit
+      Tag: PointLight
+    TransformComponent:
+      Translation: [0, 0.500650704, 0.945822775]
+      Rotation: [0, 0.059341196, 0]
+      Scale: [0.100000001, 0.100000001, 0.100000001]
+    PointLightComponent:
+      Color: [0.949720681, 0.949720681, 0.949720681]
+      Linear: 0.699999988
+      Quadratic: 1.79999995
+      Intensity: 0.899999976
+  - Entity: 2
+    TagComponent:
+      Tag: Empty Enity
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    StaticMeshComponent:
-      Path: assets\models\nanosuit\nanosuit.obj
-  - Entity: 2
-    TagComponent:
-      Tag: PointLight
-    TransformComponent:
-      Translation: [0, 6.54443264, 0.945822775]
-      Rotation: [0, -0, 0]
-      Scale: [0.100000001, 0.100000001, 0.100000001]
+      Scale: [10, 0.100000001, 10]
+    BaseGeometryComponent:
+      Type: Cube
+      TexturePath: assets\textures\wood.png
