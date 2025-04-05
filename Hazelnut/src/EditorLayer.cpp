@@ -81,7 +81,7 @@ namespace Hazel {
 			{
 				int pixelData = Framebuffer.ReadPixel(1, (int)mx, (int)my);
 				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
-				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+				m_HoveredEntity = pixelData == -1|| pixelData>1e9 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 
 				if (!ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
 					m_SceneHierarchyPanel->SetSelectedEntity(m_HoveredEntity);

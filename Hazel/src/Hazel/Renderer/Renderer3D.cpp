@@ -47,7 +47,6 @@ namespace Hazel {
 
 	void Renderer3D::Init()
 	{
-		HZ_ERROR("size: {0}",sizeof(Renderer3DData::PointLightData));
 		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraData), 0);
 
 		s_Data.PointLightsBuffer.resize(s_Data.Max_PointLights);

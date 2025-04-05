@@ -7,6 +7,7 @@ namespace Hazel {
 
 	SceneCamera::SceneCamera()
 	{
+		m_AspectRatio = 1.0f;
 		RecalculateProjection();
 	}
 

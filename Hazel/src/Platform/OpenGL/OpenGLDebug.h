@@ -5,10 +5,10 @@
 #include<string>
 
 #ifdef HZ_DEBUG
-	#define ASSERT(x) if (!(x)) __debugbreak();
-	#define GLCall(x) GLClearError(); x; ASSERT(GLLogCall(#x, __FILE__, __LINE__));
-#elif
-	#define GLCall(x) x;
+#define ASSERT(x) if (!(x)) __debugbreak();
+#define GLCall(x) GLClearError(); x; ASSERT(GLLogCall(#x, __FILE__, __LINE__));
+#else
+#define GLCall(x) x;
 #endif
 
 

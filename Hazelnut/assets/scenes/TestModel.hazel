@@ -4,8 +4,8 @@ Entities:
     TagComponent:
       Tag: Main Camera
     TransformComponent:
-      Translation: [-10.2881651, 22.2477913, 13.4933329]
-      Rotation: [-0.916001379, -0.638999104, 0]
+      Translation: [-11.4047813, 22.7784405, 13.0983458]
+      Rotation: [-0.64900142, -0.598999202, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -14,12 +14,12 @@ Entities:
         PerspectiveFar: 1000
       MoveSpeed: 10
       RotateSpeed: 0.100000001
-      LastMousePos: [1287, 646]
+      LastMousePos: [1017, 572]
       PrimaryID: 0
       FixedAspectRatio: false
   - Entity: 1
     TagComponent:
-      Tag: PurpleLight
+      Tag: Nanosuit
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [1.70175937e-07, 0.0141400062, -2.63794764e-08]
