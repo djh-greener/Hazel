@@ -4,19 +4,18 @@ Entities:
     TagComponent:
       Tag: Main Camera
     TransformComponent:
-      Translation: [-11.4047813, 22.7784405, 13.0983458]
-      Rotation: [-0.64900142, -0.598999202, 0]
+      Translation: [10.5589619, 41.9783401, 45.7138824]
+      Rotation: [-0.653000236, -1.62999511, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
         PerspectiveFOV: 0.785398185
         PerspectiveNear: 0.00999999978
-        PerspectiveFar: 1000
-      MoveSpeed: 10
+        PerspectiveFar: 110
+      MoveSpeed: 20
       RotateSpeed: 0.100000001
-      LastMousePos: [1017, 572]
+      LastMousePos: [1245, 769]
       PrimaryID: 0
-      FixedAspectRatio: false
   - Entity: 1
     TagComponent:
       Tag: Nanosuit
@@ -39,7 +38,7 @@ Entities:
       TilingFactor: 1
     BaseGeometryComponent:
       Type: Cube
-      TexturePath: assets\textures\Wallpaper.png
+      TexturePath: assets\textures\wood.png
   - Entity: 3
     TagComponent:
       Tag: WhiteLight
@@ -54,30 +53,6 @@ Entities:
       Intensity: 5.9000001
   - Entity: 4
     TagComponent:
-      Tag: RedLight
-    TransformComponent:
-      Translation: [-1.50534666, 1.5517633, 0]
-      Rotation: [0, -0, 0]
-      Scale: [1, 1, 1]
-    PointLightComponent:
-      Color: [1, 0, 0]
-      Linear: 0.699999988
-      Quadratic: 1.79999995
-      Intensity: 5.4000001
-  - Entity: 5
-    TagComponent:
-      Tag: GreenLight
-    TransformComponent:
-      Translation: [1.01250732, 2.95038867, 0.655636549]
-      Rotation: [0, -0, 0]
-      Scale: [1, 1, 1]
-    PointLightComponent:
-      Color: [0, 0.734636903, 0.0328329466]
-      Linear: 0.699999988
-      Quadratic: 1.79999995
-      Intensity: 7.5
-  - Entity: 6
-    TagComponent:
       Tag: PurpleLight
     TransformComponent:
       Translation: [0, 16.1738377, 0]
@@ -87,4 +62,33 @@ Entities:
       Color: [0.642457962, 0, 1]
       Linear: 0.349999994
       Quadratic: 3.5999999
-      Intensity: 7.0999999
+      Intensity: 11.6999998
+  - Entity: 5
+    TagComponent:
+      Tag: DirLight
+    TransformComponent:
+      Translation: [-6.39375973, 27.9768467, 17.6442413]
+      Rotation: [0, -0, 0]
+      Scale: [0.999999821, 1.20857263, 1.00000143]
+    DirLightComponent:
+      Color: [1, 1, 1]
+      Intensity: 1
+  - Entity: 6
+    TagComponent:
+      Tag: Wall
+    TransformComponent:
+      Translation: [14.550602, 6.71387196, 2.36216378]
+      Rotation: [1.58493972, -0, 0]
+      Scale: [1, 30.0000019, 7.71694374]
+    BaseGeometryComponent:
+      Type: Cube
+      TexturePath: assets\textures\brickwall.jpg
+  - Entity: 7
+    TagComponent:
+      Tag: Planet
+    TransformComponent:
+      Translation: [0, 5.81191921, 11.8457098]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    StaticMeshComponent:
+      Path: assets\models\planet\planet.obj

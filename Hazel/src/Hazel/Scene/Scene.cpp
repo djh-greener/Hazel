@@ -4,6 +4,8 @@
 
 #include"Hazel/Renderer/Renderer3D.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
+#include"Hazel/Renderer/Light/DirLightComponent.h"
+
 #include"Hazel/Renderer/RenderCommand.h"
 
 #include"Hazel/Scene/Components.h"
@@ -40,26 +42,6 @@ namespace Hazel {
 				}
 			}
 		}
-
-
-		//Render Scene Using Renderer2D API
-
-		//if (MainCameraComp)
-		//{
-		//	Renderer2D::BeginScene(*MainCameraComp);
-		//
-		//	auto group = m_Registry.group<TransformComponent, SpriteRendererComponent>();
-		//	for (auto entity : group)
-		//	{
-		//		auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-		//
-		//		Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
-		//	}
-		//	Renderer2D::EndScene();
-		//}
-		//Render Scene Using Renderer3D API
-		//Only Need To Call Renderer3D to Render Scene
-		//beLike: Renderer3D::RendererScene(MainCameraComp,m_Registry);
 		Renderer3D::RendererScene(m_Registry);
 	}
 
@@ -74,8 +56,7 @@ namespace Hazel {
 		for (auto entity : view)
 		{
 			auto& cameraComponent = view.get<CameraComponent>(entity);
-			if (!cameraComponent.FixedAspectRatio)
-				cameraComponent.Camera.SetViewportSize(width, height);
+			cameraComponent.Camera.SetViewportSize(width, height);
 		}
 
 	}
@@ -149,6 +130,11 @@ namespace Hazel {
 	}
 	template<>
 	void Scene::OnComponentAdded<PointLightComponent>(Entity entity, PointLightComponent& component)
+	{
+		component.Owner = entity;
+	}
+	template<>
+	void Scene::OnComponentAdded<DirLightComponent>(Entity entity, DirLightComponent& component)
 	{
 		component.Owner = entity;
 	}

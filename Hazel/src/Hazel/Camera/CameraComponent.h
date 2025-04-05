@@ -37,7 +37,6 @@ namespace Hazel {
 		glm::vec2 LastMousePos;
 		
 		static uint32_t PrimaryID;
-		bool FixedAspectRatio = false;
 
 	};
 }

@@ -17,7 +17,7 @@ namespace Hazel {
 		void SetPerspectiveNearClip(float nearClip) { m_PerspectiveNear = nearClip; RecalculateProjection(); }
 		float GetPerspectiveFarClip() const { return m_PerspectiveFar; }
 		void SetPerspectiveFarClip(float farClip) { m_PerspectiveFar = farClip; RecalculateProjection(); }
-
+		float GetPerspectiveAspectRatio()const { return m_AspectRatio; }
 		void SetViewportSize(uint32_t width, uint32_t height);
 
 	private:

@@ -6,6 +6,7 @@
 #include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
 #include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
+#include"Hazel/Renderer/Light/DirLightComponent.h"
 
 #include"Hazel/Core/GlobalData.h"
 #include"UI.h"
@@ -183,6 +184,8 @@ namespace Hazel {
 			DisplayAddComponentEntry<BaseGeometryComponent>("BaseGeometry");
 			DisplayAddComponentEntry<StaticMeshComponent>("StaticMesh");
 			DisplayAddComponentEntry<PointLightComponent>("PointLight");
+			DisplayAddComponentEntry<DirLightComponent>("DirLight");
+
 
 			ImGui::EndPopup();
 		}
@@ -298,11 +301,14 @@ namespace Hazel {
 				ImGui::DragFloat("Linear", &component.Linear, 0.1f, 0.35f, 1.4f);
 				ImGui::DragFloat("Quadratic", &component.Quadratic, 0.1f, 0.9f, 3.6f);
 				ImGui::DragFloat("Intensity", &component.Intensity, 0.1f, 0.1f, 100.f);
-
-
+			});
+		
+		DrawComponent<DirLightComponent>("DirLight", entity, [&](auto& component)
+			{
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				ImGui::DragFloat("Intensity", &component.Intensity, 0.1f, 0.1f, 100.f);
 			});
 		}
-
 	template<typename T>
 	void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entryName) {
 		if (!GlobalData::GetGlobalData().SelectedEntity.HasComponent<T>())

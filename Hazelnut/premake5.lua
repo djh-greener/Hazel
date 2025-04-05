@@ -4,7 +4,8 @@ project "Hazelnut"
     cppdialect "C++17"
     staticruntime "on"
     
-    targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+    --targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+	targetdir ("%{wks.location}/Hazelnut")
     objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
     
     files

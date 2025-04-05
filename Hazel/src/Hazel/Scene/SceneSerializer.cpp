@@ -6,6 +6,7 @@
 #include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
 #include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
+#include"Hazel/Renderer/Light/DirLightComponent.h"
 
 #include<yaml-cpp/yaml.h>
 
@@ -155,7 +156,6 @@ namespace Hazel {
 				out << YAML::Key << "RotateSpeed" << YAML::Value << cameraComponent.RotateSpeed;
 				out << YAML::Key << "LastMousePos" << YAML::Value << cameraComponent.LastMousePos;
 				out << YAML::Key << "PrimaryID" << YAML::Value << cameraComponent.PrimaryID;
-				out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
 			out << YAML::EndMap; 
 		}
 		if (entity.HasComponent<SpriteRendererComponent>())
@@ -203,7 +203,16 @@ namespace Hazel {
 
 			out << YAML::EndMap;
 		}
-		
+		if (entity.HasComponent<DirLightComponent>())
+		{
+			out << YAML::Key << "DirLightComponent";
+			out << YAML::BeginMap;
+			auto& DirLightComp = entity.GetComponent<DirLightComponent>();
+			out << YAML::Key << "Color" << YAML::Value << DirLightComp.Color;
+			out << YAML::Key << "Intensity" << YAML::Value << DirLightComp.Intensity;
+
+			out << YAML::EndMap;
+		}
 		out << YAML::EndMap;
 	}
 
@@ -296,7 +305,6 @@ namespace Hazel {
 				cc.RotateSpeed = cameraComponent["RotateSpeed"].as<float>();
 				cc.LastMousePos = cameraComponent["LastMousePos"].as<glm::vec2>();
 				cc.PrimaryID = cameraComponent["PrimaryID"].as<int>();
-				cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 			}
 
 			auto spriteRendererComponent = entity["SpriteRendererComponent"];
@@ -349,7 +357,15 @@ namespace Hazel {
 					src.Quadratic = PointLightComp["Quadratic"].as<float>();
 				if (PointLightComp["Intensity"])
 					src.Intensity = PointLightComp["Intensity"].as<float>();
-				
+			}
+			auto DirLightComp = entity["DirLightComponent"];
+			if (DirLightComp)
+			{
+				auto& src = deserializedEntity.AddComponent<DirLightComponent>();
+				if (DirLightComp["Color"])
+					src.Color = DirLightComp["Color"].as<glm::vec3>();
+				if (DirLightComp["Intensity"])
+					src.Intensity = DirLightComp["Intensity"].as<float>();
 			}
 		}
 

@@ -41,8 +41,8 @@ namespace Hazel {
 		FramebufferAttachmentSpecification Attachments;
 		uint32_t Width=0, Height=0;
 		uint32_t Samples = 1;
-		bool SwapChainTarget = false;
 		bool IsCubeMap = false;
+		bool FixedSize = false;
 	};
 
 	class Framebuffer
@@ -57,7 +57,7 @@ namespace Hazel {
 
 		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
 		virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
-
+		virtual uint32_t GetDepthAttachmentRendererID() const = 0;
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
 		static Ref<Framebuffer> Create(const FramebufferSpecification& spec);

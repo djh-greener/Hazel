@@ -21,7 +21,10 @@ namespace Hazel {
 		{ 
 			HZ_CORE_ASSERT(index < m_ColorAttachments.size()); return m_ColorAttachments[index];
 		}
-
+		virtual uint32_t GetDepthAttachmentRendererID() const override
+		{
+			HZ_CORE_ASSERT(m_DepthAttachment!=0); return m_DepthAttachment ;
+		}
 		virtual void Resize(uint32_t width, uint32_t height)override;
 
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }

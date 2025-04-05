@@ -59,15 +59,10 @@ namespace Hazel {
 		// Render
 		//Renderer2D::ResetStats();
 		Framebuffer.Bind();
-		RenderCommand::SetClearColor({ 0.13f, 0.13f, 0.13f, 1 });
+		RenderCommand::SetClearColor({ 0.06f, 0.06f, 0.06f, 1 });
 		RenderCommand::Clear();
-		Framebuffer.ClearAttachment(1, -1);		// Clear our entity ID attachment to -1
+		Framebuffer.ClearAttachment(1, -1);		// Clear entity ID attachment to -1
 		m_ActiveScene->OnUpdateRuntime(ts, m_ViewportHovered); // Render Scene
-
-		//m_ModelShader->Bind();
-		//m_ModelShader->SetMat4("u_Model", glm::mat4(1));
-		//m_StaticMeshEntity.GetComponent<StaticMeshComponent>().DrawStaticMesh(m_ModelShader);
-		//m_ModelShader->UnBind();
 
 		//Mouse Picking
 		if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
