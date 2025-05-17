@@ -3,8 +3,8 @@
 
 #include "Hazel/Scene/Components.h"
 #include"Hazel/Camera/CameraComponent.h"
+#include"Hazel/Renderer/Material/Material.h"
 #include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
-#include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
 #include"Hazel/Renderer/Light/DirLightComponent.h"
 
@@ -181,7 +181,6 @@ namespace Hazel {
 		if (ImGui::BeginPopup("AddComponent"))
 		{
 			DisplayAddComponentEntry<CameraComponent>("Camera");
-			DisplayAddComponentEntry<BaseGeometryComponent>("BaseGeometry");
 			DisplayAddComponentEntry<StaticMeshComponent>("StaticMesh");
 			DisplayAddComponentEntry<PointLightComponent>("PointLight");
 			DisplayAddComponentEntry<DirLightComponent>("DirLight");
@@ -233,49 +232,7 @@ namespace Hazel {
 
 			});
 
-		DrawComponent<BaseGeometryComponent>("BaseGeometry", entity, [&](auto& component)
-			{
-				//Type Select
-				const char* GeometryTypeNames[] = {"None","Cube","Sphere","Cylinder" };
-
-				int CurrentType= component.GetType();
-				if (ImGui::Combo("Type", &CurrentType, GeometryTypeNames, 4, 4)) 
-				{
-					component.SetTypeName(GeometryTypeNames[CurrentType]);
-				}
-				//Show Texture
-				ImGui::Text("Texture", ImVec2(100.0f, 0.0f));
-				if (component.m_StaticMesh)
-				{
-
-					auto& textures = component.m_StaticMesh->textures;
-					if (!component.GetTexturePath().empty())
-					{
-						ImGui::Image((ImTextureID)(uint64_t)textures[0]->GetRendererID(), ImVec2(128, 128));
-					}
-					else
-					{
-						ImGui::Image((ImTextureID)(uint64_t)(m_DefaultTextureIcon->GetRendererID()), ImVec2(128, 128));
-					}
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-						{
-							const wchar_t* path = (const wchar_t*)payload->Data;
-							std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-							//TODO:Check if texturePath is picture
-							std::string fileExtension = texturePath.extension().string();
-							HZ_ASSERT(fileExtension == ".png" || fileExtension == ".jpg", "HAZEL now only support .png or .jpg as texture");
-
-							component.SetTexturePath(texturePath);
-						}
-						ImGui::EndDragDropTarget();
-					}
-				}
-
-		});
-
-		DrawComponent<StaticMeshComponent>("StaticMesh", entity, [&](auto& component)
+		DrawComponent<StaticMeshComponent>("StaticMesh", entity, [&](StaticMeshComponent& component)
 			{
 				if(!component.name.empty())
 					ImGui::Text(component.name.string().c_str(), ImVec2(100.0f, 100.0f));
@@ -288,11 +245,147 @@ namespace Hazel {
 						const wchar_t* path = (const wchar_t*)payload->Data;
 						std::filesystem::path modelPath = std::filesystem::path(g_AssetPath) / path;
 						std::string fileExtension = modelPath.extension().string();
-						HZ_ASSERT(fileExtension == ".obj", "HAZEL now only support .obj ");
-						component.loadStaticMesh(modelPath.string());
+						HZ_ASSERT(fileExtension == ".obj"|| fileExtension == ".OBJ"|| fileExtension == ".fbx"|| fileExtension == ".FBX", "HAZEL now only support .obj .fbx ");
+						std::unordered_map<std::string, Ref<Material>> overrideMaterialPerMesh;
+						component.meshes.clear();
+						component.loadStaticMesh(modelPath, overrideMaterialPerMesh);
 					}
 					ImGui::EndDragDropTarget();
 				}
+				{
+					static float left_panel_width = 80.0f; // 调整为原来1/3宽
+					static float image_size = 80.0f;
+					static float item_spacing = 10.0f;
+					static ImVec4 separator_color = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+					static float texture_item_height = image_size + item_spacing * 2;
+					static ImVec4 splitter_color = ImVec4(0.3f, 0.3f, 0.3f, 1.0f); // 分隔线颜色
+
+
+					for (size_t i = 0; i < component.meshes.size(); i++)
+					{
+						auto& mesh = component.meshes[i];
+						auto& material = mesh->m_Material;
+						const char* materialName = mesh->name.c_str();
+						int texture_count = material->textures.size();
+
+						// 计算当前行需要的高度
+						float row_height = texture_count * texture_item_height;
+
+						// 开始一行（材质行）
+						ImGui::BeginChild(("##MaterialRow" + std::to_string(i)).c_str(),
+							ImVec2(0, row_height),
+							false,
+							ImGuiWindowFlags_NoScrollbar);
+
+						// 左侧：材质名（垂直居中）
+						ImGui::BeginChild(("##LeftPanel" + std::to_string(i)).c_str(),
+							ImVec2(left_panel_width, row_height),
+							false);
+						{
+							ImVec2 text_size = ImGui::CalcTextSize(materialName);
+							float y_pos = (row_height - text_size.y) * 0.5f;
+
+							ImGui::SetCursorPosY(y_pos);
+							ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", materialName);
+						}
+						ImGui::EndChild();
+
+						// 可拖拽的分隔条
+						ImGui::SameLine();
+						ImGui::InvisibleButton(("##Splitter" + std::to_string(i)).c_str(),
+							ImVec2(2.0f, std::max(row_height,0.1f)));
+						if (ImGui::IsItemHovered() || ImGui::IsItemActive())
+							splitter_color = ImVec4(0.5f, 0.5f, 0.8f, 1.0f); // 悬停/活动时高亮
+						else
+							splitter_color = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
+
+						ImGui::GetWindowDrawList()->AddRectFilled(
+							ImGui::GetItemRectMin(),
+							ImGui::GetItemRectMax(),
+							ImGui::GetColorU32(splitter_color),
+							0.0f);
+						if (ImGui::IsItemActive())
+						{
+							left_panel_width += ImGui::GetIO().MouseDelta.x;
+							left_panel_width = ImClamp(left_panel_width, 60.0f, 150.0f);
+						}
+						ImGui::SameLine();
+
+						// 右侧：纹理列表（图片+右侧名称）
+						ImGui::BeginChild(("##RightPanel" + std::to_string(i)).c_str(),
+							ImVec2(0, row_height),
+							false);
+						{
+							for (size_t tex_idx = 0; tex_idx < material->textures.size(); tex_idx++)
+							{
+								auto& texture = material->textures[tex_idx];
+
+								// 计算当前纹理项的起始Y位置
+								float item_y = tex_idx * texture_item_height + item_spacing;
+								ImGui::SetCursorPosY(item_y);
+
+								// 纹理项组
+								ImGui::BeginGroup();
+								{
+									// 图片（固定高度）
+									ImGui::Image((ImTextureID)(uint64_t)texture->GetRendererID(),
+										ImVec2(image_size, image_size));
+
+									if (ImGui::BeginDragDropTarget())
+									{
+										if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+										{
+											const wchar_t* path = (const wchar_t*)payload->Data;
+											std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+											//TODO:Check if texturePath is picture
+											std::string fileExtension = texturePath.extension().string();
+											HZ_ASSERT(fileExtension == ".png" || fileExtension == ".jpg", "HAZEL now only support .png or .jpg as texture");
+
+											auto uniformName = texture->GetShaderUniformName();
+											texture = Texture2D::Create(texturePath.string(), uniformName =="diffuse");
+											texture->SetShaderUniformName(uniformName);
+										}
+										ImGui::EndDragDropTarget();
+									}
+									// 图片右侧的名称
+									ImGui::SameLine();
+									ImGui::SetCursorPosY(item_y + (image_size - ImGui::GetTextLineHeight()) * 0.5f);
+									ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s",
+										texture->GetShaderUniformName().c_str());
+								}
+								ImGui::EndGroup();
+
+								// 纹理间的水平分隔线
+								if (tex_idx < material->textures.size())
+								{
+									ImGui::SetCursorPosY((tex_idx + 1) * texture_item_height - 1);
+									ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+									ImGui::GetWindowDrawList()->AddLine(
+										ImGui::GetItemRectMin(),
+										ImGui::GetItemRectMax(),
+										ImGui::GetColorU32(separator_color),
+										1.0f);
+								}
+							}
+						}
+						ImGui::EndChild();
+
+						ImGui::EndChild(); // 结束材质行
+
+						// 材质间的分隔线
+						if (i < component.meshes.size())
+						{
+							ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+							ImGui::GetWindowDrawList()->AddLine(
+								ImGui::GetItemRectMin(),
+								ImGui::GetItemRectMax(),
+								ImGui::GetColorU32(separator_color),
+								1.0f);
+						}
+					}
+
+				}
+			
 			});
 
 		DrawComponent<PointLightComponent>("PointLight", entity, [&](auto& component)

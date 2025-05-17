@@ -16,6 +16,7 @@ namespace Hazel {
 		virtual void SetShaderUniformName(const std::string&) = 0;
 
 		virtual void Bind(uint32_t slot = 0) = 0;
+		virtual void UnBind(uint32_t slot = 0) = 0;
 		virtual void SetData(void* data, uint32_t size) = 0;
 
 		virtual bool IsLoaded() const = 0;

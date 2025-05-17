@@ -10,7 +10,7 @@ namespace Hazel {
 	class VertexArray;
 	class VertexBuffer;
 	class Texture2D;
-
+	class Material;
 	struct StaticMeshVertex {
 		glm::vec3 Position;
 		glm::vec3 Normal;
@@ -25,8 +25,8 @@ namespace Hazel {
 	public:
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
-
-		std::vector<Ref<Texture2D>> textures;
+		Ref< Material>m_Material;
+		std::string name;
 
 		
 		StaticMesh(std::vector<StaticMeshVertex>& vertices, std::vector<uint32_t>& indices, std::vector<Ref<Texture2D>>&& textures);

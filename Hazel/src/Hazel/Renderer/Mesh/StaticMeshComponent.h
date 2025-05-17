@@ -10,31 +10,21 @@ namespace Hazel {
 	class Shader;
 	class Texture2D;
 	class StaticMesh;
+	class Material;
 	using fspath = std::filesystem::path;
 
-	struct StaticMeshNode {
-		std::vector<Ref<StaticMesh>>meshes;
-		std::vector<Ref<StaticMeshNode>>children;
-	};
 	class StaticMeshComponent
 	{
 	public:
 		StaticMeshComponent() = default;
 		void DrawStaticMesh(Ref<Shader> shader);
-		
-		//返回Mesh树的第一个Mesh
-		Ref<StaticMesh>GetStaticMesh(){ return GetStaticMeshRecursive(RootNode); }
-
-		void loadStaticMesh(fspath path);
-		void processNode(aiNode* ainode, Ref<StaticMeshNode> node, const aiScene* scene);
-		Ref<StaticMesh> processStaticMesh(aiMesh* mesh, const aiScene* scene);
+		void loadStaticMesh(fspath path,std::unordered_map<std::string,Ref<Material>> overrideMaterialPerMesh);
+	private:
+		Ref<StaticMesh> processStaticMesh(aiMesh* mesh, const aiScene* scene, std::unordered_map<std::string, Ref<Material>>& overrideMaterialPerMesh);
 		std::vector< Ref<Texture2D>> loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
-
-		void DrawStaticMeshRecursive(Ref<StaticMeshNode> node, Ref<Shader> shader);
-		Ref<StaticMesh>GetStaticMeshRecursive(Ref<StaticMeshNode> node);
-
+	public:
 		Entity Owner;
-		Ref<StaticMeshNode>RootNode;//the mesh tree that use same shader
+		std::vector<Ref<StaticMesh>>meshes;
 		fspath directory;
 		fspath name;
 		std::vector<Ref<Texture2D>> textures_loaded;

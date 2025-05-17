@@ -22,6 +22,8 @@ namespace Hazel
 		virtual bool IsLoaded() const override { return m_IsLoaded; }
 
 		virtual void Bind(uint32_t slot = 0) override;
+		virtual void UnBind(uint32_t slot = 0) override;
+
 		virtual void SetData(void* data, uint32_t size)override;
 		virtual bool operator==(const Texture& other) const override
 		{

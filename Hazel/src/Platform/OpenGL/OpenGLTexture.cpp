@@ -73,6 +73,10 @@ namespace Hazel {
 	{
 		glBindTextureUnit(slot, m_RendererID);
 	}
+	void OpenGLTexture2D::UnBind(uint32_t slot)
+	{
+		glBindTextureUnit(slot, 0);
+	}
 	void OpenGLTexture2D::SetData(void* data, uint32_t size)
 	{
 		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;

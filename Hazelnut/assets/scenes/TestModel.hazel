@@ -4,8 +4,8 @@ Entities:
     TagComponent:
       Tag: Main Camera
     TransformComponent:
-      Translation: [10.5589619, 41.9783401, 45.7138824]
-      Rotation: [-0.653000236, -1.62999511, 0]
+      Translation: [7.75409698, 37.0166664, 37.5195694]
+      Rotation: [-0.749002099, -1.72199547, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -14,7 +14,7 @@ Entities:
         PerspectiveFar: 110
       MoveSpeed: 20
       RotateSpeed: 0.100000001
-      LastMousePos: [1245, 769]
+      LastMousePos: [1616, 302]
       PrimaryID: 0
   - Entity: 1
     TagComponent:
@@ -25,20 +25,60 @@ Entities:
       Scale: [1, 1, 1]
     StaticMeshComponent:
       Path: assets\models\nanosuit\nanosuit.obj
-  - Entity: 2
+      Materials:
+        - MeshName: Visor
+          Textures:
+            - ambient:assets\models\nanosuit\glass_refl.png
+            - diffuse:assets\models\nanosuit\glass_dif.png
+            - normal:assets\models\nanosuit\glass_ddn.png
+        - MeshName: Legs
+          Textures:
+            - ambient:assets\models\nanosuit\leg_showroom_refl.png
+            - diffuse:assets\models\nanosuit\leg_dif.png
+            - specular:assets\models\nanosuit\leg_showroom_spec.png
+            - normal:assets\models\nanosuit\leg_showroom_ddn.png
+        - MeshName: hands
+          Textures:
+            - ambient:assets\models\nanosuit\hand_showroom_refl.png
+            - diffuse:assets\models\nanosuit\hand_dif.png
+            - specular:assets\models\nanosuit\hand_showroom_spec.png
+            - normal:assets\models\nanosuit\hand_showroom_ddn.png
+        - MeshName: Lights
+          Textures:
+            - ambient:assets\models\nanosuit\glass_refl.png
+            - diffuse:assets\models\nanosuit\glass_dif.png
+            - normal:assets\models\nanosuit\glass_ddn.png
+        - MeshName: Arms
+          Textures:
+            - ambient:assets\models\nanosuit\arm_showroom_refl.png
+            - diffuse:assets\models\nanosuit\arm_dif.png
+            - specular:assets\models\nanosuit\arm_showroom_spec.png
+            - normal:assets\models\nanosuit\arm_showroom_ddn.png
+        - MeshName: Helmet
+          Textures:
+            - ambient:assets\models\nanosuit\helmet_showroom_refl.png
+            - diffuse:assets\models\nanosuit\helmet_diff.png
+            - specular:assets\models\nanosuit\helmet_showroom_spec.png
+            - normal:assets\models\nanosuit\helmet_showroom_ddn.png
+        - MeshName: Body
+          Textures:
+            - ambient:assets\models\nanosuit\body_showroom_refl.png
+            - diffuse:assets\models\nanosuit\body_dif.png
+            - specular:assets\models\nanosuit\body_showroom_spec.png
+            - normal:assets\models\nanosuit\body_showroom_ddn.png
+  - Entity: 9
     TagComponent:
-      Tag: Floor
+      Tag: Empty Enity
     TransformComponent:
-      Translation: [0, 0, 3.7252903e-09]
-      Rotation: [1.58493972, -0, 0]
-      Scale: [50, 50, 0.999999881]
-    SpriteRendererComponent:
-      Color: [1, 1, 1, 1]
-      TexturePath: assets\textures\Checkerboard.png
-      TilingFactor: 1
-    BaseGeometryComponent:
-      Type: Cube
-      TexturePath: assets\textures\wood.png
+      Translation: [-15.228796, -1.38522959, -22.6348572]
+      Rotation: [0, -0, 0]
+      Scale: [50, 1, 50]
+    StaticMeshComponent:
+      Path: assets\models\base\cube v1.obj
+      Materials:
+        - MeshName: Body1
+          Textures:
+            - diffuse:assets\textures\wood.png
   - Entity: 3
     TagComponent:
       Tag: WhiteLight
@@ -67,7 +107,7 @@ Entities:
     TagComponent:
       Tag: DirLight
     TransformComponent:
-      Translation: [-6.39375973, 27.9768467, 17.6442413]
+      Translation: [-6.39375973, 20.0539894, 17.6442413]
       Rotation: [0, -0, 0]
       Scale: [0.999999821, 1.20857263, 1.00000143]
     DirLightComponent:
@@ -77,12 +117,15 @@ Entities:
     TagComponent:
       Tag: Wall
     TransformComponent:
-      Translation: [14.550602, 6.71387196, 2.36216378]
+      Translation: [14.550602, 7.49001455, -6.30215693]
       Rotation: [1.58493972, -0, 0]
       Scale: [1, 30.0000019, 7.71694374]
-    BaseGeometryComponent:
-      Type: Cube
-      TexturePath: assets\textures\brickwall.jpg
+    StaticMeshComponent:
+      Path: assets\models\base\cube v1.obj
+      Materials:
+        - MeshName: Body1
+          Textures:
+            - diffuse:Resources/Icons/SceneHierarchyPanel/TextureIcon.png
   - Entity: 7
     TagComponent:
       Tag: Planet
@@ -92,3 +135,7 @@ Entities:
       Scale: [1, 1, 1]
     StaticMeshComponent:
       Path: assets\models\planet\planet.obj
+      Materials:
+        - MeshName: Plane
+          Textures:
+            - diffuse:assets\models\planet\planet_Quom1200.png

@@ -2,6 +2,7 @@
 #include "StaticMeshComponent.h"
 
 #include"Hazel/Scene/Components.h"
+#include"Hazel/Renderer/Material/Material.h"
 #include"Hazel/Renderer/Mesh/StaticMesh.h"
 #include"Hazel/Renderer/Shader.h"
 #include"Hazel/Renderer/Texture.h"
@@ -11,38 +12,20 @@
 #include "assimp/postprocess.h"
 
 #include <filesystem>
+#include<queue>
 
 namespace Hazel {
 
 	void StaticMeshComponent::DrawStaticMesh(Ref<Shader> shader)
 	{
-		DrawStaticMeshRecursive(RootNode, shader);
-	}
-
-	void StaticMeshComponent::DrawStaticMeshRecursive(Ref<StaticMeshNode> node, Ref<Shader> shader)
-	{
-		if (!node)
-			return;
-		for (auto mesh : node->meshes)
-			mesh->DrawStaticMesh(shader);
-		for (auto childnode : node->children) {
-			DrawStaticMeshRecursive(childnode, shader);
+		for (size_t i = 0; i < meshes.size(); i++)
+		{
+			meshes[i]->DrawStaticMesh(shader);
 		}
 	}
 
-	Ref<StaticMesh> StaticMeshComponent::GetStaticMeshRecursive(Ref<StaticMeshNode> node)
-	{
-		for (auto mesh : node->meshes)
-			return mesh;
-		for (auto childnode : node->children)
-			return GetStaticMeshRecursive(childnode);
-
-		return {};
-	}
-
-
 	namespace fs = std::filesystem;
-	void StaticMeshComponent::loadStaticMesh(fspath path)
+	void StaticMeshComponent::loadStaticMesh(fspath path, std::unordered_map<std::string, Ref<Material>> overrideMaterialPerMesh)
 	{
 		Assimp::Importer importer;
 		auto scene = importer.ReadFile(path.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -55,29 +38,35 @@ namespace Hazel {
 		fs::path fs_path(path);
 		directory = fs_path.parent_path();
 		name = fs_path.filename();
+		
+		//BFS
+		//TODO:MultiThread
+		std::queue<aiNode*>queue;
+		queue.push(scene->mRootNode);
+		while (!queue.empty())
+		{
+			aiNode* curNode = queue.front();
+			queue.pop();
 
-		RootNode = CreateRef<StaticMeshNode>();
-		processNode(scene->mRootNode, RootNode, scene);
+			for (size_t i = 0; i < curNode->mNumMeshes; i++)
+			{
+				meshes.push_back(processStaticMesh(scene->mMeshes[curNode->mMeshes[i]], scene, overrideMaterialPerMesh));
+			}
+			for (size_t i = 0; i < curNode->mNumChildren; i++)
+			{
+				queue.push(curNode->mChildren[i]);
+			}
+		}
+
 	}
 
-	void StaticMeshComponent::processNode(aiNode* ainode, Ref<StaticMeshNode> node, const aiScene* scene)
-	{
-		for (uint32_t i = 0; i < ainode->mNumMeshes; i++) {
-			aiMesh* aimesh = scene->mMeshes[ainode->mMeshes[i]];
-			node->meshes.push_back(processStaticMesh(aimesh, scene));
-		}
-		for (uint32_t i = 0; i < ainode->mNumChildren; i++) {
-			node->children.push_back(CreateRef<StaticMeshNode>());
-			processNode(ainode->mChildren[i], node->children[i], scene);
-		}
-	}
 
-	Ref<StaticMesh> StaticMeshComponent::processStaticMesh(aiMesh* mesh, const aiScene* scene)
+	Ref<StaticMesh> StaticMeshComponent::processStaticMesh(aiMesh* mesh, const aiScene* scene, std::unordered_map<std::string, Ref<Material>>& overrideMaterialPerMesh)
 	{
-
 		std::vector<StaticMeshVertex>vertices(mesh->mNumVertices);
 		std::vector<uint32_t>indices;
 		std::vector<Ref<Texture2D>>textures;
+		std::string meshName = mesh->mName.C_Str();
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			vertices[i].Position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
@@ -101,23 +90,33 @@ namespace Hazel {
 				indices.push_back(face.mIndices[j]);
 		}
 
-		if (mesh->mMaterialIndex > 0)
+		if (overrideMaterialPerMesh.empty())
 		{
-			auto* material = scene->mMaterials[mesh->mMaterialIndex];
-			std::vector<Ref<Texture2D>> ambients = loadMaterialTextures(material, aiTextureType_AMBIENT, "ambient");
-			std::vector<Ref<Texture2D>> diffuses = loadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuse");
-			std::vector<Ref<Texture2D>> speculars = loadMaterialTextures(material, aiTextureType_SPECULAR, "specular");
-			std::vector<Ref<Texture2D>> normals = loadMaterialTextures(material, aiTextureType_HEIGHT, "normal");
-			textures.insert(textures.end(), ambients.begin(), ambients.end());
-			textures.insert(textures.end(), diffuses.begin(), diffuses.end());
-			textures.insert(textures.end(), speculars.begin(), speculars.end());
-			textures.insert(textures.end(), normals.begin(), normals.end());
-
+			if (mesh->mMaterialIndex > 0)
+			{
+				auto* material = scene->mMaterials[mesh->mMaterialIndex];
+				std::vector<Ref<Texture2D>> ambients = loadMaterialTextures(material, aiTextureType_AMBIENT, "ambient");
+				std::vector<Ref<Texture2D>> diffuses = loadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuse");
+				std::vector<Ref<Texture2D>> speculars = loadMaterialTextures(material, aiTextureType_SPECULAR, "specular");
+				std::vector<Ref<Texture2D>> normals = loadMaterialTextures(material, aiTextureType_HEIGHT, "normal");
+				textures.insert(textures.end(), ambients.begin(), ambients.end());
+				textures.insert(textures.end(), diffuses.begin(), diffuses.end());
+				textures.insert(textures.end(), speculars.begin(), speculars.end());
+				textures.insert(textures.end(), normals.begin(), normals.end());
+			}
+			else
+				HZ_ERROR("Loading No Material In This Mesh.");
 		}
 		else
-			HZ_ERROR("Loading No Material In This Mesh." );
-
-		return CreateRef<StaticMesh>(vertices, indices, std::move(textures));
+		{
+			if (overrideMaterialPerMesh.find(meshName)!= overrideMaterialPerMesh.end())
+			{
+				textures = overrideMaterialPerMesh[meshName]->textures;
+			}
+		}
+		auto staticMesh = CreateRef<StaticMesh>(vertices, indices, std::move(textures));
+		staticMesh->name = meshName;
+		return staticMesh;
 	}
 
 	std::vector< Ref<Texture2D>> StaticMeshComponent::loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)

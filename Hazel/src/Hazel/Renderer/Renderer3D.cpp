@@ -6,7 +6,6 @@
 #include "Hazel/Renderer/UniformBuffer.h"
 #include"Hazel/Scene/Components.h"
 #include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
-#include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 #include "Hazel/Camera/CameraComponent.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
 #include"Hazel/Renderer/Light/DirLightComponent.h"
@@ -210,13 +209,6 @@ namespace Hazel {
 				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", TransformComp.GetTransform());
 				MeshComp.DrawStaticMesh(s_Data.Shaders["SingleColor"]);
 			}
-			if (SelectedEntity.HasComponent<BaseGeometryComponent>())
-			{
-				auto& TransformComp = SelectedEntity.GetComponent<TransformComponent>();
-				auto& MeshComp = SelectedEntity.GetComponent<BaseGeometryComponent>();
-				s_Data.Shaders["SingleColor"]->SetMat4("u_Model", TransformComp.GetTransform());
-				MeshComp.DrawMesh(s_Data.Shaders["SingleColor"]);
-			}
 			glStencilMask(0xFF);
 		}
 
@@ -253,28 +245,6 @@ namespace Hazel {
 				CurrentShader->SetMat4("u_Model", TransformComp.GetTransform());
 				StaticMeshComp.DrawStaticMesh(CurrentShader);
 			}
-		}
-		//Draw Base Geometry Mesh
-		auto BaseMeshView = SceneRegistry.view<TransformComponent, BaseGeometryComponent>();
-		for (auto& entity : BaseMeshView)
-		{
-			if (WriteStencil && entity == SelectedEntity)
-			{
-				glStencilMask(0xFF);
-
-				auto [TransformComp, BaseMeshComp] = BaseMeshView.get< TransformComponent, BaseGeometryComponent>(entity);
-				CurrentShader->SetMat4("u_Model", TransformComp.GetTransform());
-				BaseMeshComp.DrawMesh(CurrentShader);
-
-				glStencilMask(0x00);
-			}
-			else
-			{
-				auto [TransformComp, BaseMeshComp] = BaseMeshView.get< TransformComponent, BaseGeometryComponent>(entity);
-				CurrentShader->SetMat4("u_Model", TransformComp.GetTransform());
-				BaseMeshComp.DrawMesh(CurrentShader);
-			}
-
 		}
 	}
 	//Bug

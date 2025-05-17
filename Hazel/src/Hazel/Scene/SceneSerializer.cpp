@@ -3,8 +3,8 @@
 #include"Entity.h"
 #include"Components.h"
 #include"Hazel/Camera/CameraComponent.h"
+#include"Hazel/Renderer/Material/Material.h"
 #include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
-#include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 #include"Hazel/Renderer/Light/PointLightComponent.h"
 #include"Hazel/Renderer/Light/DirLightComponent.h"
 
@@ -173,23 +173,30 @@ namespace Hazel {
 		}
 		if (entity.HasComponent<StaticMeshComponent>())
 		{
-			out << YAML::Key << "StaticMeshComponent";
-			out << YAML::BeginMap;
-			auto& staticMeshComp = entity.GetComponent<StaticMeshComponent>();
-			if (!staticMeshComp.directory.empty())
-				out << YAML::Key << "Path" << YAML::Value << (staticMeshComp.directory / staticMeshComp.name).string();
-		
-			out << YAML::EndMap;
-		}
-		if (entity.HasComponent<BaseGeometryComponent>())
-		{
-			out << YAML::Key << "BaseGeometryComponent";
-			out << YAML::BeginMap;
-			auto& BaseGeometryComp = entity.GetComponent<BaseGeometryComponent>();
-			out << YAML::Key << "Type" << YAML::Value << BaseGeometryComp.GetTypeName();
-			auto path = BaseGeometryComp.GetTexturePath().string();
-			out << YAML::Key << "TexturePath" << YAML::Value << path;
-			out << YAML::EndMap;
+			out << YAML::Key << "StaticMeshComponent" << YAML::BeginMap;  
+			{
+				auto& staticMeshComp = entity.GetComponent<StaticMeshComponent>();
+
+				if (!staticMeshComp.directory.empty()) 
+					out << YAML::Key << "Path" << YAML::Value<< (staticMeshComp.directory / staticMeshComp.name).string();
+
+				out << YAML::Key << "Materials" << YAML::BeginSeq;  
+				for (auto& mesh : staticMeshComp.meshes) {
+					out << YAML::BeginMap;  
+					{
+						out << YAML::Key << "MeshName" << YAML::Value << mesh->name;
+
+						out << YAML::Key << "Textures" << YAML::BeginSeq;
+						for (auto& texture : mesh->m_Material->textures) {
+							out << texture->GetShaderUniformName() + ":" + texture->GetPath();  
+						}
+						out << YAML::EndSeq;
+					}
+					out << YAML::EndMap;
+				}
+				out << YAML::EndSeq;
+			}
+			out << YAML::EndMap;  
 		}
 		if (entity.HasComponent<PointLightComponent>())
 		{
@@ -323,28 +330,41 @@ namespace Hazel {
 			if (StaticMeshComp)
 			{
 				auto& src = deserializedEntity.AddComponent<StaticMeshComponent>();
+				fspath path;
+				std::unordered_map<std::string, Ref<Material>> overrideMaterialPerMesh;
 				if (StaticMeshComp["Path"])
 				{
-					fspath path = StaticMeshComp["Path"].as<std::string>();
-					src.loadStaticMesh(path);
+					path = StaticMeshComp["Path"].as<std::string>();
+				}
+				if (StaticMeshComp["Materials"]) {
+					const YAML::Node& materialsNode = StaticMeshComp["Materials"];
+					for (const auto& matNode : materialsNode) {
+
+						std::string meshName;
+						if (matNode["MeshName"]) {
+							meshName = matNode["MeshName"].as<std::string>();
+						}
+						std::vector < Ref<Texture2D>> textures;
+						auto meshMaterial = CreateRef<Material>(textures);
+						if (matNode["Textures"]) {
+							for (const auto& texStr : matNode["Textures"]) {
+								std::string texInfo = texStr.as<std::string>();
+								size_t colonPos = texInfo.find(':');
+								if (colonPos != std::string::npos) {
+									std::string uniformName = texInfo.substr(0, colonPos);
+									std::string path = texInfo.substr(colonPos + 1);
+									auto Texture = Texture2D::Create(path, uniformName == "diffuse");
+									Texture->SetShaderUniformName(uniformName);
+									meshMaterial->textures.push_back(Texture);
+								}
+							}
+						}
+						overrideMaterialPerMesh[meshName] = meshMaterial;
+					}
+					src.loadStaticMesh(path, overrideMaterialPerMesh);
 				}
 			}
 
-			auto BaseGeometryComp = entity["BaseGeometryComponent"];
-			if (BaseGeometryComp)
-			{
-				auto& src = deserializedEntity.AddComponent<BaseGeometryComponent>();
-				if (BaseGeometryComp["Type"])
-				{
-					std::string TypeName = BaseGeometryComp["Type"].as<std::string>();
-					src.SetTypeName(TypeName);
-				}
-				if (BaseGeometryComp["TexturePath"])
-				{
-					std::string TexturePath = BaseGeometryComp["TexturePath"].as<std::string>();
-					src.SetTexturePath(TexturePath);
-				}
-			}
 			auto PointLightComp = entity["PointLightComponent"];
 			if (PointLightComp)
 			{

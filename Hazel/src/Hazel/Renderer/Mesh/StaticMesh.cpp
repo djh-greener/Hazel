@@ -2,7 +2,7 @@
 #include "StaticMesh.h"
 
 
-
+#include"Hazel/Renderer/Material/Material.h"
 #include "Hazel/Renderer/Texture.h"
 #include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/Renderer/Shader.h"
@@ -12,33 +12,18 @@
 namespace Hazel {
 
 	StaticMesh::StaticMesh(std::vector<StaticMeshVertex>& vertices, std::vector<uint32_t>& indices, std::vector<Ref<Texture2D>>&& textures):
-		textures(std::move(textures))
+		m_Material(CreateRef<Material>(std::move(textures)))
 	{
 		SetupMesh(vertices, indices);
 	}
 
 	void StaticMesh::DrawStaticMesh(Ref<Shader> &shader)
 	{
-		unsigned int diffuseNr = 0, specularNr = 0, ambientNr = 0, normalNr = 0;
-		for (int i = 0; i < textures.size(); i++) {
-			textures[i]->Bind(i);
-			shader->Bind();
-			std::string varName = "material." + textures[i]->GetShaderUniformName();
-			if (textures[i]->GetShaderUniformName() == "diffuse")
-				varName += std::to_string(++diffuseNr);
-			else if (textures[i]->GetShaderUniformName() == "specular")
-				varName += std::to_string(++specularNr);
-			else if (textures[i]->GetShaderUniformName() == "ambient")
-				varName += std::to_string(++ambientNr);
-			else if (textures[i]->GetShaderUniformName() == "normal")
-				varName += std::to_string(++normalNr);
-			else
-				HZ_ERROR("Error Texture Type!");
-			shader->SetInt(varName, i);
-		}
+		m_Material->Apply(shader);
 		m_VertexArray->Bind();
 		RenderCommand::DrawIndexed(m_VertexArray);
 		m_VertexArray->UnBind();
+		m_Material->UnApply();
 	}
 
 	void StaticMesh::SetupMesh(std::vector<StaticMeshVertex>& vertices, std::vector<uint32_t>& indices)
