@@ -101,8 +101,8 @@ namespace Hazel {
 			if (CameraComp.IsPrimary())
 			{
 				MainCameraComp = &CameraComp;
-				s_Data.CameraBuffer.View = CameraComp.GetProjMatrix();
-				s_Data.CameraBuffer.Projection = CameraComp.GetViewMatrix();
+				s_Data.CameraBuffer.View = CameraComp.GetViewMatrix();
+				s_Data.CameraBuffer.Projection = CameraComp.GetProjMatrix();
 				s_Data.CameraBuffer.ViewPos = TransformComp.Position;
 				s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer3DData::CameraData));
 				break;

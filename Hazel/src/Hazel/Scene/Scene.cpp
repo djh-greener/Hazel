@@ -11,7 +11,6 @@
 #include"Hazel/Scene/Components.h"
 #include"Hazel/Camera/CameraComponent.h"
 #include"Hazel/Renderer/Mesh/StaticMeshComponent.h"
-#include"Hazel/Renderer/Mesh/BaseGeometryComponent.h"
 
 #include<glm/glm.hpp>
 namespace Hazel {
@@ -120,11 +119,6 @@ namespace Hazel {
 
 	template<>
 	void Scene::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component)
-	{
-		component.Owner = entity;
-	}
-	template<>
-	void Scene::OnComponentAdded<BaseGeometryComponent>(Entity entity, BaseGeometryComponent& component)
 	{
 		component.Owner = entity;
 	}

@@ -10,8 +10,8 @@ layout(location = 5) in int	 a_EntityID;
 
 layout(std140, binding = 0) uniform CameraBlock
 {
-	mat4 u_Projection;
 	mat4 u_View;
+	mat4 u_Projection;
 	vec3  u_ViewPos;
 };
 uniform mat4 u_Model;
